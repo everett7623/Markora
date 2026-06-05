@@ -1,0 +1,1 @@
+import{j as e,F as r}from"./index.html-BBrafH5A.js";import{F as a}from"./FeaturePlaceholder-zhRtsgS3.js";function i(){return e.jsx(a,{titleKey:"pages.manager.title",descriptionKey:"pages.manager.description",icon:r})}export{i as default};

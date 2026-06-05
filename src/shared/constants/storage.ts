@@ -1,0 +1,9 @@
+export const CURRENT_SCHEMA_VERSION = 1;
+export const STORAGE_KEYS = {
+  settings: 'settings',
+  backups: 'backups',
+  scanCache: 'scan-cache'
+} as const;
+
+export const DEFAULT_BACKUP_RETENTION = 10;
+export const DEFAULT_CACHE_HOURS = 24;
