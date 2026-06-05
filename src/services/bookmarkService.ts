@@ -37,5 +37,18 @@ export const bookmarkService = {
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Unable to read bookmarks.' };
     }
+  },
+
+  async removeMany(ids: string[]): Promise<Result<string[]>> {
+    try {
+      if (!globalThis.chrome?.bookmarks) {
+        return { success: true, data: ids };
+      }
+
+      await Promise.all(ids.map((id) => chrome.bookmarks.remove(id)));
+      return { success: true, data: ids };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Unable to delete bookmarks.' };
+    }
   }
 };

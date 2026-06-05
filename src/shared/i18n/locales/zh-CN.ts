@@ -32,6 +32,17 @@ export const zhCN = {
     duplicateFolders: '重复文件夹',
     emptyFolders: '空文件夹'
   },
+  manager: {
+    allBookmarks: '全部书签',
+    bookmarkList: '书签列表',
+    visibleItems: '条可见',
+    deleteSelected: '删除选中',
+    columns: {
+      title: '标题',
+      url: '网址',
+      folder: '文件夹'
+    }
+  },
   pages: {
     dashboard: { title: '仪表盘', description: '展示实时书签统计、全局搜索历史和扫描信号。' },
     scanner: { title: '扫描检测', description: '基于 Worker 执行重复书签、重复文件夹和空文件夹扫描。' },

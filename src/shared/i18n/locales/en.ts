@@ -32,6 +32,17 @@ export const en = {
     duplicateFolders: 'Duplicate folders',
     emptyFolders: 'Empty folders'
   },
+  manager: {
+    allBookmarks: 'All bookmarks',
+    bookmarkList: 'Bookmark list',
+    visibleItems: 'visible',
+    deleteSelected: 'Delete selected',
+    columns: {
+      title: 'Title',
+      url: 'URL',
+      folder: 'Folder'
+    }
+  },
   pages: {
     dashboard: { title: 'Dashboard', description: 'Live bookmark statistics, global search history, and scan signals.' },
     scanner: { title: 'Scanner', description: 'Worker-based duplicate bookmark, duplicate folder, and empty-folder scans.' },

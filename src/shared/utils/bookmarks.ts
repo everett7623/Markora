@@ -68,3 +68,30 @@ export function searchBookmarks(bookmarks: BookmarkNode[], query: string): Bookm
     return haystack.includes(normalized);
   });
 }
+
+export function removeBookmarkNodes(nodes: BookmarkNode[], ids: Set<string>): BookmarkNode[] {
+  return nodes
+    .filter((node) => !ids.has(node.id))
+    .map((node) => ({
+      ...node,
+      children: node.children ? removeBookmarkNodes(node.children as BookmarkNode[], ids) : undefined
+    }));
+}
+
+export function getFolderDescendantBookmarks(nodes: BookmarkNode[], folderId: string | null): BookmarkNode[] {
+  if (!folderId) return flattenBookmarks(nodes);
+
+  const findFolder = (currentNodes: BookmarkNode[]): BookmarkNode | null => {
+    for (const node of currentNodes) {
+      if (node.id === folderId) return node;
+      if (node.children) {
+        const found = findFolder(node.children as BookmarkNode[]);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const folder = findFolder(nodes);
+  return folder?.children ? flattenBookmarks(folder.children as BookmarkNode[]) : [];
+}

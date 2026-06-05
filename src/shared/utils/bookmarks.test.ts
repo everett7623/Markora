@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { BookmarkNode } from '../types';
-import { calculateBookmarkStats, searchBookmarks } from './bookmarks';
+import { calculateBookmarkStats, getFolderDescendantBookmarks, removeBookmarkNodes, searchBookmarks } from './bookmarks';
 
 const tree: BookmarkNode[] = [
   {
@@ -27,5 +27,16 @@ describe('bookmark utilities', () => {
   it('searches title and url fields', () => {
     expect(searchBookmarks(tree, 'react')).toHaveLength(1);
     expect(searchBookmarks(tree, 'github')).toHaveLength(2);
+  });
+
+  it('removes bookmark nodes recursively', () => {
+    const nextTree = removeBookmarkNodes(tree, new Set(['3', '5']));
+    expect(searchBookmarks(nextTree, '')).toHaveLength(1);
+    expect(searchBookmarks(nextTree, 'github')).toHaveLength(1);
+  });
+
+  it('returns bookmarks below a selected folder', () => {
+    expect(getFolderDescendantBookmarks(tree, '4').map((bookmark) => bookmark.title)).toEqual(['React']);
+    expect(getFolderDescendantBookmarks(tree, null)).toHaveLength(3);
   });
 });
