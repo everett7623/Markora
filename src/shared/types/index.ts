@@ -25,6 +25,13 @@ export interface AppSettings {
   backupRetention: number;
 }
 
+export interface BookmarkStats {
+  totalBookmarks: number;
+  totalFolders: number;
+  duplicateBookmarks: number;
+  invalidLinks: number;
+}
+
 export interface StoredValue<T> {
   schemaVersion: number;
   data: T;
@@ -43,6 +50,11 @@ export interface ScanResult {
   duplicateFolderGroups: BookmarkNode[][];
   emptyFolders: BookmarkNode[];
   invalidLinks: BookmarkNode[];
+}
+
+export interface ScanCache {
+  result: ScanResult;
+  createdAt: number;
 }
 
 export interface ScanWorkerRequest {

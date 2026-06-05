@@ -1,1 +1,0 @@
-import{j as t,I as r}from"./index.html-BBrafH5A.js";import{F as o}from"./FeaturePlaceholder-zhRtsgS3.js";function i(){return t.jsx(o,{titleKey:"pages.importExport.title",descriptionKey:"pages.importExport.description",icon:r})}export{i as default};

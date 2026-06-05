@@ -1,6 +1,7 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppLayout } from './shared/components/AppLayout';
+import { useBookmarkStore } from './stores/bookmarkStore';
 
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage'));
 const ScannerPage = lazy(() => import('./features/scanner/ScannerPage'));
@@ -9,6 +10,12 @@ const ImportExportPage = lazy(() => import('./features/import-export/ImportExpor
 const SettingsPage = lazy(() => import('./features/settings/SettingsPage'));
 
 export function App() {
+  const loadBookmarks = useBookmarkStore((state) => state.load);
+
+  useEffect(() => {
+    void loadBookmarks();
+  }, [loadBookmarks]);
+
   return (
     <HashRouter>
       <AppLayout>

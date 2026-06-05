@@ -1,1 +1,0 @@
-import{j as e,S as r}from"./index.html-BBrafH5A.js";import{F as a}from"./FeaturePlaceholder-zhRtsgS3.js";function s(){return e.jsx(a,{titleKey:"pages.scanner.title",descriptionKey:"pages.scanner.description",icon:r})}export{s as default};
