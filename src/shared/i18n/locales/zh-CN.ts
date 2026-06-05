@@ -43,11 +43,24 @@ export const zhCN = {
       folder: '文件夹'
     }
   },
+  importExport: {
+    exportTitle: '导出书签',
+    importTitle: '导入书签',
+    importDescription: 'HTML 导入、冲突处理和导入前备份将在下一阶段实现。',
+    bookmarksReady: '个书签可导出',
+    formats: {
+      json: 'JSON',
+      csv: 'CSV',
+      txt: 'TXT',
+      opml: 'OPML',
+      html: 'HTML'
+    }
+  },
   pages: {
     dashboard: { title: '仪表盘', description: '展示实时书签统计、全局搜索历史和扫描信号。' },
     scanner: { title: '扫描检测', description: '基于 Worker 执行重复书签、重复文件夹和空文件夹扫描。' },
-    manager: { title: '书签管理', description: '虚拟化书签列表和文件夹管理工作区将在此提供。' },
-    importExport: { title: '导入 / 导出', description: '安全导入、导出、冲突处理和备份将在此提供。' },
+    manager: { title: '书签管理', description: '面向大量书签的虚拟化列表和文件夹管理工作区。' },
+    importExport: { title: '导入 / 导出', description: '用标准格式导出本地书签数据。' },
     settings: { title: '设置', description: '主题、语言、扫描、缓存和备份配置将在此提供。' }
   }
 } as const;

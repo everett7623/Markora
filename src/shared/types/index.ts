@@ -4,6 +4,7 @@ export type Result<T> =
 
 export type Theme = 'light' | 'dark' | 'system';
 export type Language = 'zh_CN' | 'en';
+export type ExportFormat = 'json' | 'csv' | 'txt' | 'opml' | 'html';
 
 export interface BookmarkNode extends chrome.bookmarks.BookmarkTreeNode {
   path?: string[];

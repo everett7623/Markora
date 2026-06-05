@@ -43,11 +43,24 @@ export const en = {
       folder: 'Folder'
     }
   },
+  importExport: {
+    exportTitle: 'Export bookmarks',
+    importTitle: 'Import bookmarks',
+    importDescription: 'HTML import, conflict resolution, and pre-import backups are reserved for the next milestone.',
+    bookmarksReady: 'bookmarks ready',
+    formats: {
+      json: 'JSON',
+      csv: 'CSV',
+      txt: 'TXT',
+      opml: 'OPML',
+      html: 'HTML'
+    }
+  },
   pages: {
     dashboard: { title: 'Dashboard', description: 'Live bookmark statistics, global search history, and scan signals.' },
     scanner: { title: 'Scanner', description: 'Worker-based duplicate bookmark, duplicate folder, and empty-folder scans.' },
-    manager: { title: 'Bookmark Manager', description: 'The virtualized bookmark and folder management workspace will live here.' },
-    importExport: { title: 'Import / Export', description: 'Validated import, export, conflict resolution, and backups will live here.' },
+    manager: { title: 'Bookmark Manager', description: 'Virtualized bookmark and folder management for large collections.' },
+    importExport: { title: 'Import / Export', description: 'Export your local bookmark data in standard portable formats.' },
     settings: { title: 'Settings', description: 'Theme, language, scanner, cache, and backup preferences will live here.' }
   }
 } as const;
