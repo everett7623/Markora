@@ -1,6 +1,6 @@
 # Current Session
 
-Date: 2026-06-06
+Date: 2026-06-07
 
 ## Working On
 
@@ -128,6 +128,8 @@ Latest verification:
 - Current release classification: `0.1.0` beta. GitHub push is acceptable after an intentional commit review; stable store publication is not yet approved.
 - Link-check transport regression verification passed with 46 Vitest tests and 7 Playwright tests after moving HTTPS requests to the background service worker.
 - Browser-store URL protection verification passed with 48 Vitest tests and 7 Playwright tests; protected store links are skipped before `fetch`.
+- GitHub README was rebuilt for the public beta, with honest feature status, installation instructions, privacy boundaries, browser support, quality gates, and the new repository URL.
+- Added `CHANGELOG.md` and the missing MIT `LICENSE`.
 
 ## Notes
 

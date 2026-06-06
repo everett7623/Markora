@@ -1,6 +1,6 @@
 # PROGRESS
 
-Last updated: 2026-06-06
+Last updated: 2026-06-07
 
 ## Current Project Completion
 
@@ -76,7 +76,8 @@ Last updated: 2026-06-06
 - English and Chinese localization is not complete: the Chinese locale is missing 15 keys and several user-facing strings, activities, and errors remain hardcoded in English.
 - A measured 10,000-bookmark performance benchmark and worker-pool optimization are not complete.
 - Store screenshots, promotional graphics, final listing copy, and AI features are not complete.
-- The repository declares MIT in README but does not yet contain a `LICENSE` file.
+- The repository includes an MIT `LICENSE` file matching the README.
+- GitHub-facing README, changelog, privacy link, installation guidance, and beta release documentation are updated for the `everett7623/Markora` repository.
 
 ## Verification
 
