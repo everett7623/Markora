@@ -1,4 +1,4 @@
-import { BarChart3, FolderTree, Import, Menu, ScanSearch, Search, Settings, Sparkles } from 'lucide-react';
+import { BarChart3, Bookmark, FolderTree, Import, Menu, ScanSearch, Search, Settings } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
@@ -24,7 +24,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const setSearchQuery = useBookmarkStore((state) => state.setSearchQuery);
 
   useEffect(() => {
-    setSearchQuery(debouncedSearch);
+    void setSearchQuery(debouncedSearch);
   }, [debouncedSearch, setSearchQuery]);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         )}
       >
         <div className="flex h-16 items-center gap-3 border-b px-5">
-          <span className="rounded-lg bg-indigo-600 p-2 text-white"><Sparkles size={18} /></span>
+          <span className="rounded-lg bg-indigo-600 p-2 text-white"><Bookmark size={18} fill="currentColor" /></span>
           <span className="font-semibold">{t('appName')}</span>
         </div>
         <nav className="flex-1 space-y-1 p-3">

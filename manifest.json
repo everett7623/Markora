@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Bookmark Management Master",
+  "name": "Markora - Bookmark Atlas",
   "version": "0.1.0",
-  "description": "Professional local-first bookmark management for Chrome and Edge.",
+  "description": "A local-first bookmark atlas for Chrome and Edge.",
   "permissions": ["bookmarks", "storage", "tabs"],
   "optional_host_permissions": ["<all_urls>"],
   "icons": {
@@ -11,7 +11,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Open Bookmark Management Master"
+    "default_title": "Open Markora"
   },
   "options_ui": {
     "page": "index.html",

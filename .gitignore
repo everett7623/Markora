@@ -1,8 +1,10 @@
 node_modules/
 dist/
+.crx-dev/
 coverage/
 playwright-report/
 test-results/
+release/
 .env
 .env.*
 !.env.example

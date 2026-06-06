@@ -2,7 +2,10 @@ export const CURRENT_SCHEMA_VERSION = 1;
 export const STORAGE_KEYS = {
   settings: 'settings',
   backups: 'backups',
-  scanCache: 'scan-cache'
+  scanCache: 'scan-cache',
+  searchHistory: 'search-history',
+  recentActivities: 'recent-activities',
+  bookmarkTags: 'bookmark-tags'
 } as const;
 
 export const DEFAULT_BACKUP_RETENTION = 10;

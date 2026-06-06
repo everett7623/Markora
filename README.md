@@ -1,8 +1,8 @@
-# 📚 Bookmark Management Master
+# Markora - 书签星图
 
 Professional Chrome Bookmark Management Extension
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)  
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
 ![Manifest](https://img.shields.io/badge/Manifest-V3-green)  
 ![React](https://img.shields.io/badge/React-18-blue)  
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
@@ -11,7 +11,7 @@ Professional Chrome Bookmark Management Extension
 
 ## Overview
 
-Bookmark Management Master is a modern Chrome / Edge extension designed for users with large bookmark collections.
+Markora is a modern Chrome / Edge extension designed for users with large bookmark collections.
 
 Unlike traditional bookmark tools, this extension provides a full-screen management experience similar to a standalone web application.
 
@@ -84,15 +84,9 @@ Supports:
 
 ### Import & Export
 
-- HTML
-    
-- JSON
-    
-- CSV
-    
-- TXT
-    
-- OPML
+- Import: HTML
+
+- Export: HTML, JSON, CSV, TXT, OPML
     
 
 ### Settings
@@ -144,9 +138,9 @@ Coming Soon
 Clone repository:
 
 ```bash
-git clone https://github.com/yourname/bookmark-manager-extension.git
+git clone https://github.com/everett7623/bookmark-manager.git
 
-cd bookmark-manager-extension
+cd bookmark-manager
 ```
 
 Install dependencies:
@@ -184,6 +178,29 @@ Output:
 ```txt
 dist/
 ```
+
+---
+
+## Release Package
+
+```bash
+npm run build
+npm run package:release
+```
+
+Output:
+
+```txt
+release/markora-v0.1.0.zip
+```
+
+Before publishing, complete [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md).
+
+---
+
+## Versioning
+
+The current `0.1.0` build is a beta baseline. See [VERSIONING.md](VERSIONING.md) for the path to `1.0.0`.
 
 ---
 
@@ -241,7 +258,7 @@ code_review.md
 
 ## Privacy
 
-Bookmark Management Master:
+Markora:
 
 - Does not upload bookmarks
     
@@ -253,6 +270,8 @@ Bookmark Management Master:
     
 
 All data remains inside the browser.
+
+See [PRIVACY.md](PRIVACY.md) for the full privacy policy.
 
 ---
 

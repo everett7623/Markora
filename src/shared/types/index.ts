@@ -5,6 +5,7 @@ export type Result<T> =
 export type Theme = 'light' | 'dark' | 'system';
 export type Language = 'zh_CN' | 'en';
 export type ExportFormat = 'json' | 'csv' | 'txt' | 'opml' | 'html';
+export type ImportConflictStrategy = 'skip' | 'import-all';
 
 export interface BookmarkNode extends chrome.bookmarks.BookmarkTreeNode {
   path?: string[];
@@ -33,6 +34,40 @@ export interface BookmarkStats {
   invalidLinks: number;
 }
 
+export type ActivityType = 'load' | 'search' | 'delete' | 'rename' | 'move' | 'merge' | 'tag' | 'undo' | 'import' | 'restore' | 'scan' | 'export' | 'settings';
+
+export interface RecentActivity {
+  id: string;
+  type: ActivityType;
+  message: string;
+  createdAt: number;
+}
+
+export interface ImportBookmarkItem {
+  title: string;
+  url: string;
+  path: string[];
+  dateAdded?: number;
+}
+
+export interface ImportConflict {
+  imported: ImportBookmarkItem;
+  existing: BookmarkNode;
+}
+
+export interface ImportPreview {
+  items: ImportBookmarkItem[];
+  conflicts: ImportConflict[];
+}
+
+export interface InvalidLink {
+  node: BookmarkNode;
+  status?: number;
+  error: string;
+  kind: 'broken' | 'unreachable';
+  reason: 'not-found' | 'http-error' | 'server-error' | 'timeout' | 'network' | 'insecure' | 'protected';
+}
+
 export interface StoredValue<T> {
   schemaVersion: number;
   data: T;
@@ -50,7 +85,7 @@ export interface ScanResult {
   duplicateBookmarkGroups: BookmarkNode[][];
   duplicateFolderGroups: BookmarkNode[][];
   emptyFolders: BookmarkNode[];
-  invalidLinks: BookmarkNode[];
+  invalidLinks: InvalidLink[];
 }
 
 export interface ScanCache {
@@ -67,5 +102,54 @@ export interface ScanWorkerResponse {
   type: 'progress' | 'complete' | 'error';
   progress: number;
   result?: ScanResult;
+  error?: string;
+}
+
+export interface LinkFetchRequest {
+  type: 'check-link';
+  url: string;
+  settings: ScannerConfig;
+}
+
+export interface LinkFetchResponse {
+  status?: number;
+  statusText?: string;
+  cloudflare?: boolean;
+  error?: string;
+  failure?: 'timeout' | 'network' | 'protected';
+}
+
+export type LinkCheckWorkerRequest =
+  | {
+      type: 'check-links';
+      bookmarks: BookmarkNode[];
+      settings: ScannerConfig;
+    }
+  | {
+      type: 'link-result';
+      requestId: number;
+      result: Result<LinkFetchResponse>;
+    };
+
+export interface LinkCheckWorkerResponse {
+  type: 'progress' | 'complete' | 'error' | 'request-link';
+  progress: number;
+  requestId?: number;
+  request?: LinkFetchRequest;
+  checkedBookmarks?: number;
+  totalBookmarks?: number;
+  uniqueUrls?: number;
+  invalidLinks?: InvalidLink[];
+  error?: string;
+}
+
+export interface ImportHtmlWorkerRequest {
+  type: 'parse-html';
+  html: string;
+}
+
+export interface ImportHtmlWorkerResponse {
+  type: 'complete' | 'error';
+  items?: ImportBookmarkItem[];
   error?: string;
 }

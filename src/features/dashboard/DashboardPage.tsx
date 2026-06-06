@@ -1,4 +1,4 @@
-import { AlertTriangle, Bookmark, Copy, Folder, Search } from 'lucide-react';
+import { Activity, AlertTriangle, Bookmark, Copy, Folder, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const loading = useBookmarkStore((state) => state.loading);
   const error = useBookmarkStore((state) => state.error);
   const recentSearches = useBookmarkStore((state) => state.recentSearches);
+  const recentActivities = useBookmarkStore((state) => state.recentActivities);
   const scanResult = useScanStore((state) => state.result);
 
   const cards = [
@@ -56,6 +57,25 @@ export default function DashboardPage() {
             ))
           ) : (
             <span className="text-sm text-slate-500">{t('dashboard.noSearchHistory')}</span>
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-lg border bg-white p-5 shadow-sm dark:bg-slate-950">
+        <div className="flex items-center gap-2">
+          <Activity size={18} className="text-indigo-600" />
+          <h2 className="font-semibold">{t('dashboard.recentActivity')}</h2>
+        </div>
+        <div className="mt-4 space-y-3">
+          {recentActivities.length > 0 ? (
+            recentActivities.map((activity) => (
+              <div key={activity.id} className="flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm">
+                <span>{activity.message}</span>
+                <span className="shrink-0 text-xs text-slate-500">{new Date(activity.createdAt).toLocaleString()}</span>
+              </div>
+            ))
+          ) : (
+            <span className="text-sm text-slate-500">{t('dashboard.noRecentActivity')}</span>
           )}
         </div>
       </section>

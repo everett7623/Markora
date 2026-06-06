@@ -3,10 +3,10 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import manifest from './manifest.json';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react(), crx({ manifest })],
   build: {
-    outDir: 'dist',
+    outDir: command === 'serve' ? '.crx-dev' : 'dist',
     emptyOutDir: true
   }
-});
+}));

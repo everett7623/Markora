@@ -1,5 +1,5 @@
 
-# Bookmark Management Master - Codex Instructions
+# Markora - Codex Instructions
 
 This repository is a Chrome / Edge Extension project.
 
@@ -11,7 +11,7 @@ Codex must follow this file before making any code changes.
 
 Project name:
 
-Bookmark Management Master
+Markora - Bookmark Atlas
 
 Product type:
 
@@ -527,5 +527,26 @@ Verification:
 Notes:
 - ...
 ```
+
+## 14. Environment Verification
+
+Before assuming the environment is unavailable, always re-verify the current machine state.
+
+Run:
+
+```bash
+git status
+node -v
+npm -v
+npm run build
+npm run lint
+npm run test
+```
+
+Do not reuse previous assumptions that Git, Node.js, npm, or the repository are unavailable.
+
+On Windows, do not conclude the environment is broken only because a command is missing from the current Codex PATH. Check the installed tool locations or ask the user for the verified environment state before recording an environment blocker.
+
+If verification succeeds, update `PROGRESS.md` and remove stale notes about missing Git, Node.js, npm, or failed environment detection.
 
 END

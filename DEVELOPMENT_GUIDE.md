@@ -1,5 +1,5 @@
 
-# Bookmark Management Master
+# Markora - Bookmark Atlas
 
 Enterprise Architecture Specification
 

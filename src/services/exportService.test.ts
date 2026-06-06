@@ -36,6 +36,7 @@ describe('exportService', () => {
 
     expect(txt.success && txt.data).toContain('Example');
     expect(opml.success && opml.data).toContain('&amp;');
+    expect(opml.success && opml.data).toContain('Markora Bookmark Export');
     expect(html.success && html.data).toContain('NETSCAPE-Bookmark-file-1');
   });
 
