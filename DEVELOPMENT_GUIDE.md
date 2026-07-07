@@ -119,10 +119,10 @@ npm run test:e2e
 The current active stream is release readiness plus comprehensive improvement.
 The near-term priorities are:
 
-1. Complete the remaining Chinese manual localization route check.
-2. Add individual empty-folder deletion from Scanner results.
-3. Complete measured 10,000-bookmark performance benchmarks and any needed worker/list tuning.
-4. Complete store-release screenshots, promotional graphics, and listing copy.
-5. Run final Chrome and Edge manual browser checks from `dist/`.
+1. Reconfirm whether the required `tabs` permission can be removed before store submission.
+2. Complete final visible Chrome and Edge click-through checks from `dist/`.
+3. Decide whether full destructive replacement restore is needed before `1.0.0`.
+4. Prepare GitHub pre-release metadata and store portal submission fields.
+5. Continue post-beta AI/local recommendation features only after release gates are closed.
 
 Always re-check `SESSION.md` and `PROGRESS.md` before choosing the next task.

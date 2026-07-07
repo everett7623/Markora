@@ -6,17 +6,21 @@
 - [x] `npm run lint`
 - [x] `npm run typecheck`
 - [x] `npm run test`
+- [x] `npm run benchmark:performance`
 - [x] `npm run test:e2e`
 - [x] `npm run build`
 - [x] `npm run validate:extension`
+- [x] `npm run check:browsers`
+- [x] `npm run capture:store-screenshots`
 - [x] `npm run package:release`
 
 ## Localization
 
-- [ ] English and Chinese locale key sets match.
-- [ ] No user-facing strings are unintentionally hardcoded.
-- [ ] Recent Activity and error messages follow the selected language.
-- [ ] Dashboard, Scanner, link review, Manager, Import / Export, and Settings are manually checked in both languages.
+- [x] English and Chinese locale key sets match.
+- [x] Recent Activity and error messages follow locale keys.
+- [x] English primary route smoke checks pass.
+- [x] Chinese primary route smoke checks pass.
+- [ ] Final human visual copy review is complete in both languages.
 
 ## Manifest Review
 
@@ -24,7 +28,7 @@
 - [x] `package.json` and `manifest.json` versions match.
 - [x] No popup page is configured.
 - [x] Options page opens in a full browser tab.
-- [ ] Required permissions have a documented user-facing purpose.
+- [x] Required permissions have a documented user-facing purpose.
 - [ ] Reconfirm whether the required `tabs` permission remains necessary before store submission.
 - [x] `<all_urls>` remains optional and is requested only for broken-link scanning.
 
@@ -38,7 +42,8 @@
 
 ## Manual Extension Checks
 
-- [ ] Load `dist/` as an unpacked extension without manifest warnings.
+- [x] Chrome and Edge accept `dist/` in headless extension load checks.
+- [ ] Load `dist/` as an unpacked extension without manifest warnings in visible Chrome and Edge.
 - [ ] Clicking the extension action opens the full-screen options page.
 - [ ] Dashboard, Scanner, Manager, Import / Export, and Settings routes open.
 - [ ] Broken-link permission is requested only after starting a scan.
@@ -47,15 +52,15 @@
 
 ## Store Submission
 
-- [ ] Store description is current.
+- [x] Store description is current.
 - [ ] Privacy policy URL is publicly accessible.
-- [ ] 1280x800 or 640x400 screenshots are prepared.
-- [ ] 440x280 promotional tile is prepared if required.
-- [ ] 128x128 store icon is prepared.
-- [ ] Support URL and contact information are current.
+- [x] 1280x800 or 640x400 screenshots are prepared.
+- [x] 440x280 promotional tile is prepared if required.
+- [x] 128x128 store icon is prepared.
+- [x] Support URL and contact information are current.
 - [x] Release ZIP contains only production extension files.
 - [x] Repository license file is present and matches the README.
-- [ ] Release is marked as beta or pre-release while the version is below `1.0.0`.
+- [x] Release is marked as beta or pre-release while the version is below `1.0.0`.
 
 ## Release Artifacts
 

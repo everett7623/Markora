@@ -40,6 +40,31 @@ test('renders manager controls for search, tags, move, undo, and delete', async 
   await expect(page.getByRole('button', { name: /Delete selected/ })).toBeDisabled();
 });
 
+test('checks primary routes in Chinese localization', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByRole('combobox', { name: 'Language' }).selectOption('zh_CN');
+
+  await expect(page.getByRole('heading', { name: '设置' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /每日自动扫描/ })).toBeVisible();
+
+  await page.getByRole('link', { name: '仪表盘' }).click();
+  await expect(page.getByRole('heading', { name: '仪表盘' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '快捷操作' })).toBeVisible();
+
+  await page.getByRole('link', { name: '扫描检测' }).click();
+  await expect(page.getByRole('heading', { name: '扫描检测' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '开始扫描' })).toBeVisible();
+
+  await page.getByRole('link', { name: '书签管理' }).click();
+  await expect(page.getByRole('heading', { name: '书签管理' })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: '按标签筛选' })).toBeVisible();
+
+  await page.getByRole('link', { name: '导入 / 导出' }).click();
+  await expect(page.getByRole('heading', { name: '导入 / 导出' })).toBeVisible();
+  await expect(page.getByText('选择文件')).toBeVisible();
+});
+
 test('runs the scanner and renders structural results', async ({ page }) => {
   await page.route(/https:\/\/(github\.com|developer\.mozilla\.org|react\.dev).*/, async (route) => {
     await route.fulfill({ status: 200, body: '' });
@@ -54,6 +79,15 @@ test('runs the scanner and renders structural results', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Duplicate bookmarks' }).locator('..').getByText('1', { exact: true })).toBeVisible();
   await expect(page.getByText('https://github.com')).toBeVisible();
   await expect(page.getByText('Bookmarks Bar / Empty Folder', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: /Delete empty folder Bookmarks Bar \/ Empty Folder/ }).click();
+  const deleteEmptyFolderDialog = page.getByRole('dialog', { name: 'Delete empty folder' });
+  await expect(deleteEmptyFolderDialog).toBeVisible();
+  await deleteEmptyFolderDialog.getByRole('button', { name: 'Delete folder' }).click();
+
+  const emptyFolderPanel = page.getByRole('heading', { name: 'Empty folders' }).locator('../..');
+  await expect(emptyFolderPanel.getByText('0', { exact: true })).toBeVisible();
+  await expect(emptyFolderPanel.getByText('No results')).toBeVisible();
 });
 
 test('separates broken links from network or proxy failures in the detail workflow', async ({ page }) => {

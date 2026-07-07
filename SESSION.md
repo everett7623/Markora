@@ -121,18 +121,23 @@ Close the clarified core, localization, and release gaps before store publicatio
 - English and Chinese locale key parity is enforced by a unit test; English route smoke coverage remains green.
 - Manager now supports batch tag add/remove for selected bookmarks and expand/collapse controls for nested folders.
 - Dashboard now includes quick actions, local scan-result recommendations, and pinyin/full-initial search support through the shared bookmark search utility.
+- Chinese primary route smoke coverage was added to Playwright and passes after switching the app language in Settings.
+- Scanner now supports deleting one detected empty folder with confirmation, backup creation, structure refresh, and scan-cache refresh.
+- 10,000-bookmark structural scan and pinyin search benchmarks are covered by `npm run benchmark:performance`.
+- Store listing copy, promotional SVG sources, and 1280x800 page screenshots now live under `store/`.
+- `npm run check:browsers` verifies Chrome and Edge can load the production `dist/` extension in headless mode.
 
 ## Next Step
 
-Complete the remaining Chinese manual localization route check, then add individual empty-folder deletion and continue performance/store-release preparation.
+Reconfirm whether the required `tabs` permission can be removed before store submission, then complete visible Chrome and Edge click-through checks from `dist/`.
 
 ## After E2E
 
-1. Complete the Chinese manual route check.
-2. Add individual empty-folder deletion from Scanner results.
-3. Resume 10,000-bookmark performance checks and tune if needed.
-4. Prepare store screenshots, promotional graphics, and listing copy.
-5. Run final Chrome and Edge manual browser checks from `dist/`.
+1. Review the `tabs` permission and remove it if no current code path requires it.
+2. Complete visible Chrome and Edge click-through checks from `dist/`.
+3. Decide whether full destructive replacement restore is needed before `1.0.0`.
+4. Prepare GitHub pre-release metadata and store portal submission fields.
+5. Continue post-beta AI/local recommendation features only after release gates are closed.
 
 ## Verification Required Before Commit
 
@@ -173,6 +178,7 @@ Latest verification:
 - On 2026-07-08, after Manager select-all/sort/keyboard/tag-count and Dashboard last-scan updates, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 12 files and 49 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 - On 2026-07-08, after automatic daily scan and legacy planning cleanup, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 12 files and 49 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 - On 2026-07-08, after backup retention, locale parity, multi-format import, Manager batch tags/collapsible folders, and Dashboard quick actions/recommendations/pinyin search, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 15 files and 60 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
+- On 2026-07-08, after Chinese route smoke, individual empty-folder deletion, 10,000-bookmark benchmarks, store assets/screenshots, and Chrome/Edge headless load checks, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 62 tests, `npm run benchmark:performance` passed, `npm run build:extension` passed, `npm run check:browsers` passed, and Playwright E2E passed with 8 tests.
 
 ## Notes
 

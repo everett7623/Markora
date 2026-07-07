@@ -1,4 +1,4 @@
-import { Play, RotateCcw } from 'lucide-react';
+import { Play, RotateCcw, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -136,6 +136,15 @@ export default function ScannerPage() {
     });
   };
 
+  const deleteEmptyFolder = (folder: BookmarkNode) => {
+    setConfirmState({
+      title: t('scanner.confirmDeleteEmptyFolderTitle'),
+      description: t('scanner.confirmDeleteEmptyFolderDescription', { title: folder.path?.join(' / ') ?? folder.title }),
+      confirmLabel: t('scanner.deleteEmptyFolder'),
+      onConfirm: () => runRepair(() => deleteBookmarks([folder.id]))
+    });
+  };
+
   const cleanAllDuplicateBookmarks = () => {
     const groups = result?.duplicateBookmarkGroups ?? [];
     const duplicateIds = groups.flatMap((group) => planDuplicateBookmarkCleanup(group).duplicateIds);
@@ -229,8 +238,18 @@ export default function ScannerPage() {
             </Button>
           ) : null}
           {(result?.emptyFolders ?? []).slice(0, 8).map((folder) => (
-            <div key={folder.id} className="truncate rounded-md border p-3 text-sm">
-              {folder.path?.join(' / ') ?? folder.title}
+            <div key={folder.id} className="flex items-center justify-between gap-2 rounded-md border p-3 text-sm">
+              <span className="min-w-0 truncate">{folder.path?.join(' / ') ?? folder.title}</span>
+              <Button
+                className="h-8 px-2 text-xs"
+                variant="outline"
+                disabled={mutating || running}
+                onClick={() => deleteEmptyFolder(folder)}
+                aria-label={t('scanner.deleteEmptyFolderAria', { title: folder.path?.join(' / ') ?? folder.title })}
+              >
+                <Trash2 size={14} />
+                {t('scanner.deleteEmptyFolder')}
+              </Button>
             </div>
           ))}
         </ResultPanel>

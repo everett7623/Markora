@@ -278,8 +278,7 @@ Empty Folder Cleanup
 
 Status:
 
-- Detection implemented
-- Cleanup not implemented
+- Implemented
 
 Acceptance:
 
@@ -600,6 +599,16 @@ TASK-605
 
 Performance Monitoring
 
+Status:
+
+- Implemented
+
+Acceptance:
+
+- 10,000-bookmark structural scan benchmark is covered
+- 10,000-bookmark pinyin search benchmark is covered
+- `npm run benchmark:performance` provides a focused performance gate
+
 ---
 
 # P7 AI
@@ -632,13 +641,40 @@ TASK-802
 
 Store Assets
 
+Status:
+
+- Implemented
+
+Acceptance:
+
+- Store listing draft is available under `store/listing.md`
+- 1280x800 screenshots are generated under `store/screenshots/`
+- Promotional SVG sources are available under `store/assets/`
+- 128x128 icon source is available under `public/icons/icon128.png`
+
 TASK-803
 
 Chrome Store Package
 
+Status:
+
+- Production package tooling implemented
+- Chrome and Edge headless `dist/` load checks implemented
+- Store portal upload is not performed from this repository
+
 TASK-804
 
 Release Build
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- `npm run build:extension` validates production extension output
+- `npm run package:release` creates the versioned ZIP artifact
+- `npm run check:browsers` verifies Chrome and Edge can load `dist/`
 
 ---
 
@@ -651,7 +687,7 @@ Status:
 - Translation resources exist for both languages
 - English and Chinese locale key parity is enforced by unit test
 - English route smoke checks pass through Playwright
-- Final Chinese manual route check remains a release gate
+- Chinese primary route smoke checks pass through Playwright
 
 Acceptance:
 
@@ -745,6 +781,6 @@ Reviewed against the current implementation on 2026-06-06.
 - English and Chinese resources are configured.
 - English and Chinese locale key parity is covered by a unit test.
 - Recent Activity, service errors, Scanner, Manager, Import/Export, Settings, and Dashboard additions use locale keys.
-- Current localization still needs final Chinese manual route review before stable store release.
+- Current localization still needs final human visual copy review before stable store release.
 
 END

@@ -4,14 +4,14 @@ Last updated: 2026-07-08
 
 ## Current Project Completion
 
-- Overall completion: about 92% against the clarified core and release-ready scope.
+- Overall completion: about 95% against the clarified core and release-ready scope.
 - P0 Foundation: complete and verified.
 - P1 Dashboard: about 94% complete.
-- P2 Scanner: about 94% complete.
+- P2 Scanner: about 97% complete.
 - P3 Manager: about 97% complete.
 - P4 Import/Export: about 94% complete after adding JSON, CSV, TXT, and OPML import.
 - P5 Settings: about 94% complete.
-- P6 Optimization through P8 Release: partially complete; localization and store release gates remain open.
+- P6 Optimization through P8 Release: mostly complete; visible browser checks, permission review, and store portal submission remain open.
 
 ## Completed
 
@@ -85,14 +85,19 @@ Last updated: 2026-07-08
 - English and Chinese locale key parity is enforced by a unit test.
 - Manager supports batch tag add/remove for selected bookmarks and expand/collapse controls in the folder tree.
 - Dashboard includes quick actions, local scan-result recommendations, and full-pinyin/pinyin-initial search support.
+- Chinese primary route smoke coverage passes through Playwright after switching language in Settings.
+- Scanner supports deleting one detected empty folder with confirmation, backup creation, bookmark refresh, and scan-cache refresh.
+- 10,000-bookmark structural scan and pinyin search performance benchmarks are covered by `npm run benchmark:performance`.
+- Store listing copy, promotional SVG sources, and 1280x800 screenshots are available under `store/`.
+- Chrome and Edge can load the production `dist/` extension through `npm run check:browsers`.
 
 ## Not Completed
 
-- Individual empty-folder deletion is not implemented; Scanner now supports batch empty-folder cleanup.
 - Full destructive replacement restore is not implemented; current restore re-applies the backup snapshot through the service boundary and keeps a safety backup.
-- A final Chinese localization manual route check remains open.
-- A measured 10,000-bookmark performance benchmark and worker-pool optimization are not complete.
-- Store screenshots, promotional graphics, final listing copy, and AI features are not complete.
+- Visible Chrome and Edge click-through checks from `dist/` remain open.
+- The `tabs` permission still needs final review before store submission.
+- Store portal submission fields and GitHub pre-release metadata are not finalized in the portal.
+- Post-beta AI features are not complete.
 - The repository includes an MIT `LICENSE` file matching the README.
 - GitHub-facing README, changelog, privacy link, installation guidance, and beta release documentation are updated for the `everett7623/Markora` repository.
 
@@ -153,12 +158,13 @@ Additional verification in this Codex session on 2026-07-08:
 - A later 2026-07-08 verification passed after Manager select-all, sort options, keyboard shortcuts, tag counts, and Dashboard last-scan updates: ESLint 0 warnings, TypeScript strict check, 49 Vitest tests, production extension build validation, and 7 Playwright E2E tests.
 - A later 2026-07-08 verification passed after automatic daily scan and legacy planning cleanup: ESLint 0 warnings, TypeScript strict check, 49 Vitest tests, production extension build validation, and 7 Playwright E2E tests.
 - A later 2026-07-08 verification passed after backup retention, locale parity, multi-format import, Manager batch tags/collapsible folders, and Dashboard quick actions/recommendations/pinyin search: ESLint 0 warnings, TypeScript strict check, 60 Vitest tests, production extension build validation, and 7 Playwright E2E tests.
+- A later 2026-07-08 verification passed after Chinese route smoke, individual empty-folder deletion, 10,000-bookmark benchmarks, store assets/screenshots, and Chrome/Edge headless load checks: ESLint 0 warnings, TypeScript strict check, 62 Vitest tests, focused performance benchmark, production extension build validation, browser load checks, and 8 Playwright E2E tests.
 
 ## Release Decision
 
 - GitHub source push: suitable as a `0.1.0` beta after reviewing and committing the current large working tree.
 - Chrome Web Store / Edge Add-ons stable publication: not ready.
-- Current release blockers include the final Chinese manual route check, remaining destructive-operation gaps, performance benchmarks, store assets, and final manual browser checks.
+- Current release blockers include visible browser click-through checks, `tabs` permission review, full destructive restore decision, and final store portal submission metadata.
 - Do not label the current build `1.0.0`.
 
 Required standards:
@@ -171,11 +177,11 @@ Required standards:
 
 ## Next Stage Development Plan
 
-1. Complete the final Chinese localization manual route check.
-2. Add individual empty-folder deletion from Scanner results.
-3. Complete measured 10,000-bookmark performance benchmarks and tune if needed.
-4. Complete store screenshots, promotional graphics, and listing copy.
-5. Run final Chrome and Edge manual browser checks from `dist/`.
+1. Reconfirm whether the required `tabs` permission can be removed before store submission.
+2. Complete visible Chrome and Edge click-through checks from `dist/`.
+3. Decide whether full destructive replacement restore is needed before `1.0.0`.
+4. Prepare GitHub pre-release metadata and store portal submission fields.
+5. Continue post-beta AI/local recommendation features only after release gates are closed.
 
 ## Design Notes / Pending Decisions
 

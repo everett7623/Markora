@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560" role="img" aria-labelledby="title desc">
+  <title id="title">Markora marquee image</title>
+  <desc id="desc">Large promotional image for Markora showing dashboard, scanner, and manager panels.</desc>
+  <rect width="1400" height="560" fill="#f8fafc"/>
+  <rect x="80" y="70" width="1240" height="420" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="112" y="102" width="220" height="356" rx="8" fill="#0f172a"/>
+  <rect x="142" y="134" width="64" height="92" rx="6" fill="#2563eb"/>
+  <path d="M160 152h28v54l-14-10-14 10z" fill="#ffffff"/>
+  <text x="142" y="270" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#ffffff">Markora</text>
+  <text x="142" y="304" font-family="Inter, Arial, sans-serif" font-size="15" fill="#cbd5e1">Your local bookmark atlas</text>
+  <rect x="380" y="118" width="270" height="132" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="410" y="166" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#1e3a8a">Dashboard</text>
+  <text x="410" y="198" font-family="Inter, Arial, sans-serif" font-size="14" fill="#334155">Stats, quick actions, and local recommendations.</text>
+  <rect x="690" y="118" width="270" height="132" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="720" y="166" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#166534">Scanner</text>
+  <text x="720" y="198" font-family="Inter, Arial, sans-serif" font-size="14" fill="#334155">Duplicates, empty folders, and link review.</text>
+  <rect x="1000" y="118" width="270" height="132" rx="8" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="1030" y="166" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#9a3412">Manager</text>
+  <text x="1030" y="198" font-family="Inter, Arial, sans-serif" font-size="14" fill="#334155">Rename, move, tag, batch edit, and undo.</text>
+  <rect x="380" y="298" width="890" height="112" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="410" y="348" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#0f172a">Local-first bookmark cleanup for Chrome and Edge</text>
+  <text x="410" y="382" font-family="Inter, Arial, sans-serif" font-size="16" fill="#475569">No analytics. No cloud upload. Your bookmark data stays in your browser.</text>
+</svg>

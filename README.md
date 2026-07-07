@@ -10,7 +10,7 @@
   [![Release](https://img.shields.io/github/v/release/everett7623/Markora?include_prereleases&label=beta)](https://github.com/everett7623/Markora/releases)
   [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4)](manifest.json)
   [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6)](tsconfig.json)
-  [![Tests](https://img.shields.io/badge/tests-60%20unit%20%2B%207%20E2E-success)](#quality)
+  [![Tests](https://img.shields.io/badge/tests-62%20unit%20%2B%208%20E2E-success)](#quality)
   [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 </div>
 
@@ -33,7 +33,7 @@ Browser bookmark managers become difficult to use once a collection grows into t
 |---|---|
 | Dashboard | Bookmark and folder statistics, quick actions, local recommendations, search history, recent activity |
 | Search | Title, URL, folder-path, full-pinyin, and pinyin-initial search with 300 ms debounce and `Ctrl/Cmd+K` |
-| Scanner | Duplicate bookmarks, duplicate folders, empty-folder cleanup, broken-link review |
+| Scanner | Duplicate bookmarks, duplicate folders, individual and batch empty-folder cleanup, broken-link review |
 | Link review | HTTP error classification, network/proxy distinction, pagination, edit/open/delete actions |
 | Manager | Folder filtering, collapsible tree, virtualized list, rename, move, reorder, tags, batch edit, batch delete, undo |
 | Import | HTML, JSON, CSV, TXT, and OPML with preview, conflict handling, and backup |
@@ -41,7 +41,7 @@ Browser bookmark managers become difficult to use once a collection grows into t
 | Settings | Theme, language, scanner, cache, automatic scan, backup retention, backup management |
 | Privacy | Local storage and direct URL checks only; no developer-controlled server |
 
-The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include final Chinese manual localization review, individual empty-folder deletion, performance benchmarks, and final store assets.
+The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include visible browser click-through checks, `tabs` permission review, full destructive restore decisions, and final store portal submission.
 
 ## Link Scanner
 
@@ -104,9 +104,10 @@ The `v0.1.0` beta baseline currently passes:
 
 - ESLint with zero errors and zero warnings.
 - TypeScript strict type checking.
-- 60 Vitest unit and component tests.
-- 7 Playwright end-to-end flows.
+- 62 Vitest unit and component tests.
+- 8 Playwright end-to-end flows.
 - Production extension validation.
+- Chrome and Edge headless `dist/` load checks.
 - Release ZIP packaging.
 
 ## Architecture

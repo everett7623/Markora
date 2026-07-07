@@ -3,6 +3,8 @@ import type { BookmarkNode, BookmarkStats, ScanResult } from '../types';
 
 export type SortOption = 'default' | 'title-asc' | 'title-desc' | 'date-asc' | 'date-desc' | 'url-asc';
 
+const cjkPattern = /[\u3400-\u9fff]/;
+
 export function annotateBookmarkPaths(nodes: BookmarkNode[], parentPath: string[] = []): BookmarkNode[] {
   return nodes.map((node) => {
     const path = [...parentPath, node.title || 'Untitled'];
@@ -136,9 +138,14 @@ export function searchBookmarks(bookmarks: BookmarkNode[], query: string): Bookm
     if (haystack.includes(normalized)) return true;
 
     const pinyinSource = `${bookmark.title} ${bookmark.path?.join(' ') ?? ''}`;
+    if (!cjkPattern.test(pinyinSource)) return false;
+
     const fullPinyin = pinyin(pinyinSource, { toneType: 'none' }).toLowerCase();
     const compactPinyin = fullPinyin.replace(/\s+/g, '');
-    const initials = pinyin(pinyinSource, { pattern: 'first', toneType: 'none' }).replace(/\s+/g, '').toLowerCase();
+    const initials = fullPinyin
+      .split(/\s+/)
+      .map((part) => part[0] ?? '')
+      .join('');
     return fullPinyin.includes(normalized) || compactPinyin.includes(compactQuery) || initials.includes(compactQuery);
   });
 }
