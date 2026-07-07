@@ -28,6 +28,8 @@ export const en = {
     reorderedBookmark: 'Reordered bookmark',
     restoredBookmarks: 'Restored {{count}} bookmark{{suffix}}',
     updatedBookmarkTags: 'Updated tags for bookmark',
+    addedBookmarkTags: 'Added tags to {{count}} selected bookmarks',
+    removedBookmarkTags: 'Removed tags from {{count}} selected bookmarks',
     importedBookmarks: 'Imported {{count}} bookmark{{suffix}}',
     mergedFolders: 'Merged {{count}} folder{{suffix}}',
     restoredBackupFromDate: 'Restored backup from {{date}}'
@@ -70,6 +72,23 @@ export const en = {
     noRecentActivity: 'Actions will appear here as you use the manager.',
     lastScanned: 'Last scanned: {{time}}',
     neverScanned: 'Never scanned',
+    quickActions: 'Quick actions',
+    quickActionsDescription: 'Jump directly into the highest-value local bookmark workflows.',
+    actions: {
+      scan: 'Start scan',
+      import: 'Import',
+      manage: 'Manage'
+    },
+    recommendations: {
+      title: 'Local recommendations',
+      empty: 'Run a scan to generate local cleanup recommendations.',
+      duplicatesTitle: 'Clean duplicate bookmarks',
+      duplicatesDescription: '{{count}} duplicate bookmarks can be removed after review.',
+      emptyFoldersTitle: 'Remove empty folders',
+      emptyFoldersDescription: '{{count}} empty folders are ready for cleanup.',
+      linkIssuesTitle: 'Review link issues',
+      linkIssuesDescription: '{{count}} links need manual review or cleanup.'
+    },
     relative: {
       justNow: 'just now',
       minutesAgo: '{{count}} min ago',
@@ -160,6 +179,10 @@ export const en = {
     renamePrompt: 'Rename bookmark',
     renameFolderPrompt: 'Rename folder',
     tagsPrompt: 'Comma-separated tags',
+    addTags: 'Add tags',
+    removeTags: 'Remove tags',
+    addTagsPrompt: 'Add comma-separated tags to selected bookmarks',
+    removeTagsPrompt: 'Remove comma-separated tags from selected bookmarks',
     save: 'Save',
     saveTags: 'Save tags',
     confirmDeleteTitle: 'Delete selected bookmarks',
@@ -171,6 +194,8 @@ export const en = {
     selectAria: 'Select {{title}}',
     renameAria: 'Rename {{title}}',
     editTagsAria: 'Edit tags for {{title}}',
+    expandFolder: 'Expand {{title}}',
+    collapseFolder: 'Collapse {{title}}',
     columns: {
       title: 'Title',
       url: 'URL',
@@ -181,10 +206,11 @@ export const en = {
   importExport: {
     exportTitle: 'Export bookmarks',
     importTitle: 'Import bookmarks',
-    importDescription: 'Import Netscape bookmark HTML locally. A backup is created before writing new bookmarks.',
+    importDescription: 'Import HTML, JSON, CSV, TXT, or OPML bookmark files locally. A backup is created before writing new bookmarks.',
     bookmarksReady: 'bookmarks ready',
-    chooseHtml: 'Choose HTML file',
+    chooseFile: 'Choose file',
     parsing: 'Parsing...',
+    unsupportedImportFormat: 'Choose an HTML, JSON, CSV, TXT, or OPML bookmark file.',
     previewTitle: 'Import preview',
     detected: 'detected',
     conflicts: 'conflicts',

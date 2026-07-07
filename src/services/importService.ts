@@ -1,7 +1,7 @@
-import type { BookmarkNode, ImportBookmarkItem, ImportConflict, ImportHtmlWorkerResponse, ImportPreview, Result } from '../shared/types';
+import type { BookmarkNode, ImportBookmarkItem, ImportConflict, ImportFormat, ImportHtmlWorkerResponse, ImportPreview, Result } from '../shared/types';
 import i18n from '../shared/i18n';
 import { flattenBookmarks } from '../shared/utils/bookmarks';
-import { parseNetscapeBookmarksHtml } from '../shared/utils/importHtml';
+import { parseImportContent } from '../shared/utils/importFormats';
 
 function findConflicts(items: ImportBookmarkItem[], bookmarks: BookmarkNode[]): ImportConflict[] {
   const existingByUrl = new Map(flattenBookmarks(bookmarks).map((bookmark) => [bookmark.url, bookmark]));
@@ -13,9 +13,9 @@ function findConflicts(items: ImportBookmarkItem[], bookmarks: BookmarkNode[]): 
     .filter((item): item is ImportConflict => item !== null);
 }
 
-async function parseWithWorker(html: string): Promise<Result<ImportBookmarkItem[]>> {
+async function parseWithWorker(format: ImportFormat, content: string): Promise<Result<ImportBookmarkItem[]>> {
   if (typeof Worker === 'undefined') {
-    return { success: true, data: parseNetscapeBookmarksHtml(html) };
+    return { success: true, data: parseImportContent(format, content) };
   }
 
   return new Promise((resolve) => {
@@ -32,13 +32,13 @@ async function parseWithWorker(html: string): Promise<Result<ImportBookmarkItem[
       worker.terminate();
       resolve({ success: false, error: i18n.t('serviceErrors.parseBookmarkHtml') });
     };
-    worker.postMessage({ type: 'parse-html', html });
+    worker.postMessage({ type: 'parse-import', format, content });
   });
 }
 
 export const importService = {
-  async previewHtml(html: string, bookmarks: BookmarkNode[]): Promise<Result<ImportPreview>> {
-    const parsed = await parseWithWorker(html);
+  async preview(format: ImportFormat, content: string, bookmarks: BookmarkNode[]): Promise<Result<ImportPreview>> {
+    const parsed = await parseWithWorker(format, content);
     if (!parsed.success) return parsed;
 
     return {
@@ -48,5 +48,9 @@ export const importService = {
         conflicts: findConflicts(parsed.data, bookmarks)
       }
     };
+  },
+
+  async previewHtml(html: string, bookmarks: BookmarkNode[]): Promise<Result<ImportPreview>> {
+    return this.preview('html', html, bookmarks);
   }
 };

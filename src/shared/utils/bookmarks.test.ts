@@ -4,6 +4,8 @@ import {
   calculateBookmarkStats,
   flattenFolders,
   getFolderDescendantBookmarks,
+  getFolderIdsWithFolderChildren,
+  getVisibleFolders,
   mergeFolderNodes,
   moveBookmarkNodes,
   planDuplicateBookmarkCleanup,
@@ -77,6 +79,20 @@ describe('bookmark utilities', () => {
     expect(searchBookmarks(tree, 'github')).toHaveLength(2);
   });
 
+  it('searches Chinese bookmark titles by full pinyin and initials', () => {
+    const chineseTree: BookmarkNode[] = [
+      {
+        id: 'root',
+        title: 'Root',
+        children: [{ id: 'cn', title: '书签星图', url: 'https://markora.test', parentId: 'root' }]
+      }
+    ];
+
+    expect(searchBookmarks(chineseTree, 'shu qian')).toHaveLength(1);
+    expect(searchBookmarks(chineseTree, 'shuqianxingtu')).toHaveLength(1);
+    expect(searchBookmarks(chineseTree, 'sqxt')).toHaveLength(1);
+  });
+
   it('removes bookmark nodes recursively', () => {
     const nextTree = removeBookmarkNodes(tree, new Set(['3', '5']));
     expect(searchBookmarks(nextTree, '')).toHaveLength(1);
@@ -86,6 +102,12 @@ describe('bookmark utilities', () => {
   it('returns bookmarks below a selected folder', () => {
     expect(getFolderDescendantBookmarks(tree, '4').map((bookmark) => bookmark.title)).toEqual(['React']);
     expect(getFolderDescendantBookmarks(tree, null)).toHaveLength(3);
+  });
+
+  it('returns visible folders based on collapsed folder ids', () => {
+    expect(getFolderIdsWithFolderChildren(tree).has('1')).toBe(true);
+    expect(getVisibleFolders(tree, new Set(['1'])).map((folder) => folder.id)).toEqual(['1']);
+    expect(getVisibleFolders(tree, new Set()).map((folder) => folder.id)).toEqual(['1', '4']);
   });
 
   it('updates a bookmark or folder title recursively', () => {

@@ -140,6 +140,23 @@ describe('bookmarkStore', () => {
     }
   });
 
+  it('adds and removes tags for multiple selected bookmarks', async () => {
+    await useBookmarkStore.getState().load();
+
+    await useBookmarkStore.getState().updateBookmarkTags(['101', '102'], ['team', 'docs'], 'add');
+    await useBookmarkStore.getState().updateBookmarkTags(['101'], ['docs'], 'remove');
+
+    expect(useBookmarkStore.getState().tagsByBookmarkId['101']).toEqual(['team']);
+    expect(useBookmarkStore.getState().tagsByBookmarkId['102']).toEqual(['team', 'docs']);
+
+    const stored = await storageService.get<Record<string, string[]>>(STORAGE_KEYS.bookmarkTags);
+    expect(stored.success).toBe(true);
+    if (stored.success) {
+      expect(stored.data?.data['101']).toEqual(['team']);
+      expect(stored.data?.data['102']).toEqual(['team', 'docs']);
+    }
+  });
+
   it('imports new bookmarks after creating a backup', async () => {
     await useBookmarkStore.getState().load();
 

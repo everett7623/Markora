@@ -1,8 +1,9 @@
-import { Activity, AlertTriangle, Bookmark, Clock, Copy, Folder, Search } from 'lucide-react';
+import { Activity, AlertTriangle, Bookmark, Clock, Copy, FileInput, Folder, Play, Search, Sparkles } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { scanService } from '../../services/scanService';
+import { Button } from '../../shared/components/ui/Button';
 import { Skeleton } from '../../shared/components/ui/Skeleton';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
 import { useScanStore } from '../../stores/scanStore';
@@ -42,6 +43,32 @@ export default function DashboardPage() {
     { label: t('dashboard.cards.duplicates'), value: stats.duplicateBookmarks, icon: Copy, to: '/scanner' },
     { label: t('dashboard.cards.invalid'), value: scanResult?.invalidLinks.length ?? stats.invalidLinks, icon: AlertTriangle, to: '/scanner' }
   ];
+  const duplicateCleanupCount = scanResult?.duplicateBookmarkGroups.reduce((total, group) => total + Math.max(0, group.length - 1), 0) ?? 0;
+  const emptyFolderCount = scanResult?.emptyFolders.length ?? 0;
+  const linkIssueCount = scanResult?.invalidLinks.length ?? 0;
+  const recommendations = [
+    duplicateCleanupCount > 0
+      ? {
+          title: t('dashboard.recommendations.duplicatesTitle'),
+          description: t('dashboard.recommendations.duplicatesDescription', { count: duplicateCleanupCount }),
+          to: '/scanner'
+        }
+      : null,
+    emptyFolderCount > 0
+      ? {
+          title: t('dashboard.recommendations.emptyFoldersTitle'),
+          description: t('dashboard.recommendations.emptyFoldersDescription', { count: emptyFolderCount }),
+          to: '/scanner'
+        }
+      : null,
+    linkIssueCount > 0
+      ? {
+          title: t('dashboard.recommendations.linkIssuesTitle'),
+          description: t('dashboard.recommendations.linkIssuesDescription', { count: linkIssueCount }),
+          to: '/scanner/links'
+        }
+      : null
+  ].filter((item): item is { title: string; description: string; to: string } => item !== null);
 
   return (
     <div className="space-y-6">
@@ -83,6 +110,54 @@ export default function DashboardPage() {
         <Clock size={16} className="text-indigo-600" />
         {t('dashboard.lastScanned', { time: lastScanAt ? formatRelativeTime(lastScanAt, t) : t('dashboard.neverScanned') })}
       </Link>
+
+      <section className="rounded-lg border bg-white p-5 shadow-sm dark:bg-slate-950">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-semibold">{t('dashboard.quickActions')}</h2>
+            <p className="mt-1 text-sm text-slate-500">{t('dashboard.quickActionsDescription')}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link to="/scanner">
+                <Play size={16} />
+                {t('dashboard.actions.scan')}
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/import-export">
+                <FileInput size={16} />
+                {t('dashboard.actions.import')}
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/manager">
+                <Bookmark size={16} />
+                {t('dashboard.actions.manage')}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-lg border bg-white p-5 shadow-sm dark:bg-slate-950">
+        <div className="flex items-center gap-2">
+          <Sparkles size={18} className="text-indigo-600" />
+          <h2 className="font-semibold">{t('dashboard.recommendations.title')}</h2>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {recommendations.length > 0 ? (
+            recommendations.map((recommendation) => (
+              <Link key={recommendation.title} to={recommendation.to} className="rounded-md border p-3 text-sm transition hover:border-indigo-300 dark:border-slate-800">
+                <div className="font-medium">{recommendation.title}</div>
+                <p className="mt-1 text-slate-500">{recommendation.description}</p>
+              </Link>
+            ))
+          ) : (
+            <p className="text-sm text-slate-500 md:col-span-3">{t('dashboard.recommendations.empty')}</p>
+          )}
+        </div>
+      </section>
 
       <section className="rounded-lg border bg-white p-5 shadow-sm dark:bg-slate-950">
         <div className="flex items-center gap-2">

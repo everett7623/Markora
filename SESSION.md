@@ -116,18 +116,23 @@ Close the clarified core, localization, and release gaps before store publicatio
 - Automatic daily scan is implemented with persisted `autoScan` settings, Manifest V3 `alarms` permission, background alarm registration, a Settings toggle, and a shared structural-scan utility reused by the scanner worker and background alarm.
 - Auto-scan saves duplicate bookmark, duplicate folder, and empty-folder scan results to the existing scan cache. Broken-link checks remain manual.
 - `PRIVACY.md` documents the new `alarms` permission.
+- Backup creation now honors the persisted backup retention setting, and lowering retention trims excess backups safely.
+- JSON, CSV, TXT, OPML, and HTML imports now share the existing preview, conflict resolver, and backup-before-import flow through a Worker parser.
+- English and Chinese locale key parity is enforced by a unit test; English route smoke coverage remains green.
+- Manager now supports batch tag add/remove for selected bookmarks and expand/collapse controls for nested folders.
+- Dashboard now includes quick actions, local scan-result recommendations, and pinyin/full-initial search support through the shared bookmark search utility.
 
 ## Next Step
 
-Apply the persisted backup retention setting in `backupService`, then continue final localization audit and multi-format imports.
+Complete the remaining Chinese manual localization route check, then add individual empty-folder deletion and continue performance/store-release preparation.
 
 ## After E2E
 
-1. Apply backup retention settings to the real service.
-2. Implement JSON, CSV, TXT, and OPML import.
-3. Add Manager batch tag editing and expand/collapse behavior.
-4. Add Dashboard quick actions, local recommendations, and pinyin search.
-5. Resume 10,000-bookmark performance checks and store preparation.
+1. Complete the Chinese manual route check.
+2. Add individual empty-folder deletion from Scanner results.
+3. Resume 10,000-bookmark performance checks and tune if needed.
+4. Prepare store screenshots, promotional graphics, and listing copy.
+5. Run final Chrome and Edge manual browser checks from `dist/`.
 
 ## Verification Required Before Commit
 
@@ -167,6 +172,7 @@ Latest verification:
 - On 2026-07-08, Playwright E2E passed: 7 tests, including the updated in-app dialog workflows.
 - On 2026-07-08, after Manager select-all/sort/keyboard/tag-count and Dashboard last-scan updates, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 12 files and 49 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 - On 2026-07-08, after automatic daily scan and legacy planning cleanup, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 12 files and 49 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
+- On 2026-07-08, after backup retention, locale parity, multi-format import, Manager batch tags/collapsible folders, and Dashboard quick actions/recommendations/pinyin search, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 15 files and 60 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 
 ## Notes
 

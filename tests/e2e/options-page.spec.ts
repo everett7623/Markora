@@ -4,6 +4,9 @@ test('renders all foundation navigation routes', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   await expect(page.getByRole('link', { name: /Last scanned:/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Quick actions' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Local recommendations' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Start scan/ })).toBeVisible();
 
   await page.getByRole('link', { name: 'Scanner' }).click();
   await expect(page.getByRole('heading', { name: 'Scanner' })).toBeVisible();
@@ -13,7 +16,7 @@ test('renders all foundation navigation routes', async ({ page }) => {
 
   await page.getByRole('link', { name: 'Import / Export' }).click();
   await expect(page.getByRole('heading', { name: 'Import / Export' })).toBeVisible();
-  await expect(page.getByText('Choose HTML file')).toBeVisible();
+  await expect(page.getByText('Choose file')).toBeVisible();
 
   await page.getByRole('link', { name: 'Settings' }).click();
   await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
@@ -31,6 +34,8 @@ test('renders manager controls for search, tags, move, undo, and delete', async 
   await expect(page.getByRole('checkbox', { name: 'Select all visible bookmarks' })).toBeVisible();
   await expect(page.getByLabel('Shortcuts: Delete selected, Escape clear selection, Ctrl+A select visible bookmarks')).toBeVisible();
   await expect(page.getByRole('button', { name: /Move selected/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Add tags/ })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Remove tags' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Undo' })).toBeDisabled();
   await expect(page.getByRole('button', { name: /Delete selected/ })).toBeDisabled();
 });
@@ -134,7 +139,10 @@ test('previews an HTML import, resolves conflicts, and imports new bookmarks', a
 
   await page.getByRole('link', { name: 'Markora' }).click();
   await expect(page.getByText('E2E Imported Bookmark')).toBeVisible();
-  await expect(page.getByRole('button', { name: /^Imported E2E 1$/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Imported E2E', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('checkbox', { name: 'Select E2E Imported Bookmark' }).locator('..').getByText('Bookmarks Bar / Imported E2E', { exact: true })
+  ).toBeVisible();
 });
 
 test('renames, tags, moves, deletes, and restores a bookmark', async ({ page }) => {

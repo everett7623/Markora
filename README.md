@@ -10,7 +10,7 @@
   [![Release](https://img.shields.io/github/v/release/everett7623/Markora?include_prereleases&label=beta)](https://github.com/everett7623/Markora/releases)
   [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4)](manifest.json)
   [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6)](tsconfig.json)
-  [![Tests](https://img.shields.io/badge/tests-49%20unit%20%2B%207%20E2E-success)](#quality)
+  [![Tests](https://img.shields.io/badge/tests-60%20unit%20%2B%207%20E2E-success)](#quality)
   [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 </div>
 
@@ -31,17 +31,17 @@ Browser bookmark managers become difficult to use once a collection grows into t
 
 | Area | Available in `v0.1.0 Beta` |
 |---|---|
-| Dashboard | Bookmark and folder statistics, search history, recent activity |
-| Search | Title, URL, and folder-path search with 300 ms debounce and `Ctrl/Cmd+K` |
+| Dashboard | Bookmark and folder statistics, quick actions, local recommendations, search history, recent activity |
+| Search | Title, URL, folder-path, full-pinyin, and pinyin-initial search with 300 ms debounce and `Ctrl/Cmd+K` |
 | Scanner | Duplicate bookmarks, duplicate folders, empty-folder cleanup, broken-link review |
 | Link review | HTTP error classification, network/proxy distinction, pagination, edit/open/delete actions |
-| Manager | Folder filtering, virtualized list, rename, move, reorder, tags, batch delete, undo |
-| Import | Netscape bookmark HTML with preview, conflict handling, and backup |
+| Manager | Folder filtering, collapsible tree, virtualized list, rename, move, reorder, tags, batch edit, batch delete, undo |
+| Import | HTML, JSON, CSV, TXT, and OPML with preview, conflict handling, and backup |
 | Export | HTML, JSON, CSV, TXT, and OPML |
-| Settings | Theme, language, scanner, cache, automatic scan, backup management |
+| Settings | Theme, language, scanner, cache, automatic scan, backup retention, backup management |
 | Privacy | Local storage and direct URL checks only; no developer-controlled server |
 
-The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include full localization coverage, multi-format import, backup retention behavior, and final store assets.
+The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include final Chinese manual localization review, individual empty-folder deletion, performance benchmarks, and final store assets.
 
 ## Link Scanner
 
@@ -104,7 +104,7 @@ The `v0.1.0` beta baseline currently passes:
 
 - ESLint with zero errors and zero warnings.
 - TypeScript strict type checking.
-- 49 Vitest unit and component tests.
+- 60 Vitest unit and component tests.
 - 7 Playwright end-to-end flows.
 - Production extension validation.
 - Release ZIP packaging.

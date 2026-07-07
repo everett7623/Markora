@@ -1,11 +1,11 @@
 import type { ImportHtmlWorkerRequest, ImportHtmlWorkerResponse } from '../shared/types';
-import { parseNetscapeBookmarksHtml } from '../shared/utils/importHtml';
+import { parseImportContent } from '../shared/utils/importFormats';
 
 self.onmessage = (event: MessageEvent<ImportHtmlWorkerRequest>) => {
-  if (event.data.type !== 'parse-html') return;
+  if (event.data.type !== 'parse-import') return;
 
   try {
-    const items = parseNetscapeBookmarksHtml(event.data.html);
+    const items = parseImportContent(event.data.format, event.data.content);
     const response: ImportHtmlWorkerResponse = { type: 'complete', items };
     self.postMessage(response);
   } catch (error) {

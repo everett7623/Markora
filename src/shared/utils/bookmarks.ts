@@ -1,3 +1,4 @@
+import { pinyin } from 'pinyin-pro';
 import type { BookmarkNode, BookmarkStats, ScanResult } from '../types';
 
 export type SortOption = 'default' | 'title-asc' | 'title-desc' | 'date-asc' | 'date-desc' | 'url-asc';
@@ -41,6 +42,36 @@ export function flattenFolders(nodes: BookmarkNode[]): BookmarkNode[] {
 
   visit(nodes);
   return folders;
+}
+
+export function getVisibleFolders(nodes: BookmarkNode[], collapsedFolderIds: Set<string>): BookmarkNode[] {
+  const folders: BookmarkNode[] = [];
+
+  const visit = (currentNodes: BookmarkNode[]) => {
+    for (const node of currentNodes) {
+      if (!node.children) continue;
+      folders.push(node);
+      if (!collapsedFolderIds.has(node.id)) visit(node.children as BookmarkNode[]);
+    }
+  };
+
+  visit(nodes);
+  return folders;
+}
+
+export function getFolderIdsWithFolderChildren(nodes: BookmarkNode[]): Set<string> {
+  const ids = new Set<string>();
+
+  const visit = (currentNodes: BookmarkNode[]) => {
+    for (const node of currentNodes) {
+      if (!node.children) continue;
+      if ((node.children as BookmarkNode[]).some((child) => child.children)) ids.add(node.id);
+      visit(node.children as BookmarkNode[]);
+    }
+  };
+
+  visit(nodes);
+  return ids;
 }
 
 export function planDuplicateBookmarkCleanup(group: BookmarkNode[]): { keeper: BookmarkNode | null; duplicateIds: string[] } {
@@ -98,10 +129,17 @@ export function calculateBookmarkStats(bookmarks: BookmarkNode[], scanResult?: S
 export function searchBookmarks(bookmarks: BookmarkNode[], query: string): BookmarkNode[] {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return flattenBookmarks(bookmarks);
+  const compactQuery = normalized.replace(/\s+/g, '');
 
   return flattenBookmarks(bookmarks).filter((bookmark) => {
     const haystack = `${bookmark.title} ${bookmark.url ?? ''} ${bookmark.path?.join(' ') ?? ''}`.toLowerCase();
-    return haystack.includes(normalized);
+    if (haystack.includes(normalized)) return true;
+
+    const pinyinSource = `${bookmark.title} ${bookmark.path?.join(' ') ?? ''}`;
+    const fullPinyin = pinyin(pinyinSource, { toneType: 'none' }).toLowerCase();
+    const compactPinyin = fullPinyin.replace(/\s+/g, '');
+    const initials = pinyin(pinyinSource, { pattern: 'first', toneType: 'none' }).replace(/\s+/g, '').toLowerCase();
+    return fullPinyin.includes(normalized) || compactPinyin.includes(compactQuery) || initials.includes(compactQuery);
   });
 }
 

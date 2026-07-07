@@ -53,6 +53,7 @@ interface BookmarkStore {
   reorderBookmarkBefore: (id: string, beforeId: string) => Promise<void>;
   undoLastDelete: () => Promise<void>;
   setBookmarkTags: (id: string, tags: string[]) => Promise<void>;
+  updateBookmarkTags: (ids: string[], tags: string[], mode: 'add' | 'remove') => Promise<void>;
   setTagFilter: (tag: string | null) => void;
   importBookmarks: (preview: ImportPreview, strategy: ImportConflictStrategy) => Promise<void>;
   restoreBackup: (id: string) => Promise<void>;
@@ -78,6 +79,11 @@ async function saveActivities(recentActivities: RecentActivity[]) {
 
 async function saveTags(tagsByBookmarkId: Record<string, string[]>) {
   await storageService.set(STORAGE_KEYS.bookmarkTags, tagsByBookmarkId);
+}
+
+async function getBackupListFallback(fallback: BackupRecord[]): Promise<BackupRecord[]> {
+  const backups = await backupService.list();
+  return backups.success ? backups.data : fallback;
 }
 
 function withLocalTags(bookmarks: BookmarkNode[], tagsByBookmarkId: Record<string, string[]>): BookmarkNode[] {
@@ -187,7 +193,7 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
       set({ error: backup.error, mutating: false });
       return;
     }
-    set((state) => ({ backups: [backup.data, ...state.backups].slice(0, 10) }));
+    set((state) => ({ backups: [backup.data, ...state.backups] }));
 
     const deleted = await bookmarkService.removeMany(ids);
     if (!deleted.success) {
@@ -195,10 +201,12 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
       return;
     }
 
+    const refreshedBackups = await getBackupListFallback(get().backups);
     set((state) => {
       const next = applyBookmarks(removeBookmarkNodes(state.bookmarks, idsSet), state.searchQuery, state.tagsByBookmarkId, state.tagFilter);
       return {
         ...next,
+        backups: refreshedBackups,
         lastDeletedSnapshot: { bookmarksBeforeDelete: currentBookmarks, deletedBookmarks },
         mutating: false
       };
@@ -270,7 +278,7 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
       set({ error: backup.error, mutating: false });
       return;
     }
-    set((state) => ({ backups: [backup.data, ...state.backups].slice(0, 10) }));
+    set((state) => ({ backups: [backup.data, ...state.backups] }));
 
     const merged = await bookmarkService.mergeFolders(validSourceIds, targetId);
     if (!merged.success) {
@@ -278,8 +286,10 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
       return;
     }
 
+    const refreshedBackups = await getBackupListFallback(get().backups);
     set((state) => ({
       ...applyBookmarks(mergeFolderNodes(state.bookmarks, new Set(validSourceIds), targetId), state.searchQuery, state.tagsByBookmarkId, state.tagFilter),
+      backups: refreshedBackups,
       mutating: false
     }));
     await get().addActivity({ type: 'merge', message: i18n.t('activity.mergedFolders', { count: validSourceIds.length, suffix: validSourceIds.length === 1 ? '' : 's' }) });
@@ -337,6 +347,31 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
     await saveTags(tagsByBookmarkId);
     await get().addActivity({ type: 'tag', message: i18n.t('activity.updatedBookmarkTags') });
   },
+  updateBookmarkTags: async (ids, tags, mode) => {
+    const normalizedTags = [...new Set(tags.map((tag) => tag.trim()).filter(Boolean))].slice(0, 8);
+    const uniqueIds = [...new Set(ids)];
+    if (uniqueIds.length === 0 || normalizedTags.length === 0) return;
+
+    const removeTags = new Set(normalizedTags);
+    const tagsByBookmarkId = { ...get().tagsByBookmarkId };
+    for (const id of uniqueIds) {
+      const currentTags = tagsByBookmarkId[id] ?? [];
+      tagsByBookmarkId[id] =
+        mode === 'add'
+          ? [...new Set([...currentTags, ...normalizedTags])].slice(0, 8)
+          : currentTags.filter((tag) => !removeTags.has(tag));
+    }
+
+    set((state) => ({
+      tagsByBookmarkId,
+      ...applyBookmarks(state.bookmarks, state.searchQuery, tagsByBookmarkId, state.tagFilter)
+    }));
+    await saveTags(tagsByBookmarkId);
+    await get().addActivity({
+      type: 'tag',
+      message: i18n.t(mode === 'add' ? 'activity.addedBookmarkTags' : 'activity.removedBookmarkTags', { count: uniqueIds.length })
+    });
+  },
   setTagFilter: (tag) => {
     set((state) => ({
       tagFilter: tag,
@@ -355,7 +390,7 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
       set({ error: backup.error, mutating: false });
       return;
     }
-    set((state) => ({ backups: [backup.data, ...state.backups].slice(0, 10) }));
+    set((state) => ({ backups: [backup.data, ...state.backups] }));
 
     const created = await bookmarkService.createMany(items);
     if (!created.success) {
@@ -363,6 +398,7 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
       return;
     }
 
+    const refreshedBackups = await getBackupListFallback(get().backups);
     set((state) => {
       const [firstRoot, ...restRoots] = state.bookmarks;
       const nextRoots = firstRoot
@@ -370,6 +406,7 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
         : created.data;
       return {
         ...applyBookmarks(nextRoots, state.searchQuery, state.tagsByBookmarkId, state.tagFilter),
+        backups: refreshedBackups,
         mutating: false
       };
     });
@@ -412,10 +449,11 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
     // 5. Reload tree from Chrome API for consistency
     const tree = await bookmarkService.getTree();
     const freshBookmarks = tree.success ? tree.data : target.bookmarks;
+    const refreshedBackups = await getBackupListFallback([safetyBackup.data, ...get().backups]);
 
     set((state) => ({
       ...applyBookmarks(freshBookmarks, state.searchQuery, state.tagsByBookmarkId, state.tagFilter),
-      backups: [safetyBackup.data, ...state.backups].slice(0, 10),
+      backups: refreshedBackups,
       mutating: false
     }));
     await get().addActivity({

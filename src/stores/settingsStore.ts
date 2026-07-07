@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { DEFAULT_BACKUP_RETENTION, DEFAULT_CACHE_HOURS, STORAGE_KEYS } from '../shared/constants/storage';
 import type { AppSettings, Result, ScannerConfig } from '../shared/types';
+import { backupService } from '../services/backupService';
 import { migrateSettings, storageService } from '../services/storageService';
 
 export const defaultSettings: AppSettings = {
@@ -70,6 +71,13 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   update: async (updates) => {
     const settings = normalizeSettings({ ...get().settings, ...updates });
     const saved = await persistSettings(settings);
+    if (saved.success && typeof updates.backupRetention === 'number') {
+      const trimmed = await backupService.trimToRetention(settings.backupRetention);
+      if (!trimmed.success) {
+        set({ error: trimmed.error });
+        return { success: false, error: trimmed.error };
+      }
+    }
     set(saved.success ? { settings, error: null } : { error: saved.error });
     return saved;
   },

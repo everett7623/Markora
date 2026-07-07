@@ -38,8 +38,9 @@ export default function SettingsPage() {
     void update({ [key]: value });
   };
 
-  const updateNumberSetting = (key: NumberSettingKey, value: string) => {
-    void update({ [key]: Number(value) });
+  const updateNumberSetting = async (key: NumberSettingKey, value: string) => {
+    const saved = await update({ [key]: Number(value) });
+    if (saved.success && key === 'backupRetention') await loadBackups();
   };
 
   const updateScannerNumber = (key: ScannerNumberKey, value: string) => {
@@ -142,7 +143,7 @@ export default function SettingsPage() {
             max={168}
             value={settings.cacheHours}
             disabled={loading}
-            onChange={(value) => updateNumberSetting('cacheHours', value)}
+            onChange={(value) => void updateNumberSetting('cacheHours', value)}
           />
         </SettingsCard>
 
@@ -153,7 +154,7 @@ export default function SettingsPage() {
             max={50}
             value={settings.backupRetention}
             disabled={loading}
-            onChange={(value) => updateNumberSetting('backupRetention', value)}
+            onChange={(value) => void updateNumberSetting('backupRetention', value)}
           />
           <div className="space-y-3">
             <div>

@@ -159,7 +159,7 @@ Pinyin Search
 
 Status:
 
-- Not implemented
+- Implemented
 
 Acceptance:
 
@@ -176,7 +176,7 @@ Dashboard Quick Actions
 
 Status:
 
-- Not implemented
+- Implemented
 
 Acceptance:
 
@@ -193,7 +193,7 @@ Dashboard Smart Recommendations
 
 Status:
 
-- Not implemented
+- Implemented
 
 Acceptance:
 
@@ -354,7 +354,7 @@ Batch Edit
 Status:
 
 - Batch move and batch delete implemented
-- Batch edit not implemented
+- Batch tag editing implemented
 
 Acceptance:
 
@@ -372,7 +372,7 @@ Collapsible Folder Tree
 Status:
 
 - Hierarchical indentation and folder filtering implemented
-- Expand and collapse controls not implemented
+- Expand and collapse controls implemented
 
 Acceptance:
 
@@ -421,7 +421,7 @@ JSON Import
 
 Status:
 
-- Not implemented
+- Implemented
 
 Acceptance:
 
@@ -439,7 +439,7 @@ CSV Import
 
 Status:
 
-- Not implemented
+- Implemented
 
 Acceptance:
 
@@ -456,7 +456,7 @@ TXT Import
 
 Status:
 
-- Not implemented
+- Implemented
 
 Acceptance:
 
@@ -473,7 +473,7 @@ OPML Import
 
 Status:
 
-- Not implemented
+- Implemented
 
 Acceptance:
 
@@ -514,8 +514,7 @@ Apply Backup Retention Setting
 
 Status:
 
-- Setting UI and persistence implemented
-- Backup service still uses the fixed default retention
+- Implemented
 
 Acceptance:
 
@@ -650,7 +649,9 @@ Complete English And Chinese Localization
 Status:
 
 - Translation resources exist for both languages
-- Key parity and UI coverage are incomplete
+- English and Chinese locale key parity is enforced by unit test
+- English route smoke checks pass through Playwright
+- Final Chinese manual route check remains a release gate
 
 Acceptance:
 
@@ -703,11 +704,10 @@ Reviewed against the current implementation on 2026-06-06.
 
 ## Dashboard
 
-- Implemented: 300ms debounced title, URL, and folder path search.
-- Missing: pinyin search.
+- Implemented: 300ms debounced title, URL, folder path, full-pinyin, and pinyin-initial search.
 - Implemented: four statistics cards.
-- Missing: quick action buttons.
-- Missing: smart recommendation cards.
+- Implemented: quick action buttons.
+- Implemented: local smart recommendation cards from scan results.
 
 ## Scanner
 
@@ -719,10 +719,8 @@ Reviewed against the current implementation on 2026-06-06.
 
 ## Manager
 
-- Implemented: hierarchical folder display and folder filtering.
-- Partial: folder tree has indentation but no expand/collapse controls.
-- Implemented: batch move and batch delete.
-- Missing: batch edit.
+- Implemented: hierarchical folder display, folder filtering, and expand/collapse controls.
+- Implemented: batch move, batch delete, and batch tag editing.
 - Implemented: tags and tag filtering.
 - Implemented: drag/drop move and bookmark ordering.
 
@@ -730,7 +728,7 @@ Reviewed against the current implementation on 2026-06-06.
 
 - Implemented: HTML import.
 - Implemented: HTML, JSON, CSV, TXT, and OPML export.
-- Missing: JSON, CSV, TXT, and OPML import.
+- Implemented: JSON, CSV, TXT, and OPML import through the shared preview, conflict resolver, and backup flow.
 - Implemented: URL conflict handling.
 - Implemented: backup before import.
 
@@ -739,14 +737,14 @@ Reviewed against the current implementation on 2026-06-06.
 - Implemented: persisted theme and language.
 - Implemented: scanner configuration.
 - Implemented: scheduled automatic structure scan through `chrome.alarms`.
-- Partial: backup retention is persisted but not applied by `backupService`.
+- Implemented: backup retention is applied by `backupService`.
 - Implemented: cache duration is applied when Scanner loads cached results.
 
 ## Localization
 
 - English and Chinese resources are configured.
-- Missing: 15 Chinese translation keys currently present in the English locale.
-- Missing: localization for Scanner labels, Manager prompts and accessibility labels, Recent Activity messages, backup metadata, loading text, and service/Worker errors.
-- Current localization is not release-complete.
+- English and Chinese locale key parity is covered by a unit test.
+- Recent Activity, service errors, Scanner, Manager, Import/Export, Settings, and Dashboard additions use locale keys.
+- Current localization still needs final Chinese manual route review before stable store release.
 
 END

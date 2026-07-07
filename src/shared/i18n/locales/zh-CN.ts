@@ -28,6 +28,8 @@ export const zhCN = {
     reorderedBookmark: '已调整书签顺序',
     restoredBookmarks: '已恢复 {{count}} 个书签',
     updatedBookmarkTags: '已更新书签标签',
+    addedBookmarkTags: '已为 {{count}} 个选中书签添加标签',
+    removedBookmarkTags: '已从 {{count}} 个选中书签移除标签',
     importedBookmarks: '已导入 {{count}} 个书签',
     mergedFolders: '已合并 {{count}} 个文件夹',
     restoredBackupFromDate: '已恢复 {{date}} 的备份'
@@ -70,6 +72,23 @@ export const zhCN = {
     noRecentActivity: '使用管理功能后，操作记录会显示在这里。',
     lastScanned: '上次扫描：{{time}}',
     neverScanned: '从未扫描',
+    quickActions: '快捷操作',
+    quickActionsDescription: '直接进入最常用的本地书签工作流。',
+    actions: {
+      scan: '开始扫描',
+      import: '导入',
+      manage: '管理'
+    },
+    recommendations: {
+      title: '本地推荐',
+      empty: '运行一次扫描后，这里会生成本地清理建议。',
+      duplicatesTitle: '清理重复书签',
+      duplicatesDescription: '有 {{count}} 个重复书签可在确认后移除。',
+      emptyFoldersTitle: '删除空文件夹',
+      emptyFoldersDescription: '有 {{count}} 个空文件夹可清理。',
+      linkIssuesTitle: '检查链接问题',
+      linkIssuesDescription: '有 {{count}} 条链接需要人工检查或清理。'
+    },
     relative: {
       justNow: '刚刚',
       minutesAgo: '{{count}} 分钟前',
@@ -160,6 +179,10 @@ export const zhCN = {
     renamePrompt: '重命名书签',
     renameFolderPrompt: '重命名文件夹',
     tagsPrompt: '请输入标签（逗号分隔）',
+    addTags: '添加标签',
+    removeTags: '移除标签',
+    addTagsPrompt: '为选中书签添加标签（逗号分隔）',
+    removeTagsPrompt: '从选中书签移除标签（逗号分隔）',
     save: '保存',
     saveTags: '保存标签',
     confirmDeleteTitle: '删除选中的书签',
@@ -171,6 +194,8 @@ export const zhCN = {
     selectAria: '选择 {{title}}',
     renameAria: '重命名 {{title}}',
     editTagsAria: '编辑 {{title}} 的标签',
+    expandFolder: '展开 {{title}}',
+    collapseFolder: '折叠 {{title}}',
     columns: {
       title: '标题',
       url: '网址',
@@ -181,9 +206,10 @@ export const zhCN = {
   importExport: {
     exportTitle: '导出书签',
     importTitle: '导入书签',
-    importDescription: '在本地导入 Netscape 书签 HTML。写入新书签前会先创建备份。',
-    chooseHtml: '选择 HTML 文件',
+    importDescription: '在本地导入 HTML、JSON、CSV、TXT 或 OPML 书签文件。写入新书签前会先创建备份。',
+    chooseFile: '选择文件',
     parsing: '解析中...',
+    unsupportedImportFormat: '请选择 HTML、JSON、CSV、TXT 或 OPML 书签文件。',
     previewTitle: '导入预览',
     detected: '已识别',
     conflicts: '冲突',

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { exportService } from '../../services/exportService';
 import { importService } from '../../services/importService';
 import { Button } from '../../shared/components/ui/Button';
-import type { ExportFormat, ImportConflictStrategy, ImportPreview } from '../../shared/types';
+import type { ExportFormat, ImportConflictStrategy, ImportFormat, ImportPreview } from '../../shared/types';
 import { flattenBookmarks } from '../../shared/utils/bookmarks';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
 
@@ -15,6 +15,13 @@ const exportOptions: Array<{ format: ExportFormat; icon: typeof FileJson }> = [
   { format: 'opml', icon: FileText },
   { format: 'html', icon: Download }
 ];
+
+function detectImportFormat(file: File): ImportFormat | null {
+  const extension = file.name.split('.').pop()?.toLowerCase();
+  if (extension === 'htm') return 'html';
+  if (extension === 'html' || extension === 'json' || extension === 'csv' || extension === 'txt' || extension === 'opml') return extension;
+  return null;
+}
 
 function downloadFile(filename: string, mimeType: string, content: string) {
   const blob = new Blob([content], { type: mimeType });
@@ -54,9 +61,19 @@ export default function ImportExportPage() {
 
     setImporting(true);
     setError(null);
-    const html = await file.text();
-    const preview = await importService.previewHtml(html, bookmarks);
+    const format = detectImportFormat(file);
+    if (!format) {
+      setImporting(false);
+      setError(t('importExport.unsupportedImportFormat'));
+      setImportPreview(null);
+      event.target.value = '';
+      return;
+    }
+
+    const content = await file.text();
+    const preview = await importService.preview(format, content, bookmarks);
     setImporting(false);
+    event.target.value = '';
 
     if (!preview.success) {
       setError(preview.error);
@@ -119,8 +136,14 @@ export default function ImportExportPage() {
           </div>
           <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900">
             <Import size={16} />
-            {importing ? t('importExport.parsing') : t('importExport.chooseHtml')}
-            <input type="file" accept=".html,.htm,text/html" className="sr-only" onChange={(event) => void previewImportFile(event)} disabled={importing || mutating} />
+            {importing ? t('importExport.parsing') : t('importExport.chooseFile')}
+            <input
+              type="file"
+              accept=".html,.htm,.json,.csv,.txt,.opml,text/html,application/json,text/csv,text/plain,text/x-opml"
+              className="sr-only"
+              onChange={(event) => void previewImportFile(event)}
+              disabled={importing || mutating}
+            />
           </label>
         </div>
 

@@ -4,13 +4,13 @@ Last updated: 2026-07-08
 
 ## Current Project Completion
 
-- Overall completion: about 87% against the clarified core and release-ready scope.
+- Overall completion: about 92% against the clarified core and release-ready scope.
 - P0 Foundation: complete and verified.
-- P1 Dashboard: about 76% complete.
+- P1 Dashboard: about 94% complete.
 - P2 Scanner: about 94% complete.
-- P3 Manager: about 91% complete.
-- P4 Import/Export: about 75% complete after adding JSON, CSV, TXT, and OPML import requirements.
-- P5 Settings: about 86% complete.
+- P3 Manager: about 97% complete.
+- P4 Import/Export: about 94% complete after adding JSON, CSV, TXT, and OPML import.
+- P5 Settings: about 94% complete.
 - P6 Optimization through P8 Release: partially complete; localization and store release gates remain open.
 
 ## Completed
@@ -80,18 +80,17 @@ Last updated: 2026-07-08
 - Automatic daily structure scan is implemented behind a Settings toggle using the Manifest V3 `alarms` permission.
 - Background auto-scan saves duplicate bookmark, duplicate folder, and empty-folder results to the existing scan cache; broken-link checks remain manual.
 - `PRIVACY.md` documents the `alarms` permission.
+- Backup creation now uses the persisted retention setting, and lowering retention trims excess backups safely.
+- Import/Export now imports JSON, CSV, TXT, OPML, and HTML through the shared Worker preview, conflict resolver, and backup-before-import flow.
+- English and Chinese locale key parity is enforced by a unit test.
+- Manager supports batch tag add/remove for selected bookmarks and expand/collapse controls in the folder tree.
+- Dashboard includes quick actions, local scan-result recommendations, and full-pinyin/pinyin-initial search support.
 
 ## Not Completed
 
-- Pinyin search for Chinese bookmark titles is not implemented.
-- Dashboard quick actions and local smart recommendation cards are not implemented.
 - Individual empty-folder deletion is not implemented; Scanner now supports batch empty-folder cleanup.
-- Manager supports batch move and delete, but not batch tag editing.
-- Folder hierarchy is displayed with indentation, but expand/collapse controls are not implemented.
-- Backup retention is persisted in Settings, but `backupService` still applies the fixed default retention.
 - Full destructive replacement restore is not implemented; current restore re-applies the backup snapshot through the service boundary and keeps a safety backup.
-- JSON, CSV, TXT, and OPML import are not implemented.
-- A final English and Chinese localization audit and manual route check remain open.
+- A final Chinese localization manual route check remains open.
 - A measured 10,000-bookmark performance benchmark and worker-pool optimization are not complete.
 - Store screenshots, promotional graphics, final listing copy, and AI features are not complete.
 - The repository includes an MIT `LICENSE` file matching the README.
@@ -153,12 +152,13 @@ Additional verification in this Codex session on 2026-07-08:
 - Playwright E2E passed: 7 tests, including updated custom-dialog flows for link URL editing and Manager rename/tag actions.
 - A later 2026-07-08 verification passed after Manager select-all, sort options, keyboard shortcuts, tag counts, and Dashboard last-scan updates: ESLint 0 warnings, TypeScript strict check, 49 Vitest tests, production extension build validation, and 7 Playwright E2E tests.
 - A later 2026-07-08 verification passed after automatic daily scan and legacy planning cleanup: ESLint 0 warnings, TypeScript strict check, 49 Vitest tests, production extension build validation, and 7 Playwright E2E tests.
+- A later 2026-07-08 verification passed after backup retention, locale parity, multi-format import, Manager batch tags/collapsible folders, and Dashboard quick actions/recommendations/pinyin search: ESLint 0 warnings, TypeScript strict check, 60 Vitest tests, production extension build validation, and 7 Playwright E2E tests.
 
 ## Release Decision
 
 - GitHub source push: suitable as a `0.1.0` beta after reviewing and committing the current large working tree.
 - Chrome Web Store / Edge Add-ons stable publication: not ready.
-- Current release blockers include localization completion, multi-format import, remaining destructive-operation gaps, backup retention behavior, repository license, store assets, and final manual browser checks.
+- Current release blockers include the final Chinese manual route check, remaining destructive-operation gaps, performance benchmarks, store assets, and final manual browser checks.
 - Do not label the current build `1.0.0`.
 
 Required standards:
@@ -171,12 +171,11 @@ Required standards:
 
 ## Next Stage Development Plan
 
-1. Complete the final English and Chinese localization audit and manual route check.
-2. Implement JSON, CSV, TXT, and OPML import through the existing preview and backup flow.
-3. Apply persisted backup retention to the backup service.
-4. Add Manager batch tag editing and collapsible folders.
-5. Add Dashboard quick actions, local recommendations, and pinyin search.
-6. Complete performance benchmarks, store assets, and manual Chrome/Edge release checks.
+1. Complete the final Chinese localization manual route check.
+2. Add individual empty-folder deletion from Scanner results.
+3. Complete measured 10,000-bookmark performance benchmarks and tune if needed.
+4. Complete store screenshots, promotional graphics, and listing copy.
+5. Run final Chrome and Edge manual browser checks from `dist/`.
 
 ## Design Notes / Pending Decisions
 

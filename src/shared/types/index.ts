@@ -5,6 +5,7 @@ export type Result<T> =
 export type Theme = 'light' | 'dark' | 'system';
 export type Language = 'zh_CN' | 'en';
 export type ExportFormat = 'json' | 'csv' | 'txt' | 'opml' | 'html';
+export type ImportFormat = ExportFormat;
 export type ImportConflictStrategy = 'skip' | 'import-all';
 
 export interface BookmarkNode extends chrome.bookmarks.BookmarkTreeNode {
@@ -145,8 +146,9 @@ export interface LinkCheckWorkerResponse {
 }
 
 export interface ImportHtmlWorkerRequest {
-  type: 'parse-html';
-  html: string;
+  type: 'parse-import';
+  format: ImportFormat;
+  content: string;
 }
 
 export interface ImportHtmlWorkerResponse {

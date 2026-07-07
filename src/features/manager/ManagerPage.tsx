@@ -1,4 +1,4 @@
-import { Bookmark, Edit3, Folder, Keyboard, RotateCcw, Tags, Trash2 } from 'lucide-react';
+import { Bookmark, ChevronDown, ChevronRight, Edit3, Folder, Keyboard, RotateCcw, Tags, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BookmarkNode } from '../../shared/types';
@@ -9,7 +9,14 @@ import { Skeleton } from '../../shared/components/ui/Skeleton';
 import { useContainerHeight } from '../../shared/hooks/useContainerHeight';
 import { useVirtualList } from '../../shared/hooks/useVirtualList';
 import { cn } from '../../shared/utils/cn';
-import { flattenFolders, getFolderDescendantBookmarks, sortBookmarks, type SortOption } from '../../shared/utils/bookmarks';
+import {
+  flattenFolders,
+  getFolderDescendantBookmarks,
+  getFolderIdsWithFolderChildren,
+  getVisibleFolders,
+  sortBookmarks,
+  type SortOption
+} from '../../shared/utils/bookmarks';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
 
 const rowHeight = 56;
@@ -17,7 +24,8 @@ const rowHeight = 56;
 type PromptState =
   | { kind: 'rename-bookmark'; bookmark: BookmarkNode; title: string; defaultValue: string }
   | { kind: 'rename-folder'; folder: BookmarkNode; title: string; defaultValue: string }
-  | { kind: 'edit-tags'; bookmark: BookmarkNode; title: string; defaultValue: string };
+  | { kind: 'edit-tags'; bookmark: BookmarkNode; title: string; defaultValue: string }
+  | { kind: 'batch-add-tags' | 'batch-remove-tags'; title: string; defaultValue: string };
 
 type ConfirmState = {
   title: string;
@@ -41,6 +49,7 @@ export default function ManagerPage() {
   const reorderBookmarkBefore = useBookmarkStore((state) => state.reorderBookmarkBefore);
   const undoLastDelete = useBookmarkStore((state) => state.undoLastDelete);
   const setBookmarkTags = useBookmarkStore((state) => state.setBookmarkTags);
+  const updateBookmarkTags = useBookmarkStore((state) => state.updateBookmarkTags);
   const tagsByBookmarkId = useBookmarkStore((state) => state.tagsByBookmarkId);
   const tagFilter = useBookmarkStore((state) => state.tagFilter);
   const setTagFilter = useBookmarkStore((state) => state.setTagFilter);
@@ -50,11 +59,14 @@ export default function ManagerPage() {
   const [moveTargetId, setMoveTargetId] = useState('');
   const [draggedIds, setDraggedIds] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('default');
+  const [collapsedFolderIds, setCollapsedFolderIds] = useState<Set<string>>(new Set());
   const [promptState, setPromptState] = useState<PromptState | null>(null);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const { ref: listContainerRef, height: containerHeight } = useContainerHeight(620);
 
   const folders = useMemo(() => flattenFolders(bookmarks), [bookmarks]);
+  const visibleFolders = useMemo(() => getVisibleFolders(bookmarks, collapsedFolderIds), [bookmarks, collapsedFolderIds]);
+  const expandableFolderIds = useMemo(() => getFolderIdsWithFolderChildren(bookmarks), [bookmarks]);
   const availableTags = useMemo(() => [...new Set(Object.values(tagsByBookmarkId).flat())].sort((a, b) => a.localeCompare(b)), [tagsByBookmarkId]);
   const tagCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -166,6 +178,24 @@ export default function ManagerPage() {
     });
   };
 
+  const editSelectedTags = (mode: 'add' | 'remove') => {
+    if (selectedIds.size === 0) return;
+    setPromptState({
+      kind: mode === 'add' ? 'batch-add-tags' : 'batch-remove-tags',
+      title: mode === 'add' ? t('manager.addTagsPrompt') : t('manager.removeTagsPrompt'),
+      defaultValue: ''
+    });
+  };
+
+  const toggleFolderCollapsed = (folderId: string) => {
+    setCollapsedFolderIds((current) => {
+      const next = new Set(current);
+      if (next.has(folderId)) next.delete(folderId);
+      else next.add(folderId);
+      return next;
+    });
+  };
+
   const confirmPrompt = async (value: string) => {
     const current = promptState;
     if (!current) return;
@@ -180,7 +210,12 @@ export default function ManagerPage() {
       return;
     }
 
-    await setBookmarkTags(current.bookmark.id, value.split(','));
+    if (current.kind === 'edit-tags') {
+      await setBookmarkTags(current.bookmark.id, value.split(','));
+      return;
+    }
+
+    await updateBookmarkTags([...selectedIds], value.split(','), current.kind === 'batch-add-tags' ? 'add' : 'remove');
   };
 
   const confirmAction = async () => {
@@ -260,16 +295,19 @@ export default function ManagerPage() {
           <span>{getFolderDescendantBookmarks(bookmarks, null).length}</span>
         </button>
         <div className="max-h-[560px] space-y-1 overflow-auto pr-1">
-          {folders.map((folder) => (
+          {visibleFolders.map((folder) => (
             <FolderButton
               key={folder.id}
               folder={folder}
               selected={selectedFolderId === folder.id}
               count={getFolderDescendantBookmarks(bookmarks, folder.id).length}
+              collapsed={collapsedFolderIds.has(folder.id)}
+              expandable={expandableFolderIds.has(folder.id)}
               onClick={() => {
                 setSelectedFolderId(folder.id);
                 setSelectedIds(new Set());
               }}
+              onToggleCollapse={() => toggleFolderCollapsed(folder.id)}
               onRename={() => void renameFolderItem(folder)}
               onDragStart={() => setDraggedIds([folder.id])}
               onDrop={() => void dropOnFolder(folder.id)}
@@ -324,6 +362,13 @@ export default function ManagerPage() {
             </select>
             <Button variant="outline" onClick={() => void moveSelected()} disabled={selectedCount === 0 || !moveTargetId || mutating}>
               {t('manager.moveSelected')} {selectedCount > 0 ? `(${selectedCount})` : ''}
+            </Button>
+            <Button variant="outline" onClick={() => editSelectedTags('add')} disabled={selectedCount === 0 || mutating}>
+              <Tags size={16} />
+              {t('manager.addTags')} {selectedCount > 0 ? `(${selectedCount})` : ''}
+            </Button>
+            <Button variant="outline" onClick={() => editSelectedTags('remove')} disabled={selectedCount === 0 || mutating}>
+              {t('manager.removeTags')}
             </Button>
             <Button variant="outline" onClick={() => void undoLastDelete()} disabled={!canUndoDelete || mutating}>
               <RotateCcw size={16} />
@@ -388,7 +433,7 @@ export default function ManagerPage() {
         open={promptState !== null}
         title={promptState?.title ?? ''}
         defaultValue={promptState?.defaultValue ?? ''}
-        confirmLabel={promptState?.kind === 'edit-tags' ? t('manager.saveTags') : t('manager.save')}
+        confirmLabel={promptState?.kind === 'edit-tags' || promptState?.kind?.startsWith('batch-') ? t('manager.saveTags') : t('manager.save')}
         cancelLabel={t('dialog.cancel')}
         onCancel={() => setPromptState(null)}
         onConfirm={(value) => void confirmPrompt(value)}
@@ -442,7 +487,10 @@ function FolderButton({
   folder,
   selected,
   count,
+  collapsed,
+  expandable,
   onClick,
+  onToggleCollapse,
   onRename,
   onDragStart,
   onDrop
@@ -450,7 +498,10 @@ function FolderButton({
   folder: BookmarkNode;
   selected: boolean;
   count: number;
+  collapsed: boolean;
+  expandable: boolean;
   onClick: () => void;
+  onToggleCollapse: () => void;
   onRename: () => void;
   onDragStart: () => void;
   onDrop: () => void;
@@ -458,26 +509,32 @@ function FolderButton({
   const { t } = useTranslation();
   const depth = Math.max(0, (folder.path?.length ?? 1) - 1);
   return (
-    <button
-      type="button"
+    <div
       draggable
-      onClick={onClick}
-      onDoubleClick={onRename}
       onDragStart={onDragStart}
       onDragOver={(event) => event.preventDefault()}
       onDrop={onDrop}
       className={cn(
-        'flex w-full items-center justify-between rounded-md py-2 pr-3 text-left text-sm',
+        'flex w-full items-center rounded-md py-1.5 pr-3 text-left text-sm',
         selected ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-200' : 'hover:bg-slate-100 dark:hover:bg-slate-900'
       )}
       style={{ paddingLeft: 12 + depth * 14 }}
     >
-      <span className="flex min-w-0 items-center gap-2">
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        disabled={!expandable}
+        className="mr-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded text-slate-500 disabled:opacity-30"
+        aria-label={collapsed ? t('manager.expandFolder', { title: folder.title || t('manager.untitled') }) : t('manager.collapseFolder', { title: folder.title || t('manager.untitled') })}
+      >
+        {expandable ? collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} /> : <span className="h-3.5 w-3.5" />}
+      </button>
+      <button type="button" onClick={onClick} onDoubleClick={onRename} className="flex min-w-0 flex-1 items-center gap-2 py-0.5 text-left">
         <Folder size={16} className="shrink-0" />
         <span className="truncate">{folder.title || t('manager.untitled')}</span>
-      </span>
+      </button>
       <span className="ml-2 text-xs text-slate-500">{count}</span>
-    </button>
+    </div>
   );
 }
 

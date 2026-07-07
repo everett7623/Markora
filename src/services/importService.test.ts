@@ -27,4 +27,14 @@ describe('importService', () => {
       expect(result.data.conflicts[0].existing.id).toBe('1');
     }
   });
+
+  it('creates a multi-format import preview through the shared flow', async () => {
+    const result = await importService.preview('json', JSON.stringify([{ title: 'New', url: 'https://new.test' }]), currentBookmarks);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.items).toHaveLength(1);
+      expect(result.data.conflicts).toHaveLength(0);
+    }
+  });
 });

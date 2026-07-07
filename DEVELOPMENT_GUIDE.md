@@ -119,11 +119,10 @@ npm run test:e2e
 The current active stream is release readiness plus comprehensive improvement.
 The near-term priorities are:
 
-1. Apply the persisted backup retention setting in `backupService`.
-2. Complete final localization audit and manual route checks.
-3. Implement JSON, CSV, TXT, and OPML import through the existing preview flow.
-4. Add Manager batch tag editing and collapsible folders.
-5. Add Dashboard quick actions, local recommendations, and pinyin search.
-6. Complete store-release assets and manual browser checks.
+1. Complete the remaining Chinese manual localization route check.
+2. Add individual empty-folder deletion from Scanner results.
+3. Complete measured 10,000-bookmark performance benchmarks and any needed worker/list tuning.
+4. Complete store-release screenshots, promotional graphics, and listing copy.
+5. Run final Chrome and Edge manual browser checks from `dist/`.
 
 Always re-check `SESSION.md` and `PROGRESS.md` before choosing the next task.
