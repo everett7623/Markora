@@ -9,7 +9,8 @@ describe('settingsStore', () => {
       theme: 'dark',
       language: 'zh_CN',
       cacheHours: 999,
-      backupRetention: 0
+      backupRetention: 0,
+      autoScan: true
     });
 
     const state = useSettingsStore.getState().settings;
@@ -17,6 +18,7 @@ describe('settingsStore', () => {
     expect(state.language).toBe('zh_CN');
     expect(state.cacheHours).toBe(168);
     expect(state.backupRetention).toBe(1);
+    expect(state.autoScan).toBe(true);
 
     const stored = await storageService.get(STORAGE_KEYS.settings);
     expect(stored.success).toBe(true);

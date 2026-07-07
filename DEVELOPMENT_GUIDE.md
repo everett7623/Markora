@@ -1,233 +1,129 @@
+# Markora Development Guide
 
-# Markora - Bookmark Atlas
+This document describes how to work on Markora in a way that any Codex session
+or human maintainer can pick up cleanly.
 
-Enterprise Architecture Specification
+## Product Goal
 
-Version: 3.0
+Markora is a local-first bookmark management extension for Chrome and Edge. It
+targets large bookmark collections and provides scanning, cleanup, import/export,
+backup/restore, settings, and future local recommendation features.
 
----
+## Application Shape
 
-# Product Goal
+- Manifest V3 extension.
+- Full-screen options page.
+- React application routed with `HashRouter`.
+- No popup page.
+- Local-first privacy boundary.
 
-Build a professional Chrome bookmark management platform.
+## Source Layout
 
-The extension must support:
-
-- 10000+ bookmarks
-    
-- duplicate detection
-    
-- broken link scanning
-    
-- folder optimization
-    
-- backup & restore
-    
-- import/export
-    
-- multilingual UI
-    
-- future AI enhancements
-    
-
----
-
-# Architecture Overview
-
-Manifest V3
-
-React 18
-
-TypeScript
-
-Vite
-
-CRXJS
-
-Zustand
-
-Tailwind CSS
-
-shadcn/ui
-
----
-
-# Core Principles
-
-Full-screen application.
-
-No popup.
-
-Service layer required.
-
-Chrome APIs never called directly inside React components.
-
-Heavy tasks run inside workers.
-
-Strict TypeScript.
-
-Feature-first architecture.
-
----
-
-# Feature Modules
-
-Dashboard
-
-Scanner
-
-Manager
-
-ImportExport
-
-Settings
-
----
-
-# Directory Structure
-
+```text
 src/
+  background/
+  workers/
+  services/
+  stores/
+  shared/
+    components/
+    constants/
+    hooks/
+    i18n/
+    types/
+    utils/
+  features/
+    dashboard/
+    scanner/
+    manager/
+    import-export/
+    settings/
+  router/
+  styles/
+  App.tsx
+  main.tsx
+```
 
-background/
+## Layer Responsibilities
 
-workers/
+- React components render UI and call store actions.
+- Zustand stores own feature state and call services.
+- Services wrap Chrome APIs, storage, import/export, scanning, and backups.
+- Workers handle expensive parsing and scan work.
+- Background modules handle privileged extension work and message routing.
+- Shared modules hold cross-feature types, hooks, utilities, UI primitives, and
+  i18n resources.
 
-services/
+## Coding Standards
 
-stores/
+- Use strict TypeScript.
+- Avoid `any`; document it if unavoidable.
+- Keep business logic out of JSX.
+- Prefer pure utility functions for reusable data transformations.
+- Use Tailwind and existing local UI primitives.
+- Use Lucide icons for icon buttons.
+- Keep i18n parity between English and Chinese resources.
+- Keep changes scoped to the task.
 
-shared/
+## Chrome Extension Rules
 
-features/
+- React components must not call `chrome.*` APIs directly.
+- Permission changes need release-review attention.
+- Broken-link checking may use optional host permissions.
+- The extension must not upload bookmark data.
+- Manual extension testing should load `dist/` only.
 
-router/
+## Testing Strategy
 
-styles/
+Use focused verification during development:
 
----
-
-# Service Layer
-
-bookmarkService
-
-scanService
-
-storageService
-
-backupService
-
-exportService
-
----
-
-# State Management
-
-Zustand only.
-
-Global state:
-
-bookmarkStore
-
-scanStore
-
-settingsStore
-
----
-
-# Performance Requirements
-
-10000+ bookmarks supported.
-
-Required:
-
-Virtualization
-
-Debounce
-
-Web Workers
-
-Cache
-
-Lazy Loading
-
----
-
-# Security Rules
-
-Local only.
-
-No cloud upload.
-
-No analytics.
-
-No telemetry.
-
----
-
-# Internationalization
-
-Languages:
-
-zh_CN
-
-en
-
-Framework:
-
-react-i18next
-
----
-
-# Backup Rules
-
-Backup before:
-
-Delete
-
-Import
-
-Merge
-
-Restore
-
-Keep:
-
-10 backups
-
----
-
-# Testing Requirements
-
-Unit Test
-
-Component Test
-
-E2E Test
-
-Commands:
-
-npm run lint
-
+```bash
 npm run typecheck
-
 npm run test
+```
 
+Use full verification before marking a phase complete:
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
 npm run build
+```
 
----
+Use extension verification when manifest, build output, icons, or packaging are
+affected:
 
-# Definition Of Done
+```bash
+npm run build:extension
+npm run package:release
+```
 
-Build passes
+Use E2E when changing user workflows:
 
-Tests pass
+```bash
+npm run test:e2e
+```
 
-No console errors
+## Documentation Map
 
-No duplicate types
+- `AGENTS.md`: Codex operating instructions and handoff rules.
+- `SESSION.md`: current working context and next step.
+- `PROGRESS.md`: overall project progress and release decision.
+- `TASKS.md`: long-term roadmap and feature audit.
+- `RELEASE_CHECKLIST.md`: store and artifact release gates.
+- `VERSIONING.md`: version policy.
 
-No architecture violations
+## Current Development Direction
 
-Manifest V3 compliant
+The current active stream is release readiness plus comprehensive improvement.
+The near-term priorities are:
 
-END
+1. Apply the persisted backup retention setting in `backupService`.
+2. Complete final localization audit and manual route checks.
+3. Implement JSON, CSV, TXT, and OPML import through the existing preview flow.
+4. Add Manager batch tag editing and collapsible folders.
+5. Add Dashboard quick actions, local recommendations, and pinyin search.
+6. Complete store-release assets and manual browser checks.
+
+Always re-check `SESSION.md` and `PROGRESS.md` before choosing the next task.

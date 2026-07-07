@@ -3,12 +3,13 @@ import { expect, test } from '@playwright/test';
 test('renders all foundation navigation routes', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Last scanned:/ })).toBeVisible();
 
   await page.getByRole('link', { name: 'Scanner' }).click();
   await expect(page.getByRole('heading', { name: 'Scanner' })).toBeVisible();
 
-  await page.getByRole('link', { name: 'Bookmark Manager' }).click();
-  await expect(page.getByRole('heading', { name: 'Bookmark Manager' })).toBeVisible();
+  await page.getByRole('link', { name: 'Markora' }).click();
+  await expect(page.getByRole('heading', { name: 'Markora' })).toBeVisible();
 
   await page.getByRole('link', { name: 'Import / Export' }).click();
   await expect(page.getByRole('heading', { name: 'Import / Export' })).toBeVisible();
@@ -16,15 +17,19 @@ test('renders all foundation navigation routes', async ({ page }) => {
 
   await page.getByRole('link', { name: 'Settings' }).click();
   await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /Automatic daily scan/ })).toBeVisible();
   await expect(page.getByText('Backup management')).toBeVisible();
 });
 
 test('renders manager controls for search, tags, move, undo, and delete', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Bookmark Manager' }).click();
+  await page.getByRole('link', { name: 'Markora' }).click();
 
   await expect(page.getByRole('combobox', { name: 'Filter by tag' })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Sort bookmarks' })).toBeVisible();
   await expect(page.getByRole('combobox', { name: 'Move target' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'Select all visible bookmarks' })).toBeVisible();
+  await expect(page.getByLabel('Shortcuts: Delete selected, Escape clear selection, Ctrl+A select visible bookmarks')).toBeVisible();
   await expect(page.getByRole('button', { name: /Move selected/ })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Undo' })).toBeDisabled();
   await expect(page.getByRole('button', { name: /Delete selected/ })).toBeDisabled();
@@ -76,10 +81,11 @@ test('separates broken links from network or proxy failures in the detail workfl
   await expect(page.getByRole('button', { name: 'Edit URL' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Delete', exact: true })).toBeVisible();
 
-  page.once('dialog', async (dialog) => {
-    await dialog.accept('https://react.dev/learn');
-  });
   await page.getByRole('button', { name: 'Edit URL' }).click();
+  const editUrlDialog = page.getByRole('dialog', { name: 'Edit URL' });
+  await expect(editUrlDialog).toBeVisible();
+  await editUrlDialog.getByRole('textbox').fill('https://react.dev/learn');
+  await editUrlDialog.getByRole('button', { name: 'Confirm' }).click();
   await expect(page.getByText('No link issues in this category.')).toBeVisible();
 });
 
@@ -126,25 +132,27 @@ test('previews an HTML import, resolves conflicts, and imports new bookmarks', a
   await page.getByRole('button', { name: 'Import new only (1)' }).click();
   await expect(page.getByRole('heading', { name: 'Import preview' })).toBeHidden();
 
-  await page.getByRole('link', { name: 'Bookmark Manager' }).click();
+  await page.getByRole('link', { name: 'Markora' }).click();
   await expect(page.getByText('E2E Imported Bookmark')).toBeVisible();
   await expect(page.getByRole('button', { name: /^Imported E2E 1$/ })).toBeVisible();
 });
 
 test('renames, tags, moves, deletes, and restores a bookmark', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Bookmark Manager' }).click();
+  await page.getByRole('link', { name: 'Markora' }).click();
 
-  page.once('dialog', async (dialog) => {
-    await dialog.accept('GitHub Renamed');
-  });
   await page.getByRole('button', { name: 'Rename GitHub', exact: true }).click();
+  const renameDialog = page.getByRole('dialog', { name: 'Rename bookmark' });
+  await expect(renameDialog).toBeVisible();
+  await renameDialog.getByRole('textbox').fill('GitHub Renamed');
+  await renameDialog.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('GitHub Renamed', { exact: true })).toBeVisible();
 
-  page.once('dialog', async (dialog) => {
-    await dialog.accept('work, code');
-  });
   await page.getByRole('button', { name: 'Edit tags for GitHub Renamed' }).click();
+  const tagDialog = page.getByRole('dialog', { name: 'Comma-separated tags' });
+  await expect(tagDialog).toBeVisible();
+  await tagDialog.getByRole('textbox').fill('work, code');
+  await tagDialog.getByRole('button', { name: 'Save tags' }).click();
   await expect(page.getByText('#work #code')).toBeVisible();
 
   await page.getByRole('checkbox', { name: 'Select GitHub Renamed' }).check();

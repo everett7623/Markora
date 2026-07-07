@@ -1,10 +1,10 @@
 # Current Session
 
-Date: 2026-06-07
+Date: 2026-07-08
 
 ## Working On
 
-Release Readiness
+Codex Handoff Docs And Comprehensive Improvement
 
 ## Current Goal
 
@@ -90,18 +90,44 @@ Close the clarified core, localization, and release gaps before store publicatio
 - Multi-format import requirements are now recorded for JSON, CSV, TXT, and OPML.
 - Localization audit found 15 English locale keys missing from Chinese and additional hardcoded user-facing English strings.
 - `VERSIONING.md` defines `0.1.0` as the current beta baseline and reserves `1.0.0` for the first stable store release.
+- Locale key parity was improved for `en` and `zh_CN`, and multiple Manager/Scanner/Settings hardcoded UI strings were switched to i18n keys.
+- `bookmarkStore` activity log messages and URL validation error text were migrated to i18n keys.
+- Service-layer fallback error messages in storage/import/bookmark/scan/link-request services were migrated to i18n keys.
+- Related unit tests were updated to assert i18n-derived messages instead of hardcoded English strings.
+- Import/Export page fallback `defaultValue` strings were removed in favor of direct locale keys, and Settings language option labels were localized.
+- `AGENTS.md` was rewritten as the primary Codex handoff guide with project snapshot, architecture rules, workflow, verification, release rules, data safety, and performance expectations.
+- `DEVELOPMENT_GUIDE.md` was rewritten as a stable Codex/human development guide with source layout, layer responsibilities, testing strategy, and current development direction.
+- Shared `ConfirmDialog` and `PromptDialog` components were added on top of the existing `Dialog` primitive.
+- Dashboard statistic cards now use skeleton placeholders while bookmark data is loading.
+- Manager uses `useContainerHeight` for the virtualized list viewport instead of a fixed `620px` height.
+- Manager loading now renders skeleton rows matching the virtual row layout.
+- Manager bookmark rename, folder rename, tag editing, bulk delete confirmation, and bulk move confirmation now use custom dialogs instead of native browser prompts.
+- Link issue URL editing, single deletion, and selected batch deletion now use custom dialogs instead of native browser prompts/confirms.
+- Settings backup restore now requires a custom confirmation dialog before calling `restoreBackup`.
+- Scanner now has backup-protected batch actions for deleting all detected empty folders and cleaning all duplicate bookmark groups by keeping the oldest entry.
+- Scanner repair actions for the new batch buttons reuse `runRepair`, refresh structure results, and save the updated scan cache.
+- Playwright E2E was updated to interact with in-app dialogs instead of browser-native dialogs.
+- Manager now supports select-all for visible bookmarks, session-only sort options, keyboard shortcuts for select/delete/clear, a shortcut tooltip, and tag counts in the tag filter.
+- `sortBookmarks` was added as a shared pure utility with unit coverage for title/date/URL sorting and undefined field handling.
+- `scanStore` now tracks the last scan timestamp, and `scanService.getCache` exposes scan-cache metadata for UI use.
+- Dashboard now shows a localized "Last scanned" link backed by scan-cache metadata.
+- E2E smoke coverage now checks Dashboard last-scan visibility and Manager select-all/sort/shortcut controls.
+- Legacy planning files were removed from the workspace; active handoff now lives in `AGENTS.md`, `DEVELOPMENT_GUIDE.md`, `SESSION.md`, `PROGRESS.md`, and `TASKS.md`.
+- Automatic daily scan is implemented with persisted `autoScan` settings, Manifest V3 `alarms` permission, background alarm registration, a Settings toggle, and a shared structural-scan utility reused by the scanner worker and background alarm.
+- Auto-scan saves duplicate bookmark, duplicate folder, and empty-folder scan results to the existing scan cache. Broken-link checks remain manual.
+- `PRIVACY.md` documents the new `alarms` permission.
 
 ## Next Step
 
-Complete localization key parity and remove hardcoded user-facing English before calling the build release-ready.
+Apply the persisted backup retention setting in `backupService`, then continue final localization audit and multi-format imports.
 
 ## After E2E
 
 1. Apply backup retention settings to the real service.
 2. Implement JSON, CSV, TXT, and OPML import.
-3. Add Dashboard quick actions and local recommendations.
-4. Add pinyin search, Manager batch tag editing, and expand/collapse behavior.
-5. Resume 10,000-bookmark performance checks, license work, and store preparation.
+3. Add Manager batch tag editing and expand/collapse behavior.
+4. Add Dashboard quick actions, local recommendations, and pinyin search.
+5. Resume 10,000-bookmark performance checks and store preparation.
 
 ## Verification Required Before Commit
 
@@ -130,6 +156,17 @@ Latest verification:
 - Browser-store URL protection verification passed with 48 Vitest tests and 7 Playwright tests; protected store links are skipped before `fetch`.
 - GitHub README was rebuilt for the public beta, with honest feature status, installation instructions, privacy boundaries, browser support, quality gates, and the new repository URL.
 - Added `CHANGELOG.md` and the missing MIT `LICENSE`.
+- ESLint passed with 0 errors and 0 warnings after locale key and UI text alignment.
+- TypeScript strict check passed after localization updates.
+- Vitest passed: 12 test files and 48 tests.
+- Vite build passed.
+- On 2026-07-08, ESLint passed with 0 errors and 0 warnings after Codex docs, dialog, skeleton, Manager, Scanner, Link Issues, and Settings updates.
+- On 2026-07-08, TypeScript strict check passed.
+- On 2026-07-08, Vitest passed: 12 test files and 48 tests.
+- On 2026-07-08, production extension build and validation passed through `npm run build:extension`.
+- On 2026-07-08, Playwright E2E passed: 7 tests, including the updated in-app dialog workflows.
+- On 2026-07-08, after Manager select-all/sort/keyboard/tag-count and Dashboard last-scan updates, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 12 files and 49 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
+- On 2026-07-08, after automatic daily scan and legacy planning cleanup, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 12 files and 49 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 
 ## Notes
 

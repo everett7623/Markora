@@ -1,21 +1,37 @@
-import { Bookmark, Edit3, Folder, RotateCcw, Tags, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Bookmark, Edit3, Folder, Keyboard, RotateCcw, Tags, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BookmarkNode } from '../../shared/types';
 import { Button } from '../../shared/components/ui/Button';
+import { ConfirmDialog } from '../../shared/components/ui/ConfirmDialog';
+import { PromptDialog } from '../../shared/components/ui/PromptDialog';
+import { Skeleton } from '../../shared/components/ui/Skeleton';
+import { useContainerHeight } from '../../shared/hooks/useContainerHeight';
 import { useVirtualList } from '../../shared/hooks/useVirtualList';
 import { cn } from '../../shared/utils/cn';
-import { flattenFolders, getFolderDescendantBookmarks } from '../../shared/utils/bookmarks';
+import { flattenFolders, getFolderDescendantBookmarks, sortBookmarks, type SortOption } from '../../shared/utils/bookmarks';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
 
 const rowHeight = 56;
-const viewportHeight = 620;
+
+type PromptState =
+  | { kind: 'rename-bookmark'; bookmark: BookmarkNode; title: string; defaultValue: string }
+  | { kind: 'rename-folder'; folder: BookmarkNode; title: string; defaultValue: string }
+  | { kind: 'edit-tags'; bookmark: BookmarkNode; title: string; defaultValue: string };
+
+type ConfirmState = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  onConfirm: () => Promise<void>;
+};
 
 export default function ManagerPage() {
   const { t } = useTranslation();
   const bookmarks = useBookmarkStore((state) => state.bookmarks);
   const searchQuery = useBookmarkStore((state) => state.searchQuery);
   const searchResults = useBookmarkStore((state) => state.searchResults);
+  const loading = useBookmarkStore((state) => state.loading);
   const mutating = useBookmarkStore((state) => state.mutating);
   const deleteBookmarks = useBookmarkStore((state) => state.deleteBookmarks);
   const renameBookmark = useBookmarkStore((state) => state.renameBookmark);
@@ -33,15 +49,32 @@ export default function ManagerPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [moveTargetId, setMoveTargetId] = useState('');
   const [draggedIds, setDraggedIds] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<SortOption>('default');
+  const [promptState, setPromptState] = useState<PromptState | null>(null);
+  const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
+  const { ref: listContainerRef, height: containerHeight } = useContainerHeight(620);
 
   const folders = useMemo(() => flattenFolders(bookmarks), [bookmarks]);
   const availableTags = useMemo(() => [...new Set(Object.values(tagsByBookmarkId).flat())].sort((a, b) => a.localeCompare(b)), [tagsByBookmarkId]);
-  const visibleBookmarks = useMemo(
+  const tagCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const tags of Object.values(tagsByBookmarkId)) {
+      for (const tag of tags) counts[tag] = (counts[tag] ?? 0) + 1;
+    }
+    return counts;
+  }, [tagsByBookmarkId]);
+  const baseVisibleBookmarks = useMemo(
     () => (searchQuery.trim() || tagFilter ? searchResults : getFolderDescendantBookmarks(bookmarks, selectedFolderId)),
     [bookmarks, searchQuery, searchResults, selectedFolderId, tagFilter]
   );
+  const visibleBookmarks = useMemo(() => sortBookmarks(baseVisibleBookmarks, sortBy), [baseVisibleBookmarks, sortBy]);
+  const visibleBookmarkIds = useMemo(() => new Set(visibleBookmarks.map((bookmark) => bookmark.id)), [visibleBookmarks]);
+  const viewportHeight = Math.max(rowHeight, containerHeight);
   const { virtualItems, totalHeight, setScrollTop } = useVirtualList(visibleBookmarks, rowHeight, viewportHeight);
   const selectedCount = selectedIds.size;
+  const selectedVisibleCount = [...selectedIds].filter((id) => visibleBookmarkIds.has(id)).length;
+  const allVisibleSelected = visibleBookmarks.length > 0 && selectedVisibleCount === visibleBookmarks.length;
+  const someVisibleSelected = selectedVisibleCount > 0 && !allVisibleSelected;
 
   const toggleSelected = (id: string, checked: boolean) => {
     setSelectedIds((current) => {
@@ -52,30 +85,109 @@ export default function ManagerPage() {
     });
   };
 
-  const deleteSelected = async () => {
-    await deleteBookmarks([...selectedIds]);
+  const toggleAllVisible = () => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (allVisibleSelected) {
+        for (const bookmark of visibleBookmarks) next.delete(bookmark.id);
+      } else {
+        for (const bookmark of visibleBookmarks) next.add(bookmark.id);
+      }
+      return next;
+    });
+  };
+
+  const performDelete = useCallback(async (ids: string[]) => {
+    await deleteBookmarks(ids);
+    setSelectedIds(new Set());
+  }, [deleteBookmarks]);
+
+  const deleteSelected = useCallback(async () => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+    if (ids.length >= 2) {
+      setConfirmState({
+        title: t('manager.confirmDeleteTitle'),
+        description: t('manager.confirmDeleteDescription', { count: ids.length }),
+        confirmLabel: t('manager.deleteSelected'),
+        onConfirm: () => performDelete(ids)
+      });
+      return;
+    }
+
+    await performDelete(ids);
+  }, [performDelete, selectedIds, t]);
+
+  const performMove = async (ids: string[], targetFolderId: string) => {
+    await moveBookmarks(ids, targetFolderId);
     setSelectedIds(new Set());
   };
 
   const moveSelected = async (targetFolderId = moveTargetId) => {
-    if (!targetFolderId || selectedIds.size === 0) return;
-    await moveBookmarks([...selectedIds], targetFolderId);
-    setSelectedIds(new Set());
+    const ids = [...selectedIds];
+    if (!targetFolderId || ids.length === 0) return;
+    if (ids.length >= 2) {
+      setConfirmState({
+        title: t('manager.confirmMoveTitle'),
+        description: t('manager.confirmMoveDescription', { count: ids.length }),
+        confirmLabel: t('manager.moveSelected'),
+        onConfirm: () => performMove(ids, targetFolderId)
+      });
+      return;
+    }
+
+    await performMove(ids, targetFolderId);
   };
 
   const renameItem = async (bookmark: BookmarkNode) => {
-    const title = window.prompt(t('manager.renamePrompt', { defaultValue: 'Rename bookmark' }), bookmark.title || 'Untitled');
-    if (title !== null) await renameBookmark(bookmark.id, title);
+    setPromptState({
+      kind: 'rename-bookmark',
+      bookmark,
+      title: t('manager.renamePrompt'),
+      defaultValue: bookmark.title || t('manager.untitled')
+    });
   };
 
   const renameFolderItem = async (folder: BookmarkNode) => {
-    const title = window.prompt(t('manager.renameFolderPrompt', { defaultValue: 'Rename folder' }), folder.title || 'Untitled');
-    if (title !== null) await renameFolder(folder.id, title);
+    setPromptState({
+      kind: 'rename-folder',
+      folder,
+      title: t('manager.renameFolderPrompt'),
+      defaultValue: folder.title || t('manager.untitled')
+    });
   };
 
   const editTags = async (bookmark: BookmarkNode) => {
-    const value = window.prompt(t('manager.tagsPrompt', { defaultValue: 'Comma-separated tags' }), bookmark.tags?.join(', ') ?? '');
-    if (value !== null) await setBookmarkTags(bookmark.id, value.split(','));
+    setPromptState({
+      kind: 'edit-tags',
+      bookmark,
+      title: t('manager.tagsPrompt'),
+      defaultValue: bookmark.tags?.join(', ') ?? ''
+    });
+  };
+
+  const confirmPrompt = async (value: string) => {
+    const current = promptState;
+    if (!current) return;
+    setPromptState(null);
+
+    if (current.kind === 'rename-bookmark') {
+      await renameBookmark(current.bookmark.id, value);
+      return;
+    }
+    if (current.kind === 'rename-folder') {
+      await renameFolder(current.folder.id, value);
+      return;
+    }
+
+    await setBookmarkTags(current.bookmark.id, value.split(','));
+  };
+
+  const confirmAction = async () => {
+    const current = confirmState;
+    if (!current) return;
+    setConfirmState(null);
+    await current.onConfirm();
   };
 
   const dropOnFolder = async (folderId: string) => {
@@ -91,6 +203,40 @@ export default function ManagerPage() {
     await reorderBookmarkBefore(draggedId, bookmarkId);
     setDraggedIds([]);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (promptState || confirmState) return;
+
+      const target = event.target as HTMLElement | null;
+      const tagName = target?.tagName;
+      const isEditable =
+        tagName === 'INPUT' ||
+        tagName === 'TEXTAREA' ||
+        tagName === 'SELECT' ||
+        target?.isContentEditable;
+      if (isEditable) return;
+
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a') {
+        event.preventDefault();
+        setSelectedIds(new Set(visibleBookmarks.map((bookmark) => bookmark.id)));
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        setSelectedIds(new Set());
+        return;
+      }
+
+      if (event.key === 'Delete' && selectedIds.size > 0) {
+        event.preventDefault();
+        void deleteSelected();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [confirmState, deleteSelected, promptState, selectedIds, visibleBookmarks]);
 
   return (
     <div className="grid h-full min-h-0 gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
@@ -145,65 +291,150 @@ export default function ManagerPage() {
               value={tagFilter ?? ''}
               onChange={(event) => setTagFilter(event.target.value || null)}
               className="h-9 rounded-md border bg-white px-2 text-sm dark:bg-slate-950"
-              aria-label={t('manager.filterByTag', { defaultValue: 'Filter by tag' })}
+              aria-label={t('manager.filterByTag')}
             >
-              <option value="">{t('manager.allTags', { defaultValue: 'All tags' })}</option>
+              <option value="">{t('manager.allTags')}</option>
               {availableTags.map((tag) => (
-                <option key={tag} value={tag}>{tag}</option>
+                <option key={tag} value={tag}>{t('manager.tagWithCount', { tag, count: tagCounts[tag] ?? 0 })}</option>
               ))}
+            </select>
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value as SortOption)}
+              className="h-9 rounded-md border bg-white px-2 text-sm dark:bg-slate-950"
+              aria-label={t('manager.sortBy')}
+            >
+              <option value="default">{t('manager.sortOptions.default')}</option>
+              <option value="title-asc">{t('manager.sortOptions.titleAsc')}</option>
+              <option value="title-desc">{t('manager.sortOptions.titleDesc')}</option>
+              <option value="date-desc">{t('manager.sortOptions.dateDesc')}</option>
+              <option value="date-asc">{t('manager.sortOptions.dateAsc')}</option>
+              <option value="url-asc">{t('manager.sortOptions.urlAsc')}</option>
             </select>
             <select
               value={moveTargetId}
               onChange={(event) => setMoveTargetId(event.target.value)}
               className="h-9 rounded-md border bg-white px-2 text-sm dark:bg-slate-950"
-              aria-label={t('manager.moveTarget', { defaultValue: 'Move target' })}
+              aria-label={t('manager.moveTarget')}
             >
-              <option value="">{t('manager.moveTo', { defaultValue: 'Move to...' })}</option>
+              <option value="">{t('manager.moveTo')}</option>
               {folders.map((folder) => (
                 <option key={folder.id} value={folder.id}>{folder.path?.join(' / ') || folder.title}</option>
               ))}
             </select>
             <Button variant="outline" onClick={() => void moveSelected()} disabled={selectedCount === 0 || !moveTargetId || mutating}>
-              {t('manager.moveSelected', { defaultValue: 'Move selected' })} {selectedCount > 0 ? `(${selectedCount})` : ''}
+              {t('manager.moveSelected')} {selectedCount > 0 ? `(${selectedCount})` : ''}
             </Button>
             <Button variant="outline" onClick={() => void undoLastDelete()} disabled={!canUndoDelete || mutating}>
               <RotateCcw size={16} />
-              {t('manager.undo', { defaultValue: 'Undo' })}
+              {t('manager.undo')}
             </Button>
             <Button variant="outline" onClick={() => void deleteSelected()} disabled={selectedCount === 0 || mutating}>
               <Trash2 size={16} />
               {t('manager.deleteSelected')} {selectedCount > 0 ? `(${selectedCount})` : ''}
             </Button>
+            <span
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border text-slate-500"
+              title={t('manager.shortcutsHint')}
+              aria-label={t('manager.shortcutsHint')}
+            >
+              <Keyboard size={16} />
+            </span>
           </div>
         </div>
 
         <div className="grid h-10 grid-cols-[44px_minmax(180px,1fr)_minmax(220px,1.2fr)_minmax(140px,0.7fr)_120px] items-center border-b px-4 text-xs font-semibold uppercase text-slate-500">
-          <span />
+          <SelectAllCheckbox
+            checked={allVisibleSelected}
+            indeterminate={someVisibleSelected}
+            disabled={visibleBookmarks.length === 0}
+            ariaLabel={t('manager.selectAll')}
+            onChange={toggleAllVisible}
+          />
           <span>{t('manager.columns.title')}</span>
           <span>{t('manager.columns.url')}</span>
           <span>{t('manager.columns.folder')}</span>
-          <span>{t('manager.columns.actions', { defaultValue: 'Actions' })}</span>
+          <span>{t('manager.columns.actions')}</span>
         </div>
 
-        <div className="relative overflow-auto" style={{ height: viewportHeight }} onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}>
-          <div style={{ height: totalHeight }}>
-            {virtualItems.map(({ item, offsetTop }) => (
-              <BookmarkRow
-                key={item.id}
-                bookmark={item}
-                selected={selectedIds.has(item.id)}
-                offsetTop={offsetTop}
-                onSelectedChange={toggleSelected}
-                onRename={renameItem}
-                onEditTags={editTags}
-                onDragStart={(id) => setDraggedIds(selectedIds.has(id) ? [...selectedIds] : [id])}
-                onDropBefore={dropBeforeBookmark}
-              />
-            ))}
-          </div>
+        <div ref={listContainerRef} className="relative min-h-[320px] flex-1 overflow-auto" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}>
+          {loading ? (
+            <div className="space-y-2 p-4">
+              {Array.from({ length: 10 }).map((_, index) => (
+                <Skeleton key={index} className="h-12 w-full" />
+              ))}
+            </div>
+          ) : (
+            <div style={{ height: totalHeight }}>
+              {virtualItems.map(({ item, offsetTop }) => (
+                <BookmarkRow
+                  key={item.id}
+                  bookmark={item}
+                  selected={selectedIds.has(item.id)}
+                  offsetTop={offsetTop}
+                  onSelectedChange={toggleSelected}
+                  onRename={renameItem}
+                  onEditTags={editTags}
+                  onDragStart={(id) => setDraggedIds(selectedIds.has(id) ? [...selectedIds] : [id])}
+                  onDropBefore={dropBeforeBookmark}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
+
+      <PromptDialog
+        open={promptState !== null}
+        title={promptState?.title ?? ''}
+        defaultValue={promptState?.defaultValue ?? ''}
+        confirmLabel={promptState?.kind === 'edit-tags' ? t('manager.saveTags') : t('manager.save')}
+        cancelLabel={t('dialog.cancel')}
+        onCancel={() => setPromptState(null)}
+        onConfirm={(value) => void confirmPrompt(value)}
+      />
+      <ConfirmDialog
+        open={confirmState !== null}
+        title={confirmState?.title ?? ''}
+        description={confirmState?.description ?? ''}
+        confirmLabel={confirmState?.confirmLabel ?? t('dialog.confirm')}
+        cancelLabel={t('dialog.cancel')}
+        variant="destructive"
+        onCancel={() => setConfirmState(null)}
+        onConfirm={() => void confirmAction()}
+      />
     </div>
+  );
+}
+
+function SelectAllCheckbox({
+  checked,
+  indeterminate,
+  disabled,
+  ariaLabel,
+  onChange
+}: {
+  checked: boolean;
+  indeterminate: boolean;
+  disabled: boolean;
+  ariaLabel: string;
+  onChange: () => void;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (ref.current) ref.current.indeterminate = indeterminate;
+  }, [indeterminate]);
+
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      checked={checked}
+      disabled={disabled}
+      onChange={onChange}
+      aria-label={ariaLabel}
+    />
   );
 }
 
@@ -224,6 +455,7 @@ function FolderButton({
   onDragStart: () => void;
   onDrop: () => void;
 }) {
+  const { t } = useTranslation();
   const depth = Math.max(0, (folder.path?.length ?? 1) - 1);
   return (
     <button
@@ -242,7 +474,7 @@ function FolderButton({
     >
       <span className="flex min-w-0 items-center gap-2">
         <Folder size={16} className="shrink-0" />
-        <span className="truncate">{folder.title || 'Untitled'}</span>
+        <span className="truncate">{folder.title || t('manager.untitled')}</span>
       </span>
       <span className="ml-2 text-xs text-slate-500">{count}</span>
     </button>
@@ -268,6 +500,7 @@ function BookmarkRow({
   onDragStart: (id: string) => void;
   onDropBefore: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       draggable
@@ -277,9 +510,9 @@ function BookmarkRow({
       className="absolute grid w-full grid-cols-[44px_minmax(180px,1fr)_minmax(220px,1.2fr)_minmax(140px,0.7fr)_120px] items-center gap-2 border-b px-4 text-sm dark:border-slate-800"
       style={{ height: rowHeight, transform: `translateY(${offsetTop}px)` }}
     >
-      <input type="checkbox" checked={selected} onChange={(event) => onSelectedChange(bookmark.id, event.target.checked)} aria-label={`Select ${bookmark.title}`} />
+      <input type="checkbox" checked={selected} onChange={(event) => onSelectedChange(bookmark.id, event.target.checked)} aria-label={t('manager.selectAria', { title: bookmark.title || t('manager.untitled') })} />
       <span className="min-w-0 truncate font-medium">
-        {bookmark.title || 'Untitled'}
+        {bookmark.title || t('manager.untitled')}
         {bookmark.tags && bookmark.tags.length > 0 ? <span className="ml-2 text-xs font-normal text-indigo-500">#{bookmark.tags.join(' #')}</span> : null}
       </span>
       <a href={bookmark.url} target="_blank" rel="noreferrer" className="min-w-0 truncate text-slate-500 hover:text-indigo-600">
@@ -287,10 +520,10 @@ function BookmarkRow({
       </a>
       <span className="min-w-0 truncate text-xs text-slate-500">{bookmark.path?.slice(0, -1).join(' / ')}</span>
       <span className="flex items-center gap-1">
-        <button type="button" onClick={() => onRename(bookmark)} className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-slate-900" aria-label={`Rename ${bookmark.title}`}>
+        <button type="button" onClick={() => onRename(bookmark)} className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-slate-900" aria-label={t('manager.renameAria', { title: bookmark.title || t('manager.untitled') })}>
           <Edit3 size={15} />
         </button>
-        <button type="button" onClick={() => onEditTags(bookmark)} className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-slate-900" aria-label={`Edit tags for ${bookmark.title}`}>
+        <button type="button" onClick={() => onEditTags(bookmark)} className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-slate-900" aria-label={t('manager.editTagsAria', { title: bookmark.title || t('manager.untitled') })}>
           <Tags size={15} />
         </button>
       </span>

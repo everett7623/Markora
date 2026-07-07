@@ -1,3 +1,4 @@
+import { registerAlarms } from './alarms';
 import { registerMessageRouter } from './messageRouter';
 
 chrome.action.onClicked.addListener(() => {
@@ -5,5 +6,14 @@ chrome.action.onClicked.addListener(() => {
 });
 
 registerMessageRouter();
+void registerAlarms();
+
+chrome.runtime.onInstalled.addListener(() => {
+  void registerAlarms();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  void registerAlarms();
+});
 
 export {};

@@ -1,4 +1,5 @@
 import type { BookmarkNode, ImportBookmarkItem, Result } from '../shared/types';
+import i18n from '../shared/i18n';
 
 function createImportedMockTree(items: ImportBookmarkItem[]): BookmarkNode[] {
   const roots = new Map<string, BookmarkNode>();
@@ -78,7 +79,7 @@ export const bookmarkService = {
       const tree = await chrome.bookmarks.getTree();
       return { success: true, data: tree as BookmarkNode[] };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to read bookmarks.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.readBookmarks') };
     }
   },
 
@@ -91,7 +92,7 @@ export const bookmarkService = {
       await Promise.all(ids.map((id) => chrome.bookmarks.remove(id)));
       return { success: true, data: ids };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to delete bookmarks.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.deleteBookmarks') };
     }
   },
 
@@ -104,7 +105,7 @@ export const bookmarkService = {
       const updated = await chrome.bookmarks.update(id, { title });
       return { success: true, data: updated as BookmarkNode };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to rename bookmark.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.renameBookmark') };
     }
   },
 
@@ -117,7 +118,7 @@ export const bookmarkService = {
       const updated = await chrome.bookmarks.update(id, { url });
       return { success: true, data: updated as BookmarkNode };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to update bookmark URL.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.updateBookmarkUrl') };
     }
   },
 
@@ -130,7 +131,7 @@ export const bookmarkService = {
       await Promise.all(ids.map((id) => chrome.bookmarks.move(id, { parentId })));
       return { success: true, data: ids };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to move bookmarks.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.moveBookmarks') };
     }
   },
 
@@ -143,7 +144,7 @@ export const bookmarkService = {
       await chrome.bookmarks.move(id, { parentId, index });
       return { success: true, data: id };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to reorder bookmark.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.reorderBookmark') };
     }
   },
 
@@ -163,7 +164,7 @@ export const bookmarkService = {
       }
       return { success: true, data: sourceIds };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to merge folders.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.mergeFolders') };
     }
   },
 
@@ -185,7 +186,7 @@ export const bookmarkService = {
       );
       return { success: true, data: bookmarks.length };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to restore bookmarks.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.restoreBookmarks') };
     }
   },
 
@@ -216,7 +217,7 @@ export const bookmarkService = {
       }
       return { success: true, data: created as BookmarkNode[] };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to import bookmarks.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.importBookmarks') };
     }
   }
 };

@@ -4,16 +4,58 @@ export const en = {
   navigation: {
     dashboard: 'Dashboard',
     scanner: 'Scanner',
-    manager: 'Bookmark Manager',
+    manager: 'Markora',
     importExport: 'Import / Export',
     settings: 'Settings'
   },
   actions: { menu: 'Open navigation' },
+  dialog: {
+    cancel: 'Cancel',
+    confirm: 'Confirm'
+  },
   search: {
     placeholder: 'Search bookmarks by title, URL, or folder path',
     shortcut: 'Ctrl K'
   },
   footer: { localOnly: 'All bookmark data stays in your browser.' },
+  activity: {
+    loadedBookmarks: 'Loaded {{count}} bookmarks',
+    searched: 'Searched "{{query}}"',
+    deletedBookmarks: 'Deleted {{count}} bookmark{{suffix}}',
+    renamedBookmark: 'Renamed bookmark to "{{title}}"',
+    updatedBookmarkUrl: 'Updated bookmark URL to "{{url}}"',
+    movedItems: 'Moved {{count}} item{{suffix}}',
+    reorderedBookmark: 'Reordered bookmark',
+    restoredBookmarks: 'Restored {{count}} bookmark{{suffix}}',
+    updatedBookmarkTags: 'Updated tags for bookmark',
+    importedBookmarks: 'Imported {{count}} bookmark{{suffix}}',
+    mergedFolders: 'Merged {{count}} folder{{suffix}}',
+    restoredBackupFromDate: 'Restored backup from {{date}}'
+  },
+  errors: {
+    invalidBookmarkUrl: 'Bookmark URL must start with http:// or https://.'
+  },
+  serviceErrors: {
+    readLocalStorage: 'Unable to read local storage.',
+    writeLocalStorage: 'Unable to write local storage.',
+    parseBookmarkHtml: 'Unable to parse bookmark HTML.',
+    readBookmarks: 'Unable to read bookmarks.',
+    deleteBookmarks: 'Unable to delete bookmarks.',
+    renameBookmark: 'Unable to rename bookmark.',
+    updateBookmarkUrl: 'Unable to update bookmark URL.',
+    moveBookmarks: 'Unable to move bookmarks.',
+    reorderBookmark: 'Unable to reorder bookmark.',
+    mergeFolders: 'Unable to merge folders.',
+    restoreBookmarks: 'Unable to restore bookmarks.',
+    importBookmarks: 'Unable to import bookmarks.',
+    contactBackgroundLinkChecker: 'Unable to contact the background link checker.',
+    requestLinkCheckPermissions: 'Unable to request link-check permissions.',
+    scanFailed: 'Scan failed.',
+    brokenLinkScanFailed: 'Broken link scan failed.',
+    browserStoreManualVerification: 'Browser store links require manual verification.',
+    linkCheckIncomplete: 'Link check did not complete.',
+    registerAutoScan: 'Unable to register automatic scanning.'
+  },
   foundation: { ready: 'Foundation route ready. Product behavior will be added in the next milestones.' },
   dashboard: {
     cards: {
@@ -25,7 +67,15 @@ export const en = {
     searchHistory: 'Recent searches',
     noSearchHistory: 'Search from the top bar to build a local history.',
     recentActivity: 'Recent activity',
-    noRecentActivity: 'Actions will appear here as you use the manager.'
+    noRecentActivity: 'Actions will appear here as you use the manager.',
+    lastScanned: 'Last scanned: {{time}}',
+    neverScanned: 'Never scanned',
+    relative: {
+      justNow: 'just now',
+      minutesAgo: '{{count}} min ago',
+      hoursAgo: '{{count}} hours ago',
+      daysAgo: '{{count}} days ago'
+    }
   },
   scanner: {
     run: 'Run scan',
@@ -37,6 +87,16 @@ export const en = {
     keep: 'Keep',
     keepOldest: 'Keep oldest, remove {{count}}',
     mergeFolders: 'Merge folders',
+    cleanAllDuplicates: 'Clean all duplicates',
+    confirmCleanAllDuplicatesTitle: 'Clean all duplicate bookmarks',
+    confirmCleanAllDuplicatesDescription: 'Delete {{count}} duplicate bookmarks and keep the oldest bookmark in each group? A backup will be created first.',
+    deleteEmptyFolders: 'Delete all empty folders',
+    confirmDeleteEmptyFoldersTitle: 'Delete all empty folders',
+    confirmDeleteEmptyFoldersDescription: 'Delete {{count}} empty folders? A backup will be created first.',
+    keepLabel: 'Keep',
+    itemCount: '{{count}} items',
+    folderCount: '{{count}} folders',
+    noResults: 'No results',
     linkIssueSummary: '{{broken}} confirmed broken, {{unreachable}} could not be verified',
     viewAllLinkIssues: 'Review all {{count}} link issues',
     linkProgress: '{{checked}} / {{total}} bookmarks processed · {{unique}} unique URLs checked'
@@ -56,6 +116,9 @@ export const en = {
     deleteOne: 'Delete',
     editPrompt: 'Enter the corrected bookmark URL (http:// or https://)',
     deleteConfirm: 'Delete "{{title}}"? A backup will be created first.',
+    confirmDeleteOneTitle: 'Delete link issue',
+    confirmDeleteSelectedTitle: 'Delete selected link issues',
+    confirmDeleteSelectedDescription: 'Delete {{count}} selected bookmark links? A backup will be created first.',
     select: 'Select {{title}}',
     noResults: 'No link issues in this category.',
     previous: 'Previous page',
@@ -77,10 +140,42 @@ export const en = {
     bookmarkList: 'Bookmark list',
     visibleItems: 'visible',
     deleteSelected: 'Delete selected',
+    filterByTag: 'Filter by tag',
+    allTags: 'All tags',
+    tagWithCount: '{{tag}} ({{count}})',
+    sortBy: 'Sort bookmarks',
+    sortOptions: {
+      default: 'Default order',
+      titleAsc: 'Title A-Z',
+      titleDesc: 'Title Z-A',
+      dateDesc: 'Date added newest',
+      dateAsc: 'Date added oldest',
+      urlAsc: 'URL A-Z'
+    },
+    moveTarget: 'Move target',
+    moveTo: 'Move to...',
+    moveSelected: 'Move selected',
+    undo: 'Undo',
+    untitled: 'Untitled',
+    renamePrompt: 'Rename bookmark',
+    renameFolderPrompt: 'Rename folder',
+    tagsPrompt: 'Comma-separated tags',
+    save: 'Save',
+    saveTags: 'Save tags',
+    confirmDeleteTitle: 'Delete selected bookmarks',
+    confirmDeleteDescription: 'Delete {{count}} selected bookmarks? A backup will be created first.',
+    confirmMoveTitle: 'Move selected bookmarks',
+    confirmMoveDescription: 'Move {{count}} selected bookmarks to the chosen folder?',
+    selectAll: 'Select all visible bookmarks',
+    shortcutsHint: 'Shortcuts: Delete selected, Escape clear selection, Ctrl+A select visible bookmarks',
+    selectAria: 'Select {{title}}',
+    renameAria: 'Rename {{title}}',
+    editTagsAria: 'Edit tags for {{title}}',
     columns: {
       title: 'Title',
       url: 'URL',
-      folder: 'Folder'
+      folder: 'Folder',
+      actions: 'Actions'
     }
   },
   importExport: {
@@ -113,16 +208,29 @@ export const en = {
     backup: 'Backup',
     theme: 'Theme',
     language: 'Language',
+    languageEnglish: 'English',
+    languageChinese: 'Chinese',
     timeoutMs: 'Request timeout (ms)',
     concurrency: 'Concurrent link checks',
     retryCount: 'Retry count',
+    autoScan: 'Automatic daily scan',
+    autoScanDescription: 'Run a daily background scan for duplicate bookmarks, duplicate folders, and empty folders. Broken-link checks still run manually.',
     cacheHours: 'Scan cache duration (hours)',
     backupRetention: 'Backups to keep',
     backupManagement: 'Backup management',
     noBackups: 'Backups will appear after delete, import, or restore operations.',
-    backupCount: 'Backups available.',
+    backupCount: '{{count}} backups available.',
+    bookmarksCount: '{{count}} bookmarks',
     restoreBackup: 'Restore',
     deleteBackup: 'Delete',
+    confirmRestoreTitle: 'Restore backup',
+    confirmRestoreDescription: 'Restore this backup with {{count}} bookmarks? A safety backup of the current state will be created first.',
+    backupReasons: {
+      delete: 'Delete',
+      import: 'Import',
+      merge: 'Merge',
+      restore: 'Restore'
+    },
     autoSave: 'Settings are saved automatically and stored locally.',
     themeOptions: {
       system: 'System',
@@ -133,7 +241,7 @@ export const en = {
   pages: {
     dashboard: { title: 'Dashboard', description: 'Live bookmark statistics, global search history, and scan signals.' },
     scanner: { title: 'Scanner', description: 'Worker-based duplicate bookmark, duplicate folder, and empty-folder scans.' },
-    manager: { title: 'Bookmark Manager', description: 'Virtualized bookmark and folder management for large collections.' },
+    manager: { title: 'Markora', description: 'Virtualized bookmark and folder management for large collections.' },
     importExport: { title: 'Import / Export', description: 'Export your local bookmark data in standard portable formats.' },
     settings: { title: 'Settings', description: 'Configure theme, language, scanner, cache, and backup preferences.' }
   }

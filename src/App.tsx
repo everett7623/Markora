@@ -39,7 +39,7 @@ export function App() {
   }, [settings.theme]);
 
   return (
-    <HashRouter>
+    <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AppLayout>
         <Suspense fallback={<div className="p-6 text-sm text-slate-500">Loading...</div>}>
           <Routes>

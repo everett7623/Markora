@@ -17,6 +17,14 @@ if (manifest.manifest_version !== 3 || typeof manifest.version !== 'string') {
   process.exit(1);
 }
 
+const requiredIconSizes = [16, 48, 128];
+for (const iconSet of [manifest.icons, manifest.action?.default_icon]) {
+  if (!iconSet || requiredIconSizes.some((size) => !existsSync(resolve(distDir, iconSet[String(size)] ?? '')))) {
+    console.error('The built manifest references missing extension icons.');
+    process.exit(1);
+  }
+}
+
 const serviceWorkerPath = resolve(distDir, manifest.background?.service_worker ?? '');
 if (!manifest.background?.service_worker || !existsSync(serviceWorkerPath)) {
   console.error('The built manifest references a missing background service worker.');

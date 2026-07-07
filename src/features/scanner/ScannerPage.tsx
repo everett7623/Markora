@@ -7,9 +7,17 @@ import { useBookmarkStore } from '../../stores/bookmarkStore';
 import { useScanStore } from '../../stores/scanStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { Button } from '../../shared/components/ui/Button';
+import { ConfirmDialog } from '../../shared/components/ui/ConfirmDialog';
 import type { BookmarkNode } from '../../shared/types';
 import { flattenBookmarks, planDuplicateBookmarkCleanup } from '../../shared/utils/bookmarks';
 import { normalizeLinkIssue } from '../../shared/utils/linkCheck';
+
+type ConfirmState = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  onConfirm: () => Promise<void>;
+};
 
 export default function ScannerPage() {
   const { t } = useTranslation();
@@ -31,11 +39,12 @@ export default function ScannerPage() {
   const brokenLinkCount = linkIssues.filter((issue) => issue.kind === 'broken').length;
   const unreachableLinkCount = linkIssues.length - brokenLinkCount;
   const [linkProgress, setLinkProgress] = useState({ checked: 0, total: 0, uniqueUrls: 0 });
+  const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
 
   useEffect(() => {
-    void scanService.getCached(cacheHours).then((cached) => {
+    void scanService.getCache(cacheHours).then((cached) => {
       if (cached.success && cached.data) {
-        setResult(cached.data);
+        setResult(cached.data.result, cached.data.createdAt);
         setProgress(100);
       }
     });
@@ -108,6 +117,38 @@ export default function ScannerPage() {
     await runRepair(() => mergeFolders(sources.map((folder) => folder.id), target.id));
   };
 
+  const confirmAction = async () => {
+    const current = confirmState;
+    if (!current) return;
+    setConfirmState(null);
+    await current.onConfirm();
+  };
+
+  const deleteAllEmptyFolders = () => {
+    const emptyFolders = result?.emptyFolders ?? [];
+    if (emptyFolders.length === 0) return;
+
+    setConfirmState({
+      title: t('scanner.confirmDeleteEmptyFoldersTitle'),
+      description: t('scanner.confirmDeleteEmptyFoldersDescription', { count: emptyFolders.length }),
+      confirmLabel: t('scanner.deleteEmptyFolders'),
+      onConfirm: () => runRepair(() => deleteBookmarks(emptyFolders.map((folder) => folder.id)))
+    });
+  };
+
+  const cleanAllDuplicateBookmarks = () => {
+    const groups = result?.duplicateBookmarkGroups ?? [];
+    const duplicateIds = groups.flatMap((group) => planDuplicateBookmarkCleanup(group).duplicateIds);
+    if (duplicateIds.length === 0) return;
+
+    setConfirmState({
+      title: t('scanner.confirmCleanAllDuplicatesTitle'),
+      description: t('scanner.confirmCleanAllDuplicatesDescription', { count: duplicateIds.length }),
+      confirmLabel: t('scanner.cleanAllDuplicates'),
+      onConfirm: () => runRepair(() => deleteBookmarks(duplicateIds))
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -143,12 +184,17 @@ export default function ScannerPage() {
 
       <div className="grid gap-4 xl:grid-cols-4">
         <ResultPanel title={t('scanner.duplicateBookmarks')} value={result?.duplicateBookmarkGroups.length ?? 0}>
+          {(result?.duplicateBookmarkGroups.length ?? 0) > 0 ? (
+            <Button className="mb-2 h-8 w-full px-3 text-xs" variant="outline" disabled={mutating || running} onClick={cleanAllDuplicateBookmarks}>
+              {t('scanner.cleanAllDuplicates')}
+            </Button>
+          ) : null}
           {(result?.duplicateBookmarkGroups ?? []).slice(0, 8).map((group) => {
             const cleanup = planDuplicateBookmarkCleanup(group);
             return (
               <div key={group.map((item) => item.id).join('-')} className="rounded-md border p-3 text-sm">
                 <div className="break-all font-medium">{group[0]?.url}</div>
-                <div className="mt-1 text-xs text-slate-500">{group.length} items</div>
+                <div className="mt-1 text-xs text-slate-500">{t('scanner.itemCount', { count: group.length })}</div>
                 <div className="mt-1 truncate text-xs text-slate-500">
                   {t('scanner.keep')}: {cleanup.keeper?.path?.join(' / ') ?? cleanup.keeper?.title}
                 </div>
@@ -168,8 +214,8 @@ export default function ScannerPage() {
           {(result?.duplicateFolderGroups ?? []).slice(0, 8).map((group) => (
             <div key={group.map((item) => item.id).join('-')} className="rounded-md border p-3 text-sm">
               <div className="font-medium">{group[0]?.title}</div>
-              <div className="mt-1 text-xs text-slate-500">{group.length} folders</div>
-              <div className="mt-1 text-xs text-slate-500">Keep: {group[0]?.path?.join(' / ') ?? group[0]?.title}</div>
+              <div className="mt-1 text-xs text-slate-500">{t('scanner.folderCount', { count: group.length })}</div>
+              <div className="mt-1 text-xs text-slate-500">{t('scanner.keepLabel')}: {group[0]?.path?.join(' / ') ?? group[0]?.title}</div>
               <Button className="mt-3 h-8 px-3 text-xs" variant="outline" disabled={mutating || running} onClick={() => void mergeFolderGroup(group)}>
                 {t('scanner.mergeFolders')}
               </Button>
@@ -177,6 +223,11 @@ export default function ScannerPage() {
           ))}
         </ResultPanel>
         <ResultPanel title={t('scanner.emptyFolders')} value={result?.emptyFolders.length ?? 0}>
+          {(result?.emptyFolders.length ?? 0) > 0 ? (
+            <Button className="mb-2 h-8 w-full px-3 text-xs" variant="outline" disabled={mutating || running} onClick={deleteAllEmptyFolders}>
+              {t('scanner.deleteEmptyFolders')}
+            </Button>
+          ) : null}
           {(result?.emptyFolders ?? []).slice(0, 8).map((folder) => (
             <div key={folder.id} className="truncate rounded-md border p-3 text-sm">
               {folder.path?.join(' / ') ?? folder.title}
@@ -204,18 +255,30 @@ export default function ScannerPage() {
           ) : null}
         </ResultPanel>
       </div>
+
+      <ConfirmDialog
+        open={confirmState !== null}
+        title={confirmState?.title ?? ''}
+        description={confirmState?.description ?? ''}
+        confirmLabel={confirmState?.confirmLabel ?? t('dialog.confirm')}
+        cancelLabel={t('dialog.cancel')}
+        variant="destructive"
+        onCancel={() => setConfirmState(null)}
+        onConfirm={() => void confirmAction()}
+      />
     </div>
   );
 }
 
 function ResultPanel({ title, value, children }: { title: string; value: number; children: React.ReactNode }) {
+  const { t } = useTranslation();
   return (
     <section className="min-h-72 rounded-lg border bg-white p-5 shadow-sm dark:bg-slate-950">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-semibold">{title}</h2>
         <span className="rounded-full bg-slate-100 px-2.5 py-1 text-sm font-semibold dark:bg-slate-900">{value}</span>
       </div>
-      <div className="space-y-2">{value > 0 ? children : <span className="text-sm text-slate-500">No results</span>}</div>
+      <div className="space-y-2">{value > 0 ? children : <span className="text-sm text-slate-500">{t('scanner.noResults')}</span>}</div>
     </section>
   );
 }

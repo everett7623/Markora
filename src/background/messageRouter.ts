@@ -1,13 +1,26 @@
+import { registerAlarms } from './alarms';
 import { linkRequestService } from '../services/linkRequestService';
-import type { LinkFetchRequest } from '../shared/types';
+import type { LinkFetchRequest, Result } from '../shared/types';
 
-export type BackgroundMessage = { type: 'open-options' } | LinkFetchRequest;
+export type BackgroundMessage = { type: 'open-options' } | { type: 'register-alarms' } | LinkFetchRequest;
 
 export function registerMessageRouter(): void {
   chrome.runtime.onMessage.addListener((message: BackgroundMessage, _sender, sendResponse) => {
     if (message.type === 'open-options') {
       void chrome.runtime.openOptionsPage();
       return;
+    }
+
+    if (message.type === 'register-alarms') {
+      void registerAlarms()
+        .then(() => sendResponse({ success: true, data: true } satisfies Result<boolean>))
+        .catch((error) =>
+          sendResponse({
+            success: false,
+            error: error instanceof Error ? error.message : 'Unable to register alarms.'
+          } satisfies Result<boolean>)
+        );
+      return true;
     }
 
     if (message.type === 'check-link') {

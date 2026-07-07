@@ -526,6 +526,24 @@ Acceptance:
 
 ---
 
+TASK-508
+
+Scheduled Auto Scan
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- Settings can enable or disable a daily automatic structure scan
+- Background registers or clears a `chrome.alarms` alarm from persisted settings
+- Alarm scans duplicate bookmarks, duplicate folders, and empty folders locally
+- Alarm results are written to the existing scan cache
+- Broken-link checks remain manual
+
+---
+
 TASK-507
 
 Apply Cache Duration Setting
@@ -697,7 +715,7 @@ Reviewed against the current implementation on 2026-06-06.
 - Implemented: duplicate folder detection and merge.
 - Implemented: broken-link checks in a Web Worker.
 - Implemented: recursive empty-folder detection.
-- Missing: empty-folder deletion and batch cleanup.
+- Implemented: batch empty-folder cleanup.
 
 ## Manager
 
@@ -720,6 +738,7 @@ Reviewed against the current implementation on 2026-06-06.
 
 - Implemented: persisted theme and language.
 - Implemented: scanner configuration.
+- Implemented: scheduled automatic structure scan through `chrome.alarms`.
 - Partial: backup retention is persisted but not applied by `backupService`.
 - Implemented: cache duration is applied when Scanner loads cached results.
 

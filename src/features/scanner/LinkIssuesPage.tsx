@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { scanService } from '../../services/scanService';
 import { Button } from '../../shared/components/ui/Button';
+import { ConfirmDialog } from '../../shared/components/ui/ConfirmDialog';
+import { PromptDialog } from '../../shared/components/ui/PromptDialog';
 import type { InvalidLink } from '../../shared/types';
 import { normalizeLinkIssue } from '../../shared/utils/linkCheck';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
@@ -11,6 +13,13 @@ import { useScanStore } from '../../stores/scanStore';
 
 const PAGE_SIZE = 50;
 type IssueFilter = 'all' | 'broken' | 'unreachable';
+
+type ConfirmState = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  onConfirm: () => Promise<void>;
+};
 
 export default function LinkIssuesPage() {
   const { t } = useTranslation();
@@ -23,6 +32,8 @@ export default function LinkIssuesPage() {
   const [filter, setFilter] = useState<IssueFilter>('all');
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [editingIssue, setEditingIssue] = useState<InvalidLink | null>(null);
+  const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
 
   useEffect(() => {
     if (result) return;
@@ -54,7 +65,7 @@ export default function LinkIssuesPage() {
     });
   };
 
-  const deleteSelected = async () => {
+  const performDeleteSelected = async () => {
     const ids = [...selectedIds];
     if (!result || ids.length === 0) return;
     await deleteBookmarks(ids);
@@ -67,6 +78,16 @@ export default function LinkIssuesPage() {
     setResult(nextResult);
     setSelectedIds(new Set());
     await scanService.saveCache(nextResult);
+  };
+
+  const deleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    setConfirmState({
+      title: t('linkIssues.confirmDeleteSelectedTitle'),
+      description: t('linkIssues.confirmDeleteSelectedDescription', { count: selectedIds.size }),
+      confirmLabel: t('linkIssues.deleteSelected', { count: selectedIds.size }),
+      onConfirm: performDeleteSelected
+    });
   };
 
   const removeIssue = async (id: string) => {
@@ -82,16 +103,34 @@ export default function LinkIssuesPage() {
   };
 
   const editIssueUrl = async (issue: InvalidLink) => {
-    const nextUrl = window.prompt(t('linkIssues.editPrompt'), issue.node.url);
-    if (nextUrl === null || nextUrl.trim() === issue.node.url) return;
+    setEditingIssue(issue);
+  };
+
+  const confirmEditIssueUrl = async (nextUrl: string) => {
+    const issue = editingIssue;
+    setEditingIssue(null);
+    if (!issue || nextUrl.trim() === issue.node.url) return;
     await updateBookmarkUrl(issue.node.id, nextUrl);
     if (!useBookmarkStore.getState().error) await removeIssue(issue.node.id);
   };
 
   const deleteIssue = async (issue: InvalidLink) => {
-    if (!window.confirm(t('linkIssues.deleteConfirm', { title: issue.node.title || issue.node.url }))) return;
-    await deleteBookmarks([issue.node.id]);
-    if (!useBookmarkStore.getState().error) await removeIssue(issue.node.id);
+    setConfirmState({
+      title: t('linkIssues.confirmDeleteOneTitle'),
+      description: t('linkIssues.deleteConfirm', { title: issue.node.title || issue.node.url }),
+      confirmLabel: t('linkIssues.deleteOne'),
+      onConfirm: async () => {
+        await deleteBookmarks([issue.node.id]);
+        if (!useBookmarkStore.getState().error) await removeIssue(issue.node.id);
+      }
+    });
+  };
+
+  const confirmAction = async () => {
+    const current = confirmState;
+    if (!current) return;
+    setConfirmState(null);
+    await current.onConfirm();
   };
 
   return (
@@ -168,6 +207,27 @@ export default function LinkIssuesPage() {
           </Button>
         </div>
       </div>
+
+      <PromptDialog
+        open={editingIssue !== null}
+        title={t('linkIssues.editUrl')}
+        defaultValue={editingIssue?.node.url ?? ''}
+        placeholder={t('linkIssues.editPrompt')}
+        confirmLabel={t('dialog.confirm')}
+        cancelLabel={t('dialog.cancel')}
+        onCancel={() => setEditingIssue(null)}
+        onConfirm={(value) => void confirmEditIssueUrl(value)}
+      />
+      <ConfirmDialog
+        open={confirmState !== null}
+        title={confirmState?.title ?? ''}
+        description={confirmState?.description ?? ''}
+        confirmLabel={confirmState?.confirmLabel ?? t('dialog.confirm')}
+        cancelLabel={t('dialog.cancel')}
+        variant="destructive"
+        onCancel={() => setConfirmState(null)}
+        onConfirm={() => void confirmAction()}
+      />
     </div>
   );
 }

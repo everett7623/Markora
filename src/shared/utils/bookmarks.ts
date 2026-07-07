@@ -1,5 +1,7 @@
 import type { BookmarkNode, BookmarkStats, ScanResult } from '../types';
 
+export type SortOption = 'default' | 'title-asc' | 'title-desc' | 'date-asc' | 'date-desc' | 'url-asc';
+
 export function annotateBookmarkPaths(nodes: BookmarkNode[], parentPath: string[] = []): BookmarkNode[] {
   return nodes.map((node) => {
     const path = [...parentPath, node.title || 'Untitled'];
@@ -55,6 +57,24 @@ export function planDuplicateBookmarkCleanup(group: BookmarkNode[]): { keeper: B
     keeper: ordered[0] ?? null,
     duplicateIds: ordered.slice(1).map((bookmark) => bookmark.id)
   };
+}
+
+export function sortBookmarks(bookmarks: BookmarkNode[], sortBy: SortOption): BookmarkNode[] {
+  if (sortBy === 'default') return bookmarks;
+
+  const sorted = [...bookmarks];
+  switch (sortBy) {
+    case 'title-asc':
+      return sorted.sort((left, right) => (left.title || '').localeCompare(right.title || ''));
+    case 'title-desc':
+      return sorted.sort((left, right) => (right.title || '').localeCompare(left.title || ''));
+    case 'date-asc':
+      return sorted.sort((left, right) => (left.dateAdded ?? 0) - (right.dateAdded ?? 0));
+    case 'date-desc':
+      return sorted.sort((left, right) => (right.dateAdded ?? 0) - (left.dateAdded ?? 0));
+    case 'url-asc':
+      return sorted.sort((left, right) => (left.url || '').localeCompare(right.url || ''));
+  }
 }
 
 export function calculateBookmarkStats(bookmarks: BookmarkNode[], scanResult?: ScanResult | null): BookmarkStats {

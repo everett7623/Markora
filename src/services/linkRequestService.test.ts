@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import i18n from '../shared/i18n';
 import { linkRequestService } from './linkRequestService';
 
 describe('linkRequestService', () => {
@@ -54,7 +55,7 @@ describe('linkRequestService', () => {
     expect(result).toEqual({
       success: true,
       data: {
-        error: 'Browser store links require manual verification.',
+        error: i18n.t('serviceErrors.browserStoreManualVerification'),
         failure: 'protected'
       }
     });

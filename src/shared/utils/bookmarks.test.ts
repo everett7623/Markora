@@ -10,6 +10,7 @@ import {
   removeBookmarkNodes,
   reorderNodeBefore,
   searchBookmarks,
+  sortBookmarks,
   updateBookmarkNodeTitle,
   updateBookmarkNodeUrl
 } from './bookmarks';
@@ -27,6 +28,12 @@ const tree: BookmarkNode[] = [
 ];
 
 describe('bookmark utilities', () => {
+  const sortableBookmarks: BookmarkNode[] = [
+    { id: 'b', title: 'Beta', url: 'https://beta.test', dateAdded: 200 },
+    { id: 'a', title: 'Alpha', url: 'https://alpha.test', dateAdded: 300 },
+    { id: 'c', title: '', url: 'https://charlie.test' }
+  ];
+
   it('keeps the oldest bookmark when planning duplicate cleanup', () => {
     const cleanup = planDuplicateBookmarkCleanup([
       { id: 'newest', title: 'Newest', url: 'https://example.com', dateAdded: 300 },
@@ -36,6 +43,16 @@ describe('bookmark utilities', () => {
 
     expect(cleanup.keeper?.id).toBe('oldest');
     expect(cleanup.duplicateIds).toEqual(['middle', 'newest']);
+  });
+
+  it('sorts bookmarks by supported fields without mutating the original array', () => {
+    expect(sortBookmarks(sortableBookmarks, 'default')).toBe(sortableBookmarks);
+    expect(sortBookmarks(sortableBookmarks, 'title-asc').map((bookmark) => bookmark.id)).toEqual(['c', 'a', 'b']);
+    expect(sortBookmarks(sortableBookmarks, 'title-desc').map((bookmark) => bookmark.id)).toEqual(['b', 'a', 'c']);
+    expect(sortBookmarks(sortableBookmarks, 'date-asc').map((bookmark) => bookmark.id)).toEqual(['c', 'b', 'a']);
+    expect(sortBookmarks(sortableBookmarks, 'date-desc').map((bookmark) => bookmark.id)).toEqual(['a', 'b', 'c']);
+    expect(sortBookmarks(sortableBookmarks, 'url-asc').map((bookmark) => bookmark.id)).toEqual(['a', 'b', 'c']);
+    expect(sortableBookmarks.map((bookmark) => bookmark.id)).toEqual(['b', 'a', 'c']);
   });
 
   it('updates a bookmark URL without changing its title', () => {

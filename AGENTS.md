@@ -1,443 +1,93 @@
+# Markora Codex Guide
 
-# Markora - Codex Instructions
+This file is the primary handoff document for Codex sessions working on Markora.
+Read it before editing code, then check `SESSION.md`, `PROGRESS.md`, and any
+task-specific design notes.
 
-This repository is a Chrome / Edge Extension project.
+## Project Snapshot
 
-Codex must follow this file before making any code changes.
+- Product: Markora - Bookmark Atlas.
+- Type: Chrome and Edge extension.
+- Architecture: Manifest V3 full-screen options page, no popup.
+- Current release line: `0.1.0` beta baseline.
+- Repository: `https://github.com/everett7623/Markora`.
+- Local app data policy: bookmark data stays in the browser. Do not add analytics,
+  telemetry, cloud sync, or remote bookmark uploads unless explicitly requested.
 
----
+## Current Priorities
 
-## 1. Project Summary
+1. Keep the verified `0.1.0` beta baseline healthy.
+2. Close release-readiness gaps recorded in `PROGRESS.md` and `SESSION.md`.
+3. Continue the active roadmap recorded in `SESSION.md`, `PROGRESS.md`, and
+   `TASKS.md`.
+4. Prefer small, verifiable changes over broad refactors.
 
-Project name:
+## Fixed Stack
 
-Markora - Bookmark Atlas
-
-Product type:
-
-Chrome / Edge browser extension
-
-Architecture:
-
-Manifest V3 full-screen options page application
-
-Core goal:
-
-Build a professional bookmark management extension for large bookmark collections.
-
-Primary features:
-
-- Dashboard
-    
-- Bookmark search
-    
-- Duplicate bookmark detection
-    
-- Empty folder cleanup
-    
-- Broken link scanning
-    
-- Duplicate folder merge
-    
-- Bookmark manager
-    
-- Import and export
-    
-- Backup and restore
-    
-- Settings
-    
-- Future AI-assisted organization
-    
-
----
-
-## 2. Fixed Technical Stack
-
-Do not change these choices.
-
-Use:
+Use the existing stack unless the user explicitly approves a change:
 
 - React 18
-    
-- TypeScript 5
-    
+- TypeScript strict mode
 - Vite 5
-    
-- @crxjs/vite-plugin
-    
+- CRXJS
 - Manifest V3
-    
 - Zustand
-    
-- React Router v6 with HashRouter
-    
+- React Router v6 with `HashRouter`
 - Tailwind CSS
-    
-- shadcn/ui
-    
+- shadcn-style local UI primitives
 - Lucide React
-    
 - react-i18next
-    
-- Vitest
-    
-- Testing Library
-    
+- Vitest and Testing Library
 - Playwright
-    
 
-Do not introduce:
-
-- Vue
-    
-- Angular
-    
-- Redux
-    
-- MobX
-    
-- jQuery
-    
-- Webpack
-    
-- popup.html
-    
-- new UI libraries without approval
-    
-
----
-
-## 3. Non-Negotiable Architecture Rules
-
-### Rule 1
-
-This extension must use full-screen Options Page mode.
-
-Do not create popup pages.
-
-### Rule 2
-
-Chrome APIs must not be called directly inside React components.
-
-Correct:
-
-```ts
-await bookmarkService.getTree()
-```
-
-Wrong:
-
-```ts
-chrome.bookmarks.getTree()
-```
-
-inside React components.
-
-### Rule 3
-
-Heavy work must run in Web Workers.
-
-Examples:
-
-- Broken link checking
-    
-- Duplicate detection on large datasets
-    
-- Import/export parsing
-    
-- Large bookmark tree transformation
-    
-
-### Rule 4
-
-All shared types must live in:
-
-```txt
-src/shared/types/
-```
-
-Do not duplicate interfaces.
-
-### Rule 5
-
-Feature code must stay inside its feature folder.
-
-Do not create cross-feature imports unless the code belongs in `src/shared`.
-
----
-
-## 4. Required Folder Structure
-
-Use this structure:
-
-```txt
-src/
-├── background/
-│   ├── background.ts
-│   ├── messageRouter.ts
-│   └── alarms.ts
-│
-├── workers/
-│   ├── linkChecker.worker.ts
-│   └── scanner.worker.ts
-│
-├── services/
-│   ├── bookmarkService.ts
-│   ├── storageService.ts
-│   ├── scanService.ts
-│   ├── exportService.ts
-│   └── backupService.ts
-│
-├── stores/
-│   ├── bookmarkStore.ts
-│   ├── scanStore.ts
-│   └── settingsStore.ts
-│
-├── shared/
-│   ├── components/
-│   ├── hooks/
-│   ├── types/
-│   ├── utils/
-│   └── constants/
-│
-├── features/
-│   ├── dashboard/
-│   ├── scanner/
-│   ├── manager/
-│   ├── import-export/
-│   └── settings/
-│
-├── router/
-├── styles/
-├── App.tsx
-└── main.tsx
-```
-
-Do not create:
-
-```txt
-src/helpers/
-src/common2/
-src/components_new/
-src/utils_backup/
-src/old/
-src/temp/
-```
-
----
-
-## 5. Coding Rules
-
-### TypeScript
-
-Use strict TypeScript.
-
-Do not use `any` unless unavoidable.
-
-If `any` is used, add a short comment explaining why.
-
-Prefer:
-
-```ts
-type Result<T> = {
-  success: boolean
-  data?: T
-  error?: string
-}
-```
-
-Avoid throwing raw errors across service boundaries.
-
----
-
-### React
-
-Use function components only.
-
-Use hooks only.
-
-Use:
-
-- React.memo
-    
-- useMemo
-    
-- useCallback
-    
-
-when rendering large lists or expensive calculations.
-
-Do not put business logic inside JSX.
-
----
-
-### Zustand
-
-Use Zustand for global state.
-
-Stores must not contain:
-
-- JSX
-    
-- React components
-    
-- direct Chrome API calls
-    
-
-Stores may call services.
-
----
-
-### Styling
-
-Use Tailwind CSS.
-
-Use shadcn/ui components where suitable.
-
-Use Lucide React for icons.
-
-Do not add random CSS files per component unless necessary.
-
----
-
-## 6. Chrome Extension Rules
-
-Manifest must remain Manifest V3.
-
-Required permissions:
-
-```json
-{
-  "permissions": ["bookmarks", "storage", "tabs"]
-}
-```
-
-Optional host permission:
-
-```json
-{
-  "host_permissions": ["<all_urls>"]
-}
-```
-
-Only use host permissions for broken link checking.
-
-The extension must not upload bookmark data to any server.
-
----
-
-## 7. Performance Rules
-
-The app must support at least:
-
-```txt
-10,000 bookmarks
-```
-
-Mandatory:
-
-- Virtualized bookmark lists
-    
-- 300ms debounced search
-    
-- Web Worker scanning
-    
-- 24-hour scan cache
-    
-- Route-level lazy loading
-    
-- Memory cleanup for event listeners
-    
-
-Do not render 10,000 bookmark DOM nodes directly.
-
----
-
-## 8. Data and Storage Rules
-
-All local data must include schema version.
-
-Example:
-
-```ts
-export interface StoredSettings {
-  schemaVersion: number
-  data: AppSettings
-  updatedAt: number
-}
-```
-
-Storage must support migration.
-
-Required migration functions:
-
-```ts
-migrateSettings()
-migrateBackup()
-migrateCache()
-```
-
-Backups must be created before:
-
-- Batch delete
-    
-- Import
-    
-- Merge folder
-    
-- Restore backup
-    
-
-Default retention:
-
-```txt
-10 backups
-```
-
----
-
-## 9. Security and Privacy Rules
-
-Never add:
-
-- analytics
-    
-- telemetry
-    
-- remote tracking
-    
-- cloud sync
-    
-- server upload
-    
-
-unless explicitly requested.
-
-Never use:
-
-```tsx
-dangerouslySetInnerHTML
-```
-
-unless the value is sanitized.
-
-Validate:
-
-- imported files
-    
-- URLs
-    
-- settings values
-    
-- user input
-    
-
----
-
-## 10. Test and Build Commands
-
-Before completing a task, run:
+Do not introduce Redux, MobX, Angular, Vue, Webpack, jQuery, popup pages, or new
+UI libraries without approval.
+
+## Architecture Rules
+
+- Chrome APIs belong in services or background modules, not React components.
+- Stores may call services, but stores must not contain JSX or direct Chrome API
+  calls.
+- Heavy or large-data work belongs in Web Workers where practical.
+- Shared types live in `src/shared/types/`.
+- Shared utilities, hooks, constants, and UI primitives live under `src/shared/`.
+- Feature-specific UI and orchestration stays under `src/features/<feature>/`.
+- Keep options-page routing full-screen; do not create `popup.html`.
+- All user-facing strings should go through i18n resources.
+
+## Important Paths
+
+- `manifest.json`: extension manifest source.
+- `src/background/`: Manifest V3 service worker and message routing.
+- `src/workers/`: scanner, import, and link-check workers.
+- `src/services/`: Chrome API and storage service boundaries.
+- `src/stores/`: Zustand stores.
+- `src/features/dashboard/`: dashboard UI.
+- `src/features/scanner/`: scanner and link issue review UI.
+- `src/features/manager/`: bookmark manager UI.
+- `src/features/import-export/`: import/export UI.
+- `src/features/settings/`: settings and backup management UI.
+- `src/shared/i18n/locales/`: English and Chinese locale resources.
+- `PROGRESS.md`: project status and release decision.
+- `SESSION.md`: latest working context and next step.
+- `TASKS.md`: broader roadmap and feature audit.
+
+## Development Workflow
+
+1. Run `git status --short --branch` and note existing uncommitted work.
+2. Read the files related to the requested task before editing.
+3. Preserve user changes. Do not revert unrelated modifications.
+4. Make the smallest coherent change that satisfies the task.
+5. Add or update tests when behavior changes.
+6. Update `SESSION.md` and `PROGRESS.md` after completing a development phase.
+7. Do not push automatically.
+
+## Verification
+
+Use the smallest useful verification while iterating, then run the appropriate
+quality gate before reporting completion.
+
+Core gates:
 
 ```bash
 npm run lint
@@ -446,107 +96,61 @@ npm run test
 npm run build
 ```
 
-If a command fails:
-
-1. Fix the issue.
-    
-2. Run the command again.
-    
-3. Report what failed and what was fixed.
-    
-
-Do not claim completion if build or typecheck fails.
-
----
-
-## 11. Codex Task Workflow
-
-For every task:
-
-1. Read this `AGENTS.md`.
-    
-2. Read related files before editing.
-    
-3. Identify the minimal change.
-    
-4. Avoid unrelated refactoring.
-    
-5. Modify only necessary files.
-    
-6. Add or update tests when behavior changes.
-    
-7. Run verification commands.
-    
-8. Summarize changed files and test results.
-    
-
----
-
-## 12. Review Checklist
-
-Before final response, check:
-
-- No architecture changes
-    
-- No new UI library
-    
-- No duplicate types
-    
-- No direct Chrome API in React components
-    
-- No untested business logic
-    
-- No large unvirtualized list
-    
-- No console errors
-    
-- No privacy regression
-    
-- Build passes
-    
-
----
-
-## 13. Preferred Response Format
-
-When Codex finishes a task, respond with:
-
-```txt
-Summary:
-- ...
-
-Changed files:
-- ...
-
-Verification:
-- npm run lint
-- npm run typecheck
-- npm run test
-- npm run build
-
-Notes:
-- ...
-```
-
-## 14. Environment Verification
-
-Before assuming the environment is unavailable, always re-verify the current machine state.
-
-Run:
+Extension gate:
 
 ```bash
-git status
-node -v
-npm -v
-npm run build
-npm run lint
-npm run test
+npm run build:extension
 ```
 
-Do not reuse previous assumptions that Git, Node.js, npm, or the repository are unavailable.
+E2E gate:
 
-On Windows, do not conclude the environment is broken only because a command is missing from the current Codex PATH. Check the installed tool locations or ask the user for the verified environment state before recording an environment blocker.
+```bash
+npm run test:e2e
+```
 
-If verification succeeds, update `PROGRESS.md` and remove stale notes about missing Git, Node.js, npm, or failed environment detection.
+On Windows, use `npm run test:e2e`; it starts and stops Vite through
+`scripts/run-e2e.mjs`. Direct Playwright server usage may leave a process
+running.
 
-END
+## Release Rules
+
+- Load `dist/` for manual extension testing.
+- Do not load `.crx-dev/` as the unpacked extension; it is development output.
+- `npm run build:extension` must pass before considering `dist/` valid.
+- `npm run package:release` creates the versioned ZIP after validation.
+- Do not label the project `1.0.0` until all stable store-release gates pass.
+
+## Data Safety
+
+Create backups before destructive operations:
+
+- batch delete
+- import
+- folder merge
+- backup restore
+
+The backup retention setting is persisted, but verify whether the service layer
+currently applies it before marking that feature complete.
+
+## Performance Expectations
+
+The app should handle at least 10,000 bookmarks:
+
+- virtualize large lists
+- debounce search
+- avoid rendering huge DOM lists
+- use workers for expensive scans and parsing
+- cache scan results with the configured duration
+- clean up event listeners and observers
+
+## Final Response Checklist
+
+When finishing a coding task, report:
+
+- what changed
+- which files matter
+- which verification commands passed
+- any skipped checks or remaining risk
+
+Keep the answer concise and do not claim completion if lint, typecheck, tests,
+or build failed.

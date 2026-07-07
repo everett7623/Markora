@@ -1,4 +1,5 @@
 import type { LinkFetchResponse, Result, ScannerConfig } from '../shared/types';
+import i18n from '../shared/i18n';
 import { isProtectedBrowserStoreUrl, shouldVerifyWithGet } from '../shared/utils/linkCheck';
 
 async function fetchWithTimeout(url: string, timeoutMs: number, method: 'HEAD' | 'GET'): Promise<Response> {
@@ -24,7 +25,7 @@ export const linkRequestService = {
       return {
         success: true,
         data: {
-          error: 'Browser store links require manual verification.',
+          error: i18n.t('serviceErrors.browserStoreManualVerification'),
           failure: 'protected'
         }
       };
@@ -58,6 +59,6 @@ export const linkRequestService = {
       }
     }
 
-    return { success: false, error: 'Link check did not complete.' };
+    return { success: false, error: i18n.t('serviceErrors.linkCheckIncomplete') };
   }
 };

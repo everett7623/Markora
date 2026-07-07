@@ -1,13 +1,19 @@
 import { RotateCcw, Save, Settings, Trash2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { alarmService } from '../../services/alarmService';
+import { ConfirmDialog } from '../../shared/components/ui/ConfirmDialog';
 import { flattenBookmarks } from '../../shared/utils/bookmarks';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
-import type { AppSettings, Language, ScannerConfig, Theme } from '../../shared/types';
+import type { AppSettings, BackupRecord, Language, ScannerConfig, Theme } from '../../shared/types';
 import { useSettingsStore } from '../../stores/settingsStore';
 
 type NumberSettingKey = 'cacheHours' | 'backupRetention';
 type ScannerNumberKey = keyof ScannerConfig;
+
+function getBackupReasonLabel(t: (key: string) => string, reason: BackupRecord['reason']): string {
+  return t(`settings.backupReasons.${reason}`);
+}
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -21,6 +27,8 @@ export default function SettingsPage() {
   const loadBackups = useBookmarkStore((state) => state.loadBackups);
   const restoreBackup = useBookmarkStore((state) => state.restoreBackup);
   const deleteBackup = useBookmarkStore((state) => state.deleteBackup);
+  const [restoreTarget, setRestoreTarget] = useState<BackupRecord | null>(null);
+  const [alarmError, setAlarmError] = useState<string | null>(null);
 
   useEffect(() => {
     void loadBackups();
@@ -38,6 +46,21 @@ export default function SettingsPage() {
     void updateScanner({ [key]: Number(value) });
   };
 
+  const updateAutoScan = async (autoScan: boolean) => {
+    setAlarmError(null);
+    const saved = await update({ autoScan });
+    if (!saved.success) return;
+
+    const registered = await alarmService.registerAlarms();
+    if (!registered.success) setAlarmError(registered.error);
+  };
+
+  const confirmRestore = async () => {
+    const target = restoreTarget;
+    setRestoreTarget(null);
+    if (target) await restoreBackup(target.id);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-3">
@@ -50,7 +73,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {error && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+      {(error || alarmError) && <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error ?? alarmError}</div>}
 
       <section className="grid gap-4 lg:grid-cols-2">
         <SettingsCard title={t('settings.appearance')}>
@@ -70,8 +93,8 @@ export default function SettingsPage() {
             value={settings.language}
             disabled={loading}
             options={[
-              { value: 'en', label: 'English' },
-              { value: 'zh_CN', label: '中文' }
+              { value: 'en', label: t('settings.languageEnglish') },
+              { value: 'zh_CN', label: t('settings.languageChinese') }
             ]}
             onChange={(value) => updateSetting('language', value as Language)}
           />
@@ -103,6 +126,13 @@ export default function SettingsPage() {
             disabled={loading}
             onChange={(value) => updateScannerNumber('retryCount', value)}
           />
+          <CheckboxField
+            label={t('settings.autoScan')}
+            description={t('settings.autoScanDescription')}
+            checked={settings.autoScan}
+            disabled={loading}
+            onChange={(checked) => void updateAutoScan(checked)}
+          />
         </SettingsCard>
 
         <SettingsCard title={t('settings.cache')}>
@@ -127,11 +157,11 @@ export default function SettingsPage() {
           />
           <div className="space-y-3">
             <div>
-              <h3 className="text-sm font-medium">{t('settings.backupManagement', { defaultValue: 'Backup management' })}</h3>
+              <h3 className="text-sm font-medium">{t('settings.backupManagement')}</h3>
               <p className="mt-1 text-xs text-slate-500">
                 {backups.length === 0
-                  ? t('settings.noBackups', { defaultValue: 'Backups will appear after delete, import, or restore operations.' })
-                  : t('settings.backupCount', { count: backups.length, defaultValue: `${backups.length} backups available.` })}
+                  ? t('settings.noBackups')
+                  : t('settings.backupCount', { count: backups.length })}
               </p>
             </div>
             <div className="max-h-72 space-y-2 overflow-auto pr-1">
@@ -139,20 +169,20 @@ export default function SettingsPage() {
                 <div key={backup.id} className="rounded-md border p-3 text-sm dark:border-slate-800">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <div className="font-medium capitalize">{backup.reason}</div>
+                      <div className="font-medium">{getBackupReasonLabel(t, backup.reason)}</div>
                       <div className="mt-1 text-xs text-slate-500">
-                        {new Date(backup.createdAt).toLocaleString()} · {flattenBookmarks(backup.bookmarks).length.toLocaleString()} bookmarks
+                        {new Date(backup.createdAt).toLocaleString()} · {t('settings.bookmarksCount', { count: flattenBookmarks(backup.bookmarks).length })}
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        onClick={() => void restoreBackup(backup.id)}
+                        onClick={() => setRestoreTarget(backup)}
                         disabled={mutating}
                         className="inline-flex items-center gap-1 rounded border px-2 py-1 text-xs hover:bg-slate-50 disabled:opacity-50 dark:hover:bg-slate-900"
                       >
                         <RotateCcw size={13} />
-                        {t('settings.restoreBackup', { defaultValue: 'Restore' })}
+                        {t('settings.restoreBackup')}
                       </button>
                       <button
                         type="button"
@@ -161,7 +191,7 @@ export default function SettingsPage() {
                         className="inline-flex items-center gap-1 rounded border px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-500/10"
                       >
                         <Trash2 size={13} />
-                        {t('settings.deleteBackup', { defaultValue: 'Delete' })}
+                        {t('settings.deleteBackup')}
                       </button>
                     </div>
                   </div>
@@ -176,6 +206,19 @@ export default function SettingsPage() {
         <Save size={16} />
         {t('settings.autoSave')}
       </div>
+
+      <ConfirmDialog
+        open={restoreTarget !== null}
+        title={t('settings.confirmRestoreTitle')}
+        description={t('settings.confirmRestoreDescription', {
+          count: restoreTarget ? flattenBookmarks(restoreTarget.bookmarks).length : 0
+        })}
+        confirmLabel={t('settings.restoreBackup')}
+        cancelLabel={t('dialog.cancel')}
+        variant="destructive"
+        onCancel={() => setRestoreTarget(null)}
+        onConfirm={() => void confirmRestore()}
+      />
     </div>
   );
 }
@@ -251,6 +294,36 @@ function NumberField({
         onChange={(event) => onChange(event.target.value)}
         className="h-10 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
       />
+    </label>
+  );
+}
+
+function CheckboxField({
+  label,
+  description,
+  checked,
+  disabled,
+  onChange
+}: {
+  label: string;
+  description: string;
+  checked: boolean;
+  disabled: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex items-start gap-3 rounded-md border p-3 text-sm dark:border-slate-800">
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.checked)}
+        className="mt-1 h-4 w-4 rounded border-slate-300"
+      />
+      <span>
+        <span className="block font-medium">{label}</span>
+        <span className="mt-1 block text-xs leading-5 text-slate-500">{description}</span>
+      </span>
     </label>
   );
 }

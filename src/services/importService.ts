@@ -1,4 +1,5 @@
 import type { BookmarkNode, ImportBookmarkItem, ImportConflict, ImportHtmlWorkerResponse, ImportPreview, Result } from '../shared/types';
+import i18n from '../shared/i18n';
 import { flattenBookmarks } from '../shared/utils/bookmarks';
 import { parseNetscapeBookmarksHtml } from '../shared/utils/importHtml';
 
@@ -24,12 +25,12 @@ async function parseWithWorker(html: string): Promise<Result<ImportBookmarkItem[
       if (event.data.type === 'complete') {
         resolve({ success: true, data: event.data.items ?? [] });
       } else {
-        resolve({ success: false, error: event.data.error ?? 'Unable to parse bookmark HTML.' });
+        resolve({ success: false, error: event.data.error ?? i18n.t('serviceErrors.parseBookmarkHtml') });
       }
     };
     worker.onerror = () => {
       worker.terminate();
-      resolve({ success: false, error: 'Unable to parse bookmark HTML.' });
+      resolve({ success: false, error: i18n.t('serviceErrors.parseBookmarkHtml') });
     };
     worker.postMessage({ type: 'parse-html', html });
   });

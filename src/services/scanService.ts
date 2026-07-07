@@ -1,4 +1,5 @@
 import { DEFAULT_CACHE_HOURS, STORAGE_KEYS } from '../shared/constants/storage';
+import i18n from '../shared/i18n';
 import type {
   BookmarkNode,
   LinkCheckWorkerRequest,
@@ -31,7 +32,7 @@ export const scanService = {
       try {
         return await chrome.runtime.sendMessage(request) as Result<LinkFetchResponse>;
       } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : 'Unable to contact the background link checker.' };
+        return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.contactBackgroundLinkChecker') };
       }
     }
 
@@ -54,7 +55,7 @@ export const scanService = {
       const granted = await chrome.permissions.request(permissions);
       return { success: true, data: granted };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to request link-check permissions.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.requestLinkCheckPermissions') };
     }
   },
 
@@ -74,7 +75,7 @@ export const scanService = {
           return;
         }
 
-        resolve({ success: false, error: event.data.error ?? 'Scan failed.' });
+        resolve({ success: false, error: event.data.error ?? i18n.t('serviceErrors.scanFailed') });
       };
 
       worker.onerror = (event) => {
@@ -117,7 +118,7 @@ export const scanService = {
           return;
         }
 
-        resolve({ success: false, error: event.data.error ?? 'Broken link scan failed.' });
+        resolve({ success: false, error: event.data.error ?? i18n.t('serviceErrors.brokenLinkScanFailed') });
       };
 
       worker.onerror = (event) => {
@@ -157,7 +158,7 @@ export const scanService = {
     };
   },
 
-  async getCached(maxAgeHours = DEFAULT_CACHE_HOURS): Promise<Result<ScanResult | null>> {
+  async getCache(maxAgeHours = DEFAULT_CACHE_HOURS): Promise<Result<ScanCache | null>> {
     const cached = await storageService.get<ScanCache>(STORAGE_KEYS.scanCache);
     if (!cached.success) return { success: false, error: cached.error };
     if (!cached.data) return { success: true, data: null };
@@ -170,9 +171,23 @@ export const scanService = {
     return {
       success: true,
       data: {
-        ...cached.data.data.result,
-        invalidLinks: cached.data.data.result.invalidLinks.map(normalizeLinkIssue)
+        ...cached.data.data,
+        result: {
+          ...cached.data.data.result,
+          invalidLinks: cached.data.data.result.invalidLinks.map(normalizeLinkIssue)
+        }
       }
+    };
+  },
+
+  async getCached(maxAgeHours = DEFAULT_CACHE_HOURS): Promise<Result<ScanResult | null>> {
+    const cached = await this.getCache(maxAgeHours);
+    if (!cached.success) return cached;
+    if (!cached.data) return { success: true, data: null };
+
+    return {
+      success: true,
+      data: cached.data.result
     };
   },
 

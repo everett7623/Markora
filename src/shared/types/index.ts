@@ -25,6 +25,7 @@ export interface AppSettings {
   scanner: ScannerConfig;
   cacheHours: number;
   backupRetention: number;
+  autoScan: boolean;
 }
 
 export interface BookmarkStats {

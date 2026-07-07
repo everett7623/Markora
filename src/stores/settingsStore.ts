@@ -8,7 +8,8 @@ export const defaultSettings: AppSettings = {
   language: 'en',
   scanner: { timeoutMs: 15000, concurrency: 8, retryCount: 1 },
   cacheHours: DEFAULT_CACHE_HOURS,
-  backupRetention: DEFAULT_BACKUP_RETENTION
+  backupRetention: DEFAULT_BACKUP_RETENTION,
+  autoScan: false
 };
 
 interface SettingsStore {
@@ -34,7 +35,8 @@ function normalizeSettings(settings: Partial<AppSettings> | null | undefined): A
     },
     cacheHours: typeof cacheHours === 'number' && Number.isFinite(cacheHours) ? Math.max(1, Math.min(cacheHours, 168)) : defaultSettings.cacheHours,
     backupRetention:
-      typeof backupRetention === 'number' && Number.isFinite(backupRetention) ? Math.max(1, Math.min(backupRetention, 50)) : defaultSettings.backupRetention
+      typeof backupRetention === 'number' && Number.isFinite(backupRetention) ? Math.max(1, Math.min(backupRetention, 50)) : defaultSettings.backupRetention,
+    autoScan: typeof settings?.autoScan === 'boolean' ? settings.autoScan : defaultSettings.autoScan
   };
 }
 

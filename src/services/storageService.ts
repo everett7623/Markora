@@ -1,4 +1,5 @@
 import { CURRENT_SCHEMA_VERSION } from '../shared/constants/storage';
+import i18n from '../shared/i18n';
 import type { Result, StoredValue } from '../shared/types';
 
 const memoryStorage = new Map<string, StoredValue<unknown>>();
@@ -25,7 +26,7 @@ export const storageService = {
       const values = await chrome.storage.local.get(key);
       return { success: true, data: (values[key] as StoredValue<T> | undefined) ?? null };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to read local storage.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.readLocalStorage') };
     }
   },
 
@@ -40,7 +41,7 @@ export const storageService = {
       await chrome.storage.local.set({ [key]: value });
       return { success: true, data: value };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : 'Unable to write local storage.' };
+      return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.writeLocalStorage') };
     }
   }
 };

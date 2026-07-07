@@ -65,7 +65,7 @@ export default function ImportExportPage() {
     }
 
     if (preview.data.items.length === 0) {
-      setError(t('importExport.noImportItems', { defaultValue: 'No valid HTTP or HTTPS bookmarks were found in this file.' }));
+      setError(t('importExport.noImportItems'));
       setImportPreview(null);
       return;
     }
@@ -119,7 +119,7 @@ export default function ImportExportPage() {
           </div>
           <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900">
             <Import size={16} />
-            {importing ? t('importExport.parsing', { defaultValue: 'Parsing...' }) : t('importExport.chooseHtml', { defaultValue: 'Choose HTML file' })}
+            {importing ? t('importExport.parsing') : t('importExport.chooseHtml')}
             <input type="file" accept=".html,.htm,text/html" className="sr-only" onChange={(event) => void previewImportFile(event)} disabled={importing || mutating} />
           </label>
         </div>
@@ -128,18 +128,18 @@ export default function ImportExportPage() {
           <div className="mt-5 rounded-lg border bg-slate-50 p-4 dark:bg-slate-900/60">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="font-medium">{t('importExport.previewTitle', { defaultValue: 'Import preview' })}</h3>
+                <h3 className="font-medium">{t('importExport.previewTitle')}</h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  {importPreview.items.length.toLocaleString()} {t('importExport.detected', { defaultValue: 'detected' })} · {importPreview.conflicts.length.toLocaleString()}{' '}
-                  {t('importExport.conflicts', { defaultValue: 'conflicts' })}
+                  {importPreview.items.length.toLocaleString()} {t('importExport.detected')} · {importPreview.conflicts.length.toLocaleString()}{' '}
+                  {t('importExport.conflicts')}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button onClick={() => void runImport('skip')} disabled={importableCount === 0 || mutating}>
-                  {t('importExport.importNewOnly', { defaultValue: 'Import new only' })} ({importableCount})
+                  {t('importExport.importNewOnly')} ({importableCount})
                 </Button>
                 <Button variant="outline" onClick={() => void runImport('import-all')} disabled={mutating}>
-                  {t('importExport.importAll', { defaultValue: 'Import all' })}
+                  {t('importExport.importAll')}
                 </Button>
               </div>
             </div>
@@ -148,9 +148,9 @@ export default function ImportExportPage() {
               <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
                 <div className="flex items-center gap-2 font-medium">
                   <AlertTriangle size={16} />
-                  {t('importExport.conflictResolver', { defaultValue: 'Conflict resolver' })}
+                  {t('importExport.conflictResolver')}
                 </div>
-                <p className="mt-1">{t('importExport.conflictDescription', { defaultValue: 'Matching URLs can be skipped or imported as duplicates.' })}</p>
+                <p className="mt-1">{t('importExport.conflictDescription')}</p>
               </div>
             ) : null}
           </div>
