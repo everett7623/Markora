@@ -126,18 +126,23 @@ Close the clarified core, localization, and release gaps before store publicatio
 - 10,000-bookmark structural scan and pinyin search benchmarks are covered by `npm run benchmark:performance`.
 - Store listing copy, promotional SVG sources, and 1280x800 page screenshots now live under `store/`.
 - `npm run check:browsers` verifies Chrome and Edge can load the production `dist/` extension in headless mode.
+- Manifest required permissions are now limited to `alarms`, `bookmarks`, and `storage`; the unused `tabs` permission was removed after a source audit found no `chrome.tabs` usage.
+- `npm run audit:permissions` verifies the manifest permission boundary and `PRIVACY.md` permission copy.
+- Visible browser click-through steps are prepared in `docs/release/browser-clickthrough.md`; the final human-visible Chrome and Edge results still need to be recorded before store submission.
+- Full destructive replacement restore is deferred by `docs/decisions/restore-strategy.md`; current restore remains backup-protected and service-boundary scoped.
+- GitHub pre-release metadata, store submission fields, and post-beta AI guardrails are prepared in `docs/release/github-prerelease-v0.1.0.md`, `store/submission-fields.md`, and `docs/roadmap/post-beta-ai.md`.
 
 ## Next Step
 
-Reconfirm whether the required `tabs` permission can be removed before store submission, then complete visible Chrome and Edge click-through checks from `dist/`.
+Run and record the final visible Chrome and Edge click-through checks from `dist/`, then copy the prepared submission fields into the Chrome Web Store and Edge Add-ons portals when publication is approved.
 
 ## After E2E
 
-1. Review the `tabs` permission and remove it if no current code path requires it.
-2. Complete visible Chrome and Edge click-through checks from `dist/`.
-3. Decide whether full destructive replacement restore is needed before `1.0.0`.
-4. Prepare GitHub pre-release metadata and store portal submission fields.
-5. Continue post-beta AI/local recommendation features only after release gates are closed.
+1. Run the visible Chrome and Edge checklist in `docs/release/browser-clickthrough.md`.
+2. Confirm the public privacy policy URL and support URL in the store portals.
+3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.1.0.md`.
+4. Upload the verified release ZIP only after the visible browser pass is recorded.
+5. Start post-beta AI/local recommendation work only after release gates are closed.
 
 ## Verification Required Before Commit
 
@@ -145,6 +150,7 @@ Reconfirm whether the required `tabs` permission can be removed before store sub
 - `npm run lint`
 - `npm run typecheck`
 - `npm run test`
+- `npm run audit:permissions`
 - `npm run build`
 
 Quality gates must pass before marking the next phase complete.
@@ -179,19 +185,20 @@ Latest verification:
 - On 2026-07-08, after automatic daily scan and legacy planning cleanup, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 12 files and 49 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 - On 2026-07-08, after backup retention, locale parity, multi-format import, Manager batch tags/collapsible folders, and Dashboard quick actions/recommendations/pinyin search, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 15 files and 60 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 - On 2026-07-08, after Chinese route smoke, individual empty-folder deletion, 10,000-bookmark benchmarks, store assets/screenshots, and Chrome/Edge headless load checks, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 62 tests, `npm run benchmark:performance` passed, `npm run build:extension` passed, `npm run check:browsers` passed, and Playwright E2E passed with 8 tests.
+- On 2026-07-08, after release permission tightening, browser click-through preparation, restore strategy decision, pre-release/store metadata, and post-beta AI guardrails, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 62 tests, `npm run benchmark:performance` passed, `npm run build:extension` passed with permission audit, `npm run check:browsers` passed, Playwright E2E passed with 8 tests, and `npm run package:release` regenerated `release/markora-v0.1.0.zip`.
 
 ## Notes
 
 - Do not reuse stale environment assumptions. The Windows 11 environment has been verified with Git, Node.js v24.16.0, npm v11.13.0, build, lint, and test passing.
 - Do not automatically push.
 - Update both `SESSION.md` and `PROGRESS.md` after completing each development phase.
-- Current restore flow re-applies the selected backup snapshot and creates a safety backup first; destructive full replacement should be designed separately if required.
+- Current restore flow re-applies the selected backup snapshot and creates a safety backup first; destructive full replacement is deferred by `docs/decisions/restore-strategy.md`.
 - Use `npm run test:e2e` for Playwright; direct `playwright test` can leave the local web server hanging on this Windows setup.
 
 ## Design Notes / Pending Decisions
 
 - Backup restore currently re-applies a selected snapshot and creates a safety backup first.
-- Full destructive replacement restore is intentionally not implemented yet.
+- Full destructive replacement restore is intentionally deferred to post-beta work.
 - HTML import now recreates nested folders; folder conflict behavior currently creates/imports new folders for the import batch.
 - Folder merge keeps the first duplicate folder as the target, moves all source children, preserves URL conflicts, and creates a backup first.
 - Advanced drag/drop ordering now supports bookmark ordering before a target row; folder ordering polish can be added after E2E coverage.

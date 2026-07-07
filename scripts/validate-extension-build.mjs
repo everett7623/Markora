@@ -13,6 +13,20 @@ if (manifest.manifest_version !== 3) {
   throw new Error('Built extension must use Manifest V3.');
 }
 
+const expectedPermissions = ['alarms', 'bookmarks', 'storage'];
+const permissions = manifest.permissions ?? [];
+if (
+  permissions.length !== expectedPermissions.length ||
+  expectedPermissions.some((permission) => !permissions.includes(permission))
+) {
+  throw new Error(`Built manifest permissions must be exactly: ${expectedPermissions.join(', ')}.`);
+}
+
+const optionalHostPermissions = manifest.optional_host_permissions ?? [];
+if (optionalHostPermissions.length !== 1 || optionalHostPermissions[0] !== '<all_urls>') {
+  throw new Error('Built manifest optional host permissions must be limited to <all_urls>.');
+}
+
 const requiredIconSizes = [16, 48, 128];
 const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 

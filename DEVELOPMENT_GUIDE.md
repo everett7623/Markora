@@ -72,6 +72,7 @@ src/
 - Broken-link checking may use optional host permissions.
 - The extension must not upload bookmark data.
 - Manual extension testing should load `dist/` only.
+- Run `npm run audit:permissions` after manifest or permission-copy changes.
 
 ## Testing Strategy
 
@@ -96,6 +97,7 @@ affected:
 
 ```bash
 npm run build:extension
+npm run audit:permissions
 npm run package:release
 ```
 
@@ -119,10 +121,10 @@ npm run test:e2e
 The current active stream is release readiness plus comprehensive improvement.
 The near-term priorities are:
 
-1. Reconfirm whether the required `tabs` permission can be removed before store submission.
-2. Complete final visible Chrome and Edge click-through checks from `dist/`.
-3. Decide whether full destructive replacement restore is needed before `1.0.0`.
-4. Prepare GitHub pre-release metadata and store portal submission fields.
-5. Continue post-beta AI/local recommendation features only after release gates are closed.
+1. Run and record final visible Chrome and Edge click-through checks from `dist/`.
+2. Confirm the public privacy policy URL and copy the prepared submission fields into the store portals.
+3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.1.0.md`.
+4. Keep destructive full replacement restore deferred unless a separate safety design is approved.
+5. Start post-beta AI/local recommendation work only after release gates are closed.
 
 Always re-check `SESSION.md` and `PROGRESS.md` before choosing the next task.

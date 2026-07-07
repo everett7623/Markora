@@ -723,14 +723,94 @@ Repository License
 
 Status:
 
-- README declares MIT
-- LICENSE file is missing
+- Implemented
 
 Acceptance:
 
-- Add an MIT `LICENSE` file
-- Confirm copyright holder and year
+- MIT `LICENSE` file is present
 - README license claim matches the repository file
+
+---
+
+TASK-808
+
+Permission Audit
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- Manifest required permissions are limited to `alarms`, `bookmarks`, and `storage`
+- `tabs` permission is removed after confirming no `chrome.tabs` usage
+- `PRIVACY.md` documents every required permission and optional `<all_urls>` host access
+- `npm run audit:permissions` enforces the release permission boundary
+
+---
+
+TASK-809
+
+Visible Browser Click-Through Preparation
+
+Status:
+
+- Checklist prepared
+- Final human-visible Chrome and Edge pass remains required before store submission
+
+Acceptance:
+
+- `docs/release/browser-clickthrough.md` lists required visible Chrome and Edge checks
+- `npm run check:browsers` continues to verify headless `dist/` loading
+- Manual results are recorded with browser versions before portal submission
+
+---
+
+TASK-810
+
+Restore Strategy Decision
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- `docs/decisions/restore-strategy.md` documents the pre-`1.0.0` decision
+- Full destructive replacement restore is deferred to post-beta work
+- Current restore behavior remains backup-protected and service-boundary scoped
+
+---
+
+TASK-811
+
+Pre-Release And Store Submission Metadata
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- GitHub pre-release draft is prepared in `docs/release/github-prerelease-v0.1.0.md`
+- Store portal field worksheet is prepared in `store/submission-fields.md`
+- Required permission justifications and beta notes are ready to copy into portals
+
+---
+
+TASK-812
+
+Post-Beta AI Guardrail
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- `docs/roadmap/post-beta-ai.md` defines release gates before recommendation or AI work starts
+- Local-first privacy guardrails are documented
+- Candidate post-beta recommendation features are scoped without changing the `0.1.0` release
 
 ---
 

@@ -28,7 +28,6 @@ This data remains on the user's device unless the user explicitly exports a file
 - `alarms`: Schedules the optional daily local bookmark structure scan when the user enables automatic scanning in Settings.
 - `bookmarks`: Reads and updates the user's bookmark tree when the user uses management features.
 - `storage`: Stores settings, local tags, scan caches, search history, recent activity, and backups.
-- `tabs`: Reserved by the extension specification for browser integration. The extension does not read browsing history, page content, or tab URLs for analytics or tracking.
 - Optional `<all_urls>` host access: Requested only when the user starts broken-link checking. It is used to send direct link-validation requests and is not used to collect page content.
 
 ## Network Requests

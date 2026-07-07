@@ -17,6 +17,22 @@ if (manifest.manifest_version !== 3 || typeof manifest.version !== 'string') {
   process.exit(1);
 }
 
+const expectedPermissions = ['alarms', 'bookmarks', 'storage'];
+const permissions = manifest.permissions ?? [];
+if (
+  permissions.length !== expectedPermissions.length ||
+  expectedPermissions.some((permission) => !permissions.includes(permission))
+) {
+  console.error(`The built manifest permissions must be exactly: ${expectedPermissions.join(', ')}.`);
+  process.exit(1);
+}
+
+const optionalHostPermissions = manifest.optional_host_permissions ?? [];
+if (optionalHostPermissions.length !== 1 || optionalHostPermissions[0] !== '<all_urls>') {
+  console.error('The built manifest optional host permissions must be limited to <all_urls>.');
+  process.exit(1);
+}
+
 const requiredIconSizes = [16, 48, 128];
 for (const iconSet of [manifest.icons, manifest.action?.default_icon]) {
   if (!iconSet || requiredIconSizes.some((size) => !existsSync(resolve(distDir, iconSet[String(size)] ?? '')))) {

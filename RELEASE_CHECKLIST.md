@@ -10,6 +10,7 @@
 - [x] `npm run test:e2e`
 - [x] `npm run build`
 - [x] `npm run validate:extension`
+- [x] `npm run audit:permissions`
 - [x] `npm run check:browsers`
 - [x] `npm run capture:store-screenshots`
 - [x] `npm run package:release`
@@ -29,7 +30,8 @@
 - [x] No popup page is configured.
 - [x] Options page opens in a full browser tab.
 - [x] Required permissions have a documented user-facing purpose.
-- [ ] Reconfirm whether the required `tabs` permission remains necessary before store submission.
+- [x] `tabs` permission was removed after source audit confirmed no `chrome.tabs` usage.
+- [x] `npm run audit:permissions` verifies manifest and privacy-copy alignment.
 - [x] `<all_urls>` remains optional and is requested only for broken-link scanning.
 
 ## Privacy And Security
@@ -43,6 +45,7 @@
 ## Manual Extension Checks
 
 - [x] Chrome and Edge accept `dist/` in headless extension load checks.
+- [x] Visible Chrome and Edge click-through checklist is prepared in `docs/release/browser-clickthrough.md`.
 - [ ] Load `dist/` as an unpacked extension without manifest warnings in visible Chrome and Edge.
 - [ ] Clicking the extension action opens the full-screen options page.
 - [ ] Dashboard, Scanner, Manager, Import / Export, and Settings routes open.
@@ -53,6 +56,8 @@
 ## Store Submission
 
 - [x] Store description is current.
+- [x] Store portal submission field worksheet is prepared in `store/submission-fields.md`.
+- [x] GitHub pre-release draft metadata is prepared in `docs/release/github-prerelease-v0.1.0.md`.
 - [ ] Privacy policy URL is publicly accessible.
 - [x] 1280x800 or 640x400 screenshots are prepared.
 - [x] 440x280 promotional tile is prepared if required.

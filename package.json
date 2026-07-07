@@ -11,8 +11,9 @@
     "benchmark:performance": "vitest run src/shared/utils/performance.test.ts",
     "test:e2e": "node scripts/run-e2e.mjs",
     "build": "vite build",
-    "build:extension": "npm run build && npm run validate:extension",
+    "build:extension": "npm run build && npm run validate:extension && npm run audit:permissions",
     "validate:extension": "node scripts/validate-extension-build.mjs",
+    "audit:permissions": "node scripts/audit-permissions.mjs",
     "check:browsers": "node scripts/check-browsers.mjs",
     "capture:store-screenshots": "node scripts/capture-store-screenshots.mjs",
     "package:release": "node scripts/package-release.mjs"

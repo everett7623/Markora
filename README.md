@@ -41,7 +41,7 @@ Browser bookmark managers become difficult to use once a collection grows into t
 | Settings | Theme, language, scanner, cache, automatic scan, backup retention, backup management |
 | Privacy | Local storage and direct URL checks only; no developer-controlled server |
 
-The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include visible browser click-through checks, `tabs` permission review, full destructive restore decisions, and final store portal submission.
+The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include final visible browser click-through checks, store portal submission, and post-beta local recommendation work. Full destructive replacement restore is documented as deferred.
 
 ## Link Scanner
 
@@ -107,6 +107,7 @@ The `v0.1.0` beta baseline currently passes:
 - 62 Vitest unit and component tests.
 - 8 Playwright end-to-end flows.
 - Production extension validation.
+- Permission audit for the release manifest and privacy copy.
 - Chrome and Edge headless `dist/` load checks.
 - Release ZIP packaging.
 
@@ -143,6 +144,10 @@ Markora does not collect personal data or upload bookmarks. Settings, tags, hist
 - [Roadmap and tasks](TASKS.md)
 - [Current progress](PROGRESS.md)
 - [Release checklist](RELEASE_CHECKLIST.md)
+- [Browser click-through checklist](docs/release/browser-clickthrough.md)
+- [Restore strategy decision](docs/decisions/restore-strategy.md)
+- [Store submission fields](store/submission-fields.md)
+- [Post-beta AI roadmap](docs/roadmap/post-beta-ai.md)
 - [Version policy](VERSIONING.md)
 - [Changelog](CHANGELOG.md)
 - [Code review rules](code_review.md)
