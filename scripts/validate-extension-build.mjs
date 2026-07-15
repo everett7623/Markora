@@ -3,9 +3,19 @@ import { resolve } from 'node:path';
 
 const distDir = resolve(process.cwd(), 'dist');
 const manifestPath = resolve(distDir, 'manifest.json');
+const sourceLicensePath = resolve(process.cwd(), 'LICENSE');
+const builtLicensePath = resolve(distDir, 'LICENSE');
 
 if (!existsSync(manifestPath)) {
   throw new Error('Missing dist/manifest.json. Run npm run build first.');
+}
+
+if (!existsSync(sourceLicensePath) || !existsSync(builtLicensePath)) {
+  throw new Error('Production build must include the repository LICENSE file.');
+}
+
+if (!readFileSync(sourceLicensePath).equals(readFileSync(builtLicensePath))) {
+  throw new Error('Production build LICENSE does not match the repository LICENSE.');
 }
 
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));

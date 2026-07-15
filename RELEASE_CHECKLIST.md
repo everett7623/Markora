@@ -64,6 +64,7 @@
 - [x] 128x128 store icon is prepared.
 - [x] Support URL and contact information are current.
 - [x] Release ZIP contains only production extension files.
+- [x] Release ZIP includes the repository GPL license text.
 - [x] Repository license file is present and matches the README.
 - [x] Release is marked as beta or pre-release while the version is below `1.0.0`.
 

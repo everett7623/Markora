@@ -177,6 +177,7 @@ Additional verification in this Codex session on 2026-07-08:
 - On 2026-07-15, the GitHub repository was renamed from `everett7623/Markora` to `everett7623/FavGrove`; repository documentation, store URLs, and the local `origin` now use the FavGrove URL.
 - On 2026-07-15, current project package metadata, README attribution, MIT copyright, and repository-local Git author were normalized to `everettlabs`; the GitHub account path remains `everett7623` because it is the repository owner URL. The extension manifest omits its email-only author object rather than inventing an address.
 - On 2026-07-15, the local workspace was relocated from `D:\EvenFrank\Workspace\Plugins\Google\markora` to `D:\EvenFrank\Workspace\Plugins\Google\FavGrove`; Git state, uncommitted changes, and the FavGrove remote were preserved.
+- On 2026-07-15, the FavGrove `0.2.0` development line and future releases were relicensed under `GPL-3.0-or-later`; production builds and release archives include the matching license text, while historical MIT grants, existing release artifacts, and third-party dependency licenses remain unchanged.
 
 ## Release Decision
 

@@ -727,8 +727,11 @@ Status:
 
 Acceptance:
 
-- MIT `LICENSE` file is present
+- GNU GPL version 3 `LICENSE` file is present
+- Project metadata declares `GPL-3.0-or-later`
 - README license claim matches the repository file
+- Production extension builds and release archives include the matching `LICENSE`
+- Historical grants and third-party dependency licenses are not rewritten
 
 ---
 

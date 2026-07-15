@@ -27,6 +27,10 @@ FavGrove v0.2.0 is the rebranded beta of the local-first Manifest V3 bookmark wo
 
 FavGrove stores bookmark metadata, settings, scan cache, search history, tags, and backups locally in browser extension storage. It does not include analytics, telemetry, account sync, cloud processing, or developer-operated bookmark uploads.
 
+## License
+
+FavGrove v0.2.0 is distributed under `GPL-3.0-or-later`. The release archive includes the matching license text, and the corresponding source is available from the tagged repository version. Previously distributed versions retain their existing license grants.
+
 ## Verification Before Publishing
 
 - `npm run lint`

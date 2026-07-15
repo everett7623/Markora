@@ -11,7 +11,7 @@
   [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4)](manifest.json)
   [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6)](tsconfig.json)
   [![Tests](https://img.shields.io/badge/tests-66%20unit%20%2B%208%20E2E-success)](#quality)
-  [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+  [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 </div>
 
 > [!IMPORTANT]
@@ -154,7 +154,7 @@ FavGrove does not collect personal data or upload bookmarks. Settings, tags, his
 
 ## License
 
-[MIT](LICENSE) © 2026 everettlabs.
+[GNU GPL v3 or later](LICENSE) © 2026 everettlabs.
 
 ## Links
 
