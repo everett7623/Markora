@@ -102,12 +102,13 @@ Last updated: 2026-07-15
 - GitHub pre-release metadata is prepared in `docs/release/github-prerelease-v0.2.0.md`.
 - Store portal submission fields are prepared in `store/submission-fields.md`.
 - Post-beta AI and local recommendation guardrails are documented in `docs/roadmap/post-beta-ai.md`.
+- `TASK-705` and `.codex/tasks/ai-analysis-integration-2026-07-15.md` define the first model-backed milestone as opt-in, read-only bookmark-library analysis with explicit provider, privacy, schema, cancellation, and large-library acceptance gates.
 
 ## Not Completed
 
 - Visible Chrome and Edge click-through checks from `dist/` remain open.
 - Store portal submission fields and GitHub pre-release metadata are prepared locally but not finalized in the portals.
-- Post-beta AI features are not complete.
+- Post-beta AI analysis is planned but not implemented; no provider, model, credential, endpoint, permission, or data transfer is configured.
 - Full destructive replacement restore remains a deferred post-beta feature and is not part of the current release path.
 
 ## Verification
@@ -200,7 +201,7 @@ Required standards:
 2. Confirm public privacy policy and support URLs in the store portals.
 3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.2.0.md`.
 4. Upload the verified release ZIP only after the visible browser pass is recorded.
-5. Continue post-beta AI/local recommendation features only after release gates are closed.
+5. After release gates close, begin `TASK-705` with the provider/data-boundary decision and local preprocessing contract.
 
 ## Design Notes / Pending Decisions
 

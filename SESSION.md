@@ -136,6 +136,7 @@ Complete the FavGrove `0.2.0` beta migration and close the remaining release gap
 - Manually dismissed link URLs are now persisted locally and filtered from future scans and cached results.
 - Settings now manages ignored link-check URLs with local search, per-URL re-enable, and confirmation-protected clear-all actions.
 - Link issue rows now support an in-place single-link recheck using the current scanner settings; successful checks remove the issue, while failures refresh its status and classification without adding an ignore rule.
+- The first post-beta AI milestone is now specified as optional, read-only bookmark-library analysis in `TASK-705` and `.codex/tasks/ai-analysis-integration-2026-07-15.md`. No provider, model, credential, endpoint, permission, or data transfer was added during planning.
 
 ## Next Step
 
@@ -147,7 +148,7 @@ Run and record the final visible Chrome and Edge click-through checks from `dist
 2. Confirm the public privacy policy URL and support URL in the store portals.
 3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.2.0.md`.
 4. Upload the verified release ZIP only after the visible browser pass is recorded.
-5. Start post-beta AI/local recommendation work only after release gates are closed.
+5. After release gates close, implement the provider/data-boundary decision and local preprocessing phase for `TASK-705`.
 
 ## Verification Required Before Commit
 

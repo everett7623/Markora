@@ -125,6 +125,6 @@ The near-term priorities are:
 2. Confirm the public privacy policy URL and copy the prepared submission fields into the store portals.
 3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.2.0.md`.
 4. Keep destructive full replacement restore deferred unless a separate safety design is approved.
-5. Start post-beta AI/local recommendation work only after release gates are closed.
+5. After release gates close, start the read-only AI analysis milestone defined by `TASK-705` and `.codex/tasks/ai-analysis-integration-2026-07-15.md`.
 
 Always re-check `SESSION.md` and `PROGRESS.md` before choosing the next task.

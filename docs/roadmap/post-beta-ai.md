@@ -1,4 +1,4 @@
-# Post-Beta Local Recommendation Roadmap
+# Post-Beta AI Analysis And Local Recommendation Roadmap
 
 Post-beta AI and recommendation work starts only after the release gates in `RELEASE_CHECKLIST.md` are closed.
 
@@ -25,6 +25,27 @@ Post-beta AI and recommendation work starts only after the release gates in `REL
 - Tag suggestions derived from local bookmark metadata.
 - Search ranking improvements based on local usage and recency.
 - Optional future model integration only if privacy, consent, and data-boundary requirements are explicitly approved.
+
+## First AI Milestone
+
+The first model-backed feature is `TASK-705 AI Bookmark Library Analysis`.
+Its implementation specification is recorded in
+`.codex/tasks/ai-analysis-integration-2026-07-15.md`.
+
+The milestone is intentionally read-only. It analyzes a user-selected scope,
+returns provider-neutral structured findings, and does not directly delete,
+move, merge, or tag bookmarks.
+
+## Required Sequence
+
+1. Close the beta release gates.
+2. Approve the provider, model, execution mode, data boundary, and credential strategy.
+3. Define a versioned request/response schema and local preprocessing contract.
+4. Implement opt-in scope preview, URL redaction, token/cost estimation, and cancellation.
+5. Add the provider-neutral service/background boundary and structured result UI.
+6. Complete privacy, store disclosure, unit, performance, and E2E validation before release.
+
+No provider SDK or endpoint should be added before steps 1 through 3 are complete.
 
 ## Validation
 

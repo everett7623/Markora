@@ -629,6 +629,27 @@ TASK-704
 
 Smart Search
 
+TASK-705
+
+AI Bookmark Library Analysis
+
+Status:
+
+- Planned; implementation has not started
+- First model-backed milestone after the release gates are closed
+- Detailed scope: `.codex/tasks/ai-analysis-integration-2026-07-15.md`
+
+Acceptance:
+
+- AI analysis is disabled by default and starts only after explicit scope preview and confirmation
+- The first milestone is read-only and cannot directly mutate bookmarks
+- Local preprocessing minimizes and redacts data before an approved remote request
+- Provider/model selection, credential handling, retention, cost, and host permissions are approved before implementation
+- Provider calls stay behind service/background boundaries and return provider-neutral structured results
+- Large-library analysis supports cancellation, progress, bounded batches, and at least 10,000 bookmarks
+- Invalid or malicious model output cannot trigger bookmark operations
+- Unit, performance, E2E, privacy, store disclosure, and release-note requirements are complete before shipping
+
 ---
 
 # P8 Release
