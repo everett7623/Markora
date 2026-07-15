@@ -2,11 +2,14 @@ import { createReadStream, existsSync, mkdirSync } from 'node:fs';
 import { createServer } from 'node:http';
 import path from 'node:path';
 import { chromium, expect } from '@playwright/test';
+import { findChromiumExecutable } from './browser-paths.mjs';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
 const screenshotDir = path.join(root, 'store', 'screenshots');
 mkdirSync(screenshotDir, { recursive: true });
+
+const executablePath = findChromiumExecutable();
 
 const mimeTypes = {
   '.css': 'text/css',
@@ -34,7 +37,7 @@ const server = createServer((request, response) => {
 
 await new Promise((resolve) => server.listen(4173, '127.0.0.1', resolve));
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(executablePath ? { executablePath } : {});
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 
 async function screenshot(name) {
@@ -59,8 +62,8 @@ try {
   await expect(page.getByText('100%')).toBeVisible();
   await screenshot('scanner');
 
-  await page.getByRole('link', { name: 'Markora' }).click();
-  await expect(page.getByRole('heading', { name: 'Markora' })).toBeVisible();
+  await page.getByRole('link', { name: 'FavGrove' }).click();
+  await expect(page.getByRole('heading', { name: 'FavGrove' })).toBeVisible();
   await screenshot('manager');
 
   await page.getByRole('link', { name: 'Import / Export' }).click();

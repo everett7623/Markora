@@ -1,8 +1,8 @@
 # Privacy Policy
 
-Last updated: July 8, 2026
+Last updated: July 15, 2026
 
-Markora is a local-first Chrome and Edge extension for organizing browser bookmarks.
+FavGrove is a local-first Chrome and Edge extension for organizing browser bookmarks.
 
 ## Data Collection
 
@@ -50,4 +50,4 @@ Material privacy changes will be documented in this file and reflected in the ex
 
 Project repository:
 
-https://github.com/everett7623/Markora
+https://github.com/everett7623/FavGrove

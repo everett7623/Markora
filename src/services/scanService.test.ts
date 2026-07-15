@@ -66,4 +66,41 @@ describe('scanService', () => {
     expect(result.success).toBe(true);
     expect(fetchMock).toHaveBeenCalledOnce();
   });
+
+  it('persists, restores, and clears ignored link URLs', async () => {
+    await scanService.clearIgnoredLinkUrls();
+
+    const ignored = await scanService.ignoreLinkUrl('https://working.example.com');
+    expect(ignored.success && ignored.data.has('https://working.example.com')).toBe(true);
+
+    const restored = await scanService.restoreIgnoredLinkUrl('https://working.example.com');
+    expect(restored.success && restored.data.size).toBe(0);
+
+    await scanService.ignoreLinkUrl('https://one.example.com');
+    await scanService.ignoreLinkUrl('https://two.example.com');
+    const cleared = await scanService.clearIgnoredLinkUrls();
+    expect(cleared.success && cleared.data.size).toBe(0);
+  });
+
+  it('rechecks one link and removes successful responses from the issue result', async () => {
+    vi.spyOn(scanService, 'requestLinkCheck').mockResolvedValue({ success: true, data: { status: 200, statusText: 'OK' } });
+
+    const result = await scanService.recheckLink(
+      bookmarks[0].children?.[1] as BookmarkNode,
+      { timeoutMs: 5000, concurrency: 2, retryCount: 0 }
+    );
+
+    expect(result).toEqual({ success: true, data: null });
+  });
+
+  it('rechecks one link and returns a conservative HTTP issue', async () => {
+    vi.spyOn(scanService, 'requestLinkCheck').mockResolvedValue({ success: true, data: { status: 404, statusText: 'Not Found' } });
+
+    const result = await scanService.recheckLink(
+      bookmarks[0].children?.[1] as BookmarkNode,
+      { timeoutMs: 5000, concurrency: 2, retryCount: 0 }
+    );
+
+    expect(result.success && result.data).toMatchObject({ status: 404, kind: 'unreachable', reason: 'http-error' });
+  });
 });

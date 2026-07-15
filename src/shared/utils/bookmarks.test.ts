@@ -84,13 +84,13 @@ describe('bookmark utilities', () => {
       {
         id: 'root',
         title: 'Root',
-        children: [{ id: 'cn', title: '书签星图', url: 'https://markora.test', parentId: 'root' }]
+        children: [{ id: 'cn', title: '书签整理', url: 'https://favgrove.test', parentId: 'root' }]
       }
     ];
 
     expect(searchBookmarks(chineseTree, 'shu qian')).toHaveLength(1);
-    expect(searchBookmarks(chineseTree, 'shuqianxingtu')).toHaveLength(1);
-    expect(searchBookmarks(chineseTree, 'sqxt')).toHaveLength(1);
+    expect(searchBookmarks(chineseTree, 'shuqianzhengli')).toHaveLength(1);
+    expect(searchBookmarks(chineseTree, 'sqzl')).toHaveLength(1);
   });
 
   it('removes bookmark nodes recursively', () => {

@@ -1,5 +1,5 @@
 
-# Markora - Bookmark Atlas
+# FavGrove - Bookmark Manager
 
 Roadmap
 
@@ -424,7 +424,7 @@ Status:
 
 Acceptance:
 
-- Parse Markora JSON exports in a Web Worker
+- Parse FavGrove JSON exports in a Web Worker
 - Validate schema, URLs, titles, and folder paths
 - Show the existing import preview and conflict resolver
 - Create a backup before writing bookmarks
@@ -459,7 +459,7 @@ Status:
 
 Acceptance:
 
-- Parse Markora TXT exports in a Web Worker
+- Parse FavGrove TXT exports in a Web Worker
 - Validate HTTP and HTTPS URLs
 - Preserve titles and folder paths when present
 - Use the existing import preview, conflict resolver, and backup flow
@@ -706,7 +706,7 @@ Release Versioning
 Status:
 
 - Version policy documented in `VERSIONING.md`
-- Current development version is `0.1.0`
+- Current development version is `0.2.0`
 
 Acceptance:
 
@@ -792,7 +792,7 @@ Status:
 
 Acceptance:
 
-- GitHub pre-release draft is prepared in `docs/release/github-prerelease-v0.1.0.md`
+- GitHub pre-release draft is prepared in `docs/release/github-prerelease-v0.2.0.md`
 - Store portal field worksheet is prepared in `store/submission-fields.md`
 - Required permission justifications and beta notes are ready to copy into portals
 
@@ -810,7 +810,27 @@ Acceptance:
 
 - `docs/roadmap/post-beta-ai.md` defines release gates before recommendation or AI work starts
 - Local-first privacy guardrails are documented
-- Candidate post-beta recommendation features are scoped without changing the `0.1.0` release
+- Candidate post-beta recommendation features are scoped without rewriting the historical `0.1.0` release
+
+---
+
+TASK-813
+
+FavGrove Brand Migration
+
+Status:
+
+- Implemented for the `0.2.0` beta candidate
+- Remote GitHub repository rename remains a separate external operation
+
+Acceptance:
+
+- User-facing Markora and Bookmark Atlas branding is replaced with FavGrove
+- English product name is `FavGrove - Bookmark Manager`
+- Chinese product name is `FavGrove 书签管理器`
+- Package, manifest, UI footer, release archive, store copy, and promotional assets use `0.2.0` FavGrove metadata
+- Browser storage keys, import schemas, and stable background identifiers remain compatible
+- The published `v0.1.0` Markora release remains historical and unchanged
 
 ---
 

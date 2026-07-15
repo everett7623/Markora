@@ -4,7 +4,7 @@ Date: 2026-07-08
 
 ## Decision
 
-Markora will not add a destructive full bookmark-tree replacement restore mode before the `1.0.0` stable release.
+FavGrove will not add a destructive full bookmark-tree replacement restore mode before the `1.0.0` stable release.
 
 The current restore behavior remains the release path:
 
@@ -22,7 +22,7 @@ The current restore behavior remains the release path:
 
 ## Release Impact
 
-This decision closes the pre-`1.0.0` release question. Full destructive replacement restore is deferred to post-beta planning and is not a blocker for the `0.1.0` beta or the first stable release candidate unless product requirements change.
+This decision closes the pre-`1.0.0` release question. Full destructive replacement restore is deferred to post-beta planning and is not a blocker for the current beta or the first stable release candidate unless product requirements change.
 
 ## Future Acceptance Criteria
 

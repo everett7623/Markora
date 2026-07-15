@@ -8,7 +8,7 @@ import './shared/i18n';
 describe('App', () => {
   it('renders the full-screen foundation layout', async () => {
     render(<App />);
-    expect(screen.getAllByText('Markora').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('FavGrove').length).toBeGreaterThan(0);
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
     expect(screen.getByText('All bookmark data stays in your browser.')).toBeInTheDocument();
   });

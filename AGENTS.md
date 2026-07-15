@@ -1,22 +1,22 @@
-# Markora Codex Guide
+# FavGrove Codex Guide
 
-This file is the primary handoff document for Codex sessions working on Markora.
+This file is the primary handoff document for Codex sessions working on FavGrove.
 Read it before editing code, then check `SESSION.md`, `PROGRESS.md`, and any
 task-specific design notes.
 
 ## Project Snapshot
 
-- Product: Markora - Bookmark Atlas.
+- Product: FavGrove - Bookmark Manager.
 - Type: Chrome and Edge extension.
 - Architecture: Manifest V3 full-screen options page, no popup.
-- Current release line: `0.1.0` beta baseline.
-- Repository: `https://github.com/everett7623/Markora`.
+- Current release line: `0.2.0` beta candidate; `0.1.0` is the historical Markora beta.
+- Repository: `https://github.com/everett7623/FavGrove`.
 - Local app data policy: bookmark data stays in the browser. Do not add analytics,
   telemetry, cloud sync, or remote bookmark uploads unless explicitly requested.
 
 ## Current Priorities
 
-1. Keep the verified `0.1.0` beta baseline healthy.
+1. Keep the verified `0.1.0` baseline and the current `0.2.0` FavGrove beta candidate healthy.
 2. Close release-readiness gaps recorded in `PROGRESS.md` and `SESSION.md`.
 3. Continue the active roadmap recorded in `SESSION.md`, `PROGRESS.md`, and
    `TASKS.md`.

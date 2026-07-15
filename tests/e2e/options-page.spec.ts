@@ -11,8 +11,8 @@ test('renders all foundation navigation routes', async ({ page }) => {
   await page.getByRole('link', { name: 'Scanner' }).click();
   await expect(page.getByRole('heading', { name: 'Scanner' })).toBeVisible();
 
-  await page.getByRole('link', { name: 'Markora' }).click();
-  await expect(page.getByRole('heading', { name: 'Markora' })).toBeVisible();
+  await page.getByRole('link', { name: 'FavGrove' }).click();
+  await expect(page.getByRole('heading', { name: 'FavGrove' })).toBeVisible();
 
   await page.getByRole('link', { name: 'Import / Export' }).click();
   await expect(page.getByRole('heading', { name: 'Import / Export' })).toBeVisible();
@@ -26,7 +26,7 @@ test('renders all foundation navigation routes', async ({ page }) => {
 
 test('renders manager controls for search, tags, move, undo, and delete', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Markora' }).click();
+  await page.getByRole('link', { name: 'FavGrove' }).click();
 
   await expect(page.getByRole('combobox', { name: 'Filter by tag' })).toBeVisible();
   await expect(page.getByRole('combobox', { name: 'Sort bookmarks' })).toBeVisible();
@@ -90,7 +90,7 @@ test('runs the scanner and renders structural results', async ({ page }) => {
   await expect(emptyFolderPanel.getByText('No results')).toBeVisible();
 });
 
-test('separates broken links from network or proxy failures in the detail workflow', async ({ page }) => {
+test('keeps ambiguous HTTP and proxy failures in the manual review workflow', async ({ page }) => {
   await page.route(/https:\/\/github\.com.*/, async (route) => {
     await route.fulfill({ status: 404, body: 'Not found' });
   });
@@ -105,27 +105,24 @@ test('separates broken links from network or proxy failures in the detail workfl
   await page.getByRole('link', { name: 'Scanner' }).click();
   await page.getByRole('button', { name: 'Run scan' }).click();
 
-  await expect(page.getByText(/2 confirmed broken, 1 could not be verified/)).toBeVisible();
+  await expect(page.getByText(/0 confirmed broken, 3 could not be verified/)).toBeVisible();
   await page.getByRole('link', { name: 'Review all 3 link issues' }).click();
 
   await expect(page.getByRole('heading', { name: 'Link issue review' })).toBeVisible();
   await expect(page.getByText(/browser\/system network and proxy configuration/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Confirmed broken (2)' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Could not verify (1)' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Confirmed broken (0)' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Could not verify (3)' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Select this page' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Check selected (0)' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Could not verify (1)' }).click();
+  await page.getByRole('button', { name: 'Could not verify (3)' }).click();
   await expect(page.getByText('Network, proxy, DNS, TLS, or regional access failure')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Edit URL' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Delete', exact: true })).toBeVisible();
-
-  await page.getByRole('button', { name: 'Edit URL' }).click();
-  const editUrlDialog = page.getByRole('dialog', { name: 'Edit URL' });
-  await expect(editUrlDialog).toBeVisible();
-  await editUrlDialog.getByRole('textbox').fill('https://react.dev/learn');
-  await editUrlDialog.getByRole('button', { name: 'Confirm' }).click();
-  await expect(page.getByText('No link issues in this category.')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Check again' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Edit URL' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Delete', exact: true }).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Works for me' }).first().click();
+  await expect(page.getByRole('button', { name: 'Could not verify (2)' })).toBeVisible();
 });
 
 test('cleans duplicate bookmarks and persists the refreshed scan result', async ({ page }) => {
@@ -171,7 +168,7 @@ test('previews an HTML import, resolves conflicts, and imports new bookmarks', a
   await page.getByRole('button', { name: 'Import new only (1)' }).click();
   await expect(page.getByRole('heading', { name: 'Import preview' })).toBeHidden();
 
-  await page.getByRole('link', { name: 'Markora' }).click();
+  await page.getByRole('link', { name: 'FavGrove' }).click();
   await expect(page.getByText('E2E Imported Bookmark')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Imported E2E', exact: true })).toBeVisible();
   await expect(
@@ -181,7 +178,7 @@ test('previews an HTML import, resolves conflicts, and imports new bookmarks', a
 
 test('renames, tags, moves, deletes, and restores a bookmark', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: 'Markora' }).click();
+  await page.getByRole('link', { name: 'FavGrove' }).click();
 
   await page.getByRole('button', { name: 'Rename GitHub', exact: true }).click();
   const renameDialog = page.getByRole('dialog', { name: 'Rename bookmark' });

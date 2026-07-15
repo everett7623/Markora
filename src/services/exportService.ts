@@ -45,7 +45,7 @@ function toOpml(bookmarks: BookmarkNode[]): string {
   const outlines = flattenBookmarks(bookmarks)
     .map((bookmark) => `    <outline text="${escapeXml(bookmark.title || 'Untitled')}" type="link" url="${escapeXml(bookmark.url)}" />`)
     .join('\n');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<opml version="2.0">\n  <head>\n    <title>Markora Bookmark Export</title>\n  </head>\n  <body>\n${outlines}\n  </body>\n</opml>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<opml version="2.0">\n  <head>\n    <title>FavGrove Bookmark Export</title>\n  </head>\n  <body>\n${outlines}\n  </body>\n</opml>\n`;
 }
 
 function toHtml(bookmarks: BookmarkNode[]): string {

@@ -22,6 +22,7 @@ describe('link check response classification', () => {
     expect(isConfirmedBrokenResponse(new Response(null, { status: 401 }))).toBe(false);
     expect(isConfirmedBrokenResponse(new Response(null, { status: 403 }))).toBe(false);
     expect(isConfirmedBrokenResponse(new Response(null, { status: 429 }))).toBe(false);
+    expect(classifyLinkResponse(new Response(null, { status: 403 }))).toEqual({ kind: 'unreachable', reason: 'http-error' });
   });
 
   it('does not classify Cloudflare challenges as broken', () => {
@@ -31,7 +32,7 @@ describe('link check response classification', () => {
     });
 
     expect(isConfirmedBrokenResponse(response)).toBe(false);
-    expect(classifyLinkStatus(403, true)).toBeNull();
+    expect(classifyLinkStatus(403, true)).toEqual({ kind: 'unreachable', reason: 'http-error' });
   });
 
   it('identifies insecure HTTP links before any automatic request is made', () => {
@@ -47,8 +48,10 @@ describe('link check response classification', () => {
     expect(isProtectedBrowserStoreUrl('https://example.com')).toBe(false);
   });
 
-  it('still reports confirmed missing pages and server failures', () => {
-    expect(isConfirmedBrokenResponse(new Response(null, { status: 404 }))).toBe(true);
+  it('only confirms permanently gone pages and keeps ambiguous responses unverified', () => {
+    expect(isConfirmedBrokenResponse(new Response(null, { status: 404 }))).toBe(false);
+    expect(isConfirmedBrokenResponse(new Response(null, { status: 410 }))).toBe(true);
+    expect(classifyLinkResponse(new Response(null, { status: 400 }))).toEqual({ kind: 'unreachable', reason: 'http-error' });
     expect(isConfirmedBrokenResponse(new Response(null, { status: 500 }))).toBe(false);
     expect(classifyLinkResponse(new Response(null, { status: 500 }))).toEqual({ kind: 'unreachable', reason: 'server-error' });
   });
@@ -61,6 +64,18 @@ describe('link check response classification', () => {
 
     expect(issue.kind).toBe('unreachable');
     expect(issue.reason).toBe('network');
+  });
+
+  it('reclassifies legacy cached 404 results as unverified', () => {
+    const issue = normalizeLinkIssue({
+      node: { id: '1', title: 'Example', url: 'https://example.com' },
+      status: 404,
+      error: 'Not Found',
+      kind: 'broken',
+      reason: 'not-found'
+    });
+
+    expect(issue).toMatchObject({ kind: 'unreachable', reason: 'http-error' });
   });
 
   it('checks each exact URL once while preserving all matching bookmarks', () => {

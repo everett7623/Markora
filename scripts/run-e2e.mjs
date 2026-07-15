@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'vite';
+import { findChromiumExecutable } from './browser-paths.mjs';
 
 const server = await createServer({
   server: {
@@ -13,7 +14,8 @@ await server.listen();
 const child = spawn(process.execPath, ['node_modules/@playwright/test/cli.js', 'test'], {
   env: {
     ...process.env,
-    PLAYWRIGHT_EXTERNAL_SERVER: '1'
+    PLAYWRIGHT_EXTERNAL_SERVER: '1',
+    PLAYWRIGHT_CHROMIUM_EXECUTABLE: findChromiumExecutable()
   },
   stdio: 'inherit'
 });
