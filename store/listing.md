@@ -1,8 +1,8 @@
-# Markora Store Listing Draft
+# FavGrove Store Listing Draft
 
 ## Product Name
 
-Markora - Bookmark Atlas
+FavGrove - Bookmark Manager
 
 ## Short Description
 
@@ -10,7 +10,7 @@ A local-first bookmark workspace for scanning, cleaning, importing, exporting, a
 
 ## Long Description
 
-Markora opens a full-screen bookmark workspace inside your browser. It helps large bookmark collections stay understandable without sending bookmark data to a developer-controlled server.
+FavGrove opens a full-screen bookmark workspace inside your browser. It helps large bookmark collections stay understandable without sending bookmark data to a developer-controlled server.
 
 Core features:
 
@@ -25,7 +25,7 @@ Core features:
 
 Privacy summary:
 
-Markora stores bookmark metadata, settings, scan cache, search history, tags, and backups locally in the browser. It does not include analytics, telemetry, account sync, cloud processing, or developer-operated bookmark upload.
+FavGrove stores bookmark metadata, settings, scan cache, search history, tags, and backups locally in the browser. It does not include analytics, telemetry, account sync, cloud processing, or developer-operated bookmark upload.
 
 ## Chrome Web Store Category
 
@@ -37,15 +37,16 @@ Productivity
 
 ## Support URL
 
-https://github.com/everett7623/Markora/issues
+https://github.com/everett7623/FavGrove/issues
 
 ## Privacy Policy URL
 
-https://github.com/everett7623/Markora/blob/main/PRIVACY.md
+https://github.com/everett7623/FavGrove/blob/main/PRIVACY.md
 
-## Release Notes For 0.1.0 Beta
+## Release Notes For 0.2.0 Beta
 
-- Public beta for local testing.
+- Renamed from Markora to FavGrove before browser-store submission.
+- Public beta candidate for local testing.
 - Manifest V3 Chrome and Edge extension.
 - Local-first bookmark scan, cleanup, import/export, backup, and management workflows.
 - Not yet a stable `1.0.0` store release.

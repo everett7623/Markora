@@ -2,6 +2,7 @@ import { DEFAULT_CACHE_HOURS, STORAGE_KEYS } from '../shared/constants/storage';
 import i18n from '../shared/i18n';
 import type {
   BookmarkNode,
+  InvalidLink,
   LinkCheckWorkerRequest,
   LinkCheckWorkerResponse,
   LinkFetchRequest,
@@ -14,7 +15,7 @@ import type {
   ScanWorkerResponse
 } from '../shared/types';
 import { flattenBookmarks } from '../shared/utils/bookmarks';
-import { normalizeLinkIssue } from '../shared/utils/linkCheck';
+import { classifyLinkStatus, isInsecureHttpUrl, isProtectedBrowserStoreUrl, normalizeLinkIssue } from '../shared/utils/linkCheck';
 import { linkRequestService } from './linkRequestService';
 import { storageService } from './storageService';
 
@@ -37,6 +38,33 @@ export const scanService = {
     }
 
     return linkRequestService.check(request.url, request.settings);
+  },
+
+  async recheckLink(node: BookmarkNode, settings: ScannerConfig): Promise<Result<InvalidLink | null>> {
+    if (!node.url) return { success: true, data: null };
+    if (isInsecureHttpUrl(node.url)) {
+      return { success: true, data: { node, error: 'Manual verification required', kind: 'unreachable', reason: 'insecure' } };
+    }
+    if (isProtectedBrowserStoreUrl(node.url)) {
+      return { success: true, data: { node, error: 'Manual verification required', kind: 'unreachable', reason: 'protected' } };
+    }
+
+    const response = await this.requestLinkCheck({ type: 'check-link', url: node.url, settings });
+    if (!response.success) return response;
+    if (response.data.failure) {
+      return {
+        success: true,
+        data: { node, error: response.data.error ?? 'Network error', kind: 'unreachable', reason: response.data.failure }
+      };
+    }
+
+    const status = response.data.status ?? 0;
+    const classification = classifyLinkStatus(status, response.data.cloudflare);
+    if (!classification) return { success: true, data: null };
+    return {
+      success: true,
+      data: { node, status, error: response.data.statusText || `HTTP ${status}`, ...classification }
+    };
   },
 
   start(worker: Worker, bookmarks: BookmarkNode[]): void {
@@ -148,12 +176,14 @@ export const scanService = {
 
     const invalidLinks = await this.runLinkCheck(bookmarks, settings, onProgress, onLinkProgress);
     if (!invalidLinks.success) return invalidLinks;
+    const ignored = await this.getIgnoredLinkUrls();
+    if (!ignored.success) return ignored;
 
     return {
       success: true,
       data: {
         ...structure.data,
-        invalidLinks: invalidLinks.data
+        invalidLinks: invalidLinks.data.filter((issue) => !issue.node.url || !ignored.data.has(issue.node.url))
       }
     };
   },
@@ -168,13 +198,16 @@ export const scanService = {
       return { success: true, data: null };
     }
 
+    const ignored = await this.getIgnoredLinkUrls();
+    if (!ignored.success) return ignored;
+
     return {
       success: true,
       data: {
         ...cached.data.data,
         result: {
           ...cached.data.data.result,
-          invalidLinks: cached.data.data.result.invalidLinks.map(normalizeLinkIssue)
+          invalidLinks: cached.data.data.result.invalidLinks.map(normalizeLinkIssue).filter((issue) => !issue.node.url || !ignored.data.has(issue.node.url))
         }
       }
     };
@@ -195,5 +228,32 @@ export const scanService = {
     const cache: ScanCache = { result, createdAt: Date.now() };
     const saved = await storageService.set(STORAGE_KEYS.scanCache, cache);
     return saved.success ? { success: true, data: cache } : saved;
+  },
+
+  async getIgnoredLinkUrls(): Promise<Result<Set<string>>> {
+    const stored = await storageService.get<string[]>(STORAGE_KEYS.ignoredLinkUrls);
+    if (!stored.success) return stored;
+    return { success: true, data: new Set(stored.data?.data ?? []) };
+  },
+
+  async ignoreLinkUrl(url: string): Promise<Result<Set<string>>> {
+    const current = await this.getIgnoredLinkUrls();
+    if (!current.success) return current;
+    current.data.add(url);
+    const saved = await storageService.set(STORAGE_KEYS.ignoredLinkUrls, [...current.data]);
+    return saved.success ? { success: true, data: current.data } : saved;
+  },
+
+  async restoreIgnoredLinkUrl(url: string): Promise<Result<Set<string>>> {
+    const current = await this.getIgnoredLinkUrls();
+    if (!current.success) return current;
+    current.data.delete(url);
+    const saved = await storageService.set(STORAGE_KEYS.ignoredLinkUrls, [...current.data]);
+    return saved.success ? { success: true, data: current.data } : saved;
+  },
+
+  async clearIgnoredLinkUrls(): Promise<Result<Set<string>>> {
+    const saved = await storageService.set<string[]>(STORAGE_KEYS.ignoredLinkUrls, []);
+    return saved.success ? { success: true, data: new Set() } : saved;
   }
 };

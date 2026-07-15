@@ -5,7 +5,8 @@ export const STORAGE_KEYS = {
   scanCache: 'scan-cache',
   searchHistory: 'search-history',
   recentActivities: 'recent-activities',
-  bookmarkTags: 'bookmark-tags'
+  bookmarkTags: 'bookmark-tags',
+  ignoredLinkUrls: 'ignored-link-urls'
 } as const;
 
 export const DEFAULT_BACKUP_RETENTION = 10;

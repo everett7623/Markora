@@ -1,19 +1,19 @@
 # Store Submission Fields
 
-Use this worksheet when copying Markora metadata into the Chrome Web Store and Microsoft Edge Add-ons portals.
+Use this worksheet when copying FavGrove metadata into the Chrome Web Store and Microsoft Edge Add-ons portals.
 
 ## Listing
 
-- Product name: `Markora - Bookmark Atlas`
+- Product name: `FavGrove - Bookmark Manager`
 - Short description: `A local-first bookmark workspace for scanning, cleaning, importing, exporting, and backing up large Chrome and Edge bookmark collections.`
 - Category: `Productivity`
-- Support URL: `https://github.com/everett7623/Markora/issues`
-- Privacy policy URL: `https://github.com/everett7623/Markora/blob/main/PRIVACY.md`
-- Repository URL: `https://github.com/everett7623/Markora`
+- Support URL: `https://github.com/everett7623/FavGrove/issues`
+- Privacy policy URL: `https://github.com/everett7623/FavGrove/blob/main/PRIVACY.md`
+- Repository URL: `https://github.com/everett7623/FavGrove`
 
 ## Single Purpose
 
-Markora helps users organize, scan, clean, import, export, and back up their browser bookmark collections locally inside Chrome or Edge.
+FavGrove helps users organize, scan, clean, import, export, and back up their browser bookmark collections locally inside Chrome or Edge.
 
 ## Permission Justifications
 
@@ -39,8 +39,8 @@ The extension does not request the `tabs` permission.
 - Store listing draft: `store/listing.md`
 - Screenshots: `store/screenshots/`
 - Promotional assets: `store/assets/`
-- Extension package: `release/markora-v0.1.0.zip`
+- Extension package: `release/favgrove-v0.2.0.zip`
 
 ## Beta Notes
 
-Use `v0.1.0` as a beta or pre-release label. Do not present this build as stable `1.0.0` until the visible browser checks, portal review, and final publication gates are complete.
+Use `v0.2.0` as a beta or pre-release label. Do not present this build as stable `1.0.0` until the visible browser checks, portal review, and final publication gates are complete.

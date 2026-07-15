@@ -1,10 +1,10 @@
 export const en = {
-  appName: 'Markora',
-  tagline: 'Your local bookmark atlas',
+  appName: 'FavGrove',
+  tagline: 'Your bookmarks, organized locally',
   navigation: {
     dashboard: 'Dashboard',
     scanner: 'Scanner',
-    manager: 'Markora',
+    manager: 'FavGrove',
     importExport: 'Import / Export',
     settings: 'Settings'
   },
@@ -135,6 +135,10 @@ export const en = {
     selectPage: 'Select this page',
     clearSelection: 'Clear selection',
     open: 'Open',
+    recheck: 'Check again',
+    rechecking: 'Checking...',
+    recheckSelected: 'Check selected ({{count}})',
+    markWorking: 'Works for me',
     editUrl: 'Edit URL',
     deleteOne: 'Delete',
     editPrompt: 'Enter the corrected bookmark URL (http:// or https://)',
@@ -149,8 +153,8 @@ export const en = {
     range: 'Showing {{from}}-{{to}} of {{total}}',
     proxyNotice: 'HTTPS checks run through the extension background service and use the browser/system network and proxy configuration. Plain HTTP links are not requested automatically because insecure responses can trigger browser security errors. Open unverified links manually before deleting them.',
     reasons: {
-      'not-found': 'The page returned Not Found or Gone',
-      'http-error': 'The server returned an HTTP error',
+      'not-found': 'The page is permanently gone',
+      'http-error': 'The automated request returned an HTTP error; open it to verify',
       'server-error': 'The server is temporarily unavailable',
       timeout: 'The request timed out',
       network: 'Network, proxy, DNS, TLS, or regional access failure',
@@ -248,6 +252,15 @@ export const en = {
     cacheHours: 'Scan cache duration (hours)',
     backupRetention: 'Backups to keep',
     backupManagement: 'Backup management',
+    ignoredLinks: 'Ignored link checks',
+    ignoredLinksCount: '{{count}} ignored URLs',
+    searchIgnoredLinks: 'Search ignored URLs',
+    clearIgnoredLinks: 'Clear all',
+    restoreIgnoredLink: 'Check again',
+    noIgnoredLinks: 'No link checks are currently ignored.',
+    noIgnoredLinkMatches: 'No ignored URLs match this search.',
+    confirmClearIgnoredTitle: 'Clear ignored links',
+    confirmClearIgnoredDescription: 'Allow all {{count}} ignored URLs to appear in future link scans again?',
     noBackups: 'Backups will appear after delete, import, or restore operations.',
     backupCount: '{{count}} backups available.',
     bookmarksCount: '{{count}} bookmarks',
@@ -271,7 +284,7 @@ export const en = {
   pages: {
     dashboard: { title: 'Dashboard', description: 'Live bookmark statistics, global search history, and scan signals.' },
     scanner: { title: 'Scanner', description: 'Worker-based duplicate bookmark, duplicate folder, and empty-folder scans.' },
-    manager: { title: 'Markora', description: 'Virtualized bookmark and folder management for large collections.' },
+    manager: { title: 'FavGrove', description: 'Virtualized bookmark and folder management for large collections.' },
     importExport: { title: 'Import / Export', description: 'Export your local bookmark data in standard portable formats.' },
     settings: { title: 'Settings', description: 'Configure theme, language, scanner, cache, and backup preferences.' }
   }

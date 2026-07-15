@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280" role="img" aria-labelledby="title desc">
-  <title id="title">Markora promotional tile</title>
-  <desc id="desc">A promotional tile for Markora, a local-first bookmark atlas.</desc>
+  <title id="title">FavGrove promotional tile</title>
+  <desc id="desc">A promotional tile for FavGrove, a local-first bookmark manager.</desc>
   <rect width="440" height="280" fill="#f8fafc"/>
   <rect x="28" y="28" width="384" height="224" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
   <rect x="52" y="54" width="82" height="128" rx="6" fill="#2563eb"/>
   <path d="M74 74h38v82l-19-14-19 14z" fill="#ffffff"/>
-  <text x="154" y="92" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#0f172a">Markora</text>
-  <text x="154" y="126" font-family="Inter, Arial, sans-serif" font-size="16" fill="#475569">Bookmark Atlas</text>
+  <text x="154" y="92" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#0f172a">FavGrove</text>
+  <text x="154" y="126" font-family="Inter, Arial, sans-serif" font-size="16" fill="#475569">Bookmark Manager</text>
   <text x="154" y="164" font-family="Inter, Arial, sans-serif" font-size="14" fill="#334155">Scan, clean, import, export, and back up</text>
   <text x="154" y="188" font-family="Inter, Arial, sans-serif" font-size="14" fill="#334155">large bookmark collections locally.</text>
   <rect x="154" y="208" width="70" height="12" rx="6" fill="#dbeafe"/>

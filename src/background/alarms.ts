@@ -4,6 +4,7 @@ import { STORAGE_KEYS } from '../shared/constants/storage';
 import type { AppSettings, ScanCache } from '../shared/types';
 import { createStructureScanResult } from '../shared/utils/structureScan';
 
+// Keep this persisted alarm identifier stable across the FavGrove rebrand.
 const AUTO_SCAN_ALARM_NAME = 'markora-auto-scan';
 const AUTO_SCAN_PERIOD_MINUTES = 24 * 60;
 let alarmListenerRegistered = false;

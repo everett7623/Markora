@@ -1,25 +1,25 @@
 <div align="center">
-  <img src="public/icons/icon128.png" width="96" height="96" alt="Markora icon">
+  <img src="public/icons/icon128.png" width="96" height="96" alt="FavGrove icon">
 
-  # Markora - 书签星图
+  # FavGrove - 本地书签管理器
 
   **A local-first bookmark workspace for Chrome and Edge.**
 
   面向大型书签库的本地优先管理、扫描、整理与备份工具。
 
-  [![Release](https://img.shields.io/github/v/release/everett7623/Markora?include_prereleases&label=beta)](https://github.com/everett7623/Markora/releases)
+  [![Release](https://img.shields.io/github/v/release/everett7623/FavGrove?include_prereleases&label=beta)](https://github.com/everett7623/FavGrove/releases)
   [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4)](manifest.json)
   [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6)](tsconfig.json)
-  [![Tests](https://img.shields.io/badge/tests-62%20unit%20%2B%208%20E2E-success)](#quality)
+  [![Tests](https://img.shields.io/badge/tests-66%20unit%20%2B%208%20E2E-success)](#quality)
   [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 </div>
 
 > [!IMPORTANT]
-> `v0.1.0` is a public beta for local testing. It is not yet a Chrome Web Store or Edge Add-ons stable release.
+> `v0.2.0` is the FavGrove beta candidate. It is not yet a Chrome Web Store or Edge Add-ons stable release. The published `v0.1.0` release remains available under the former Markora name.
 
-## Why Markora
+## Why FavGrove
 
-Browser bookmark managers become difficult to use once a collection grows into the thousands. Markora opens as a full-screen extension workspace and keeps bookmark processing on the user's device.
+Browser bookmark managers become difficult to use once a collection grows into the thousands. FavGrove opens as a full-screen extension workspace and keeps bookmark processing on the user's device.
 
 - Handles large bookmark collections with a virtualized manager list.
 - Detects exact duplicate URLs, duplicate folders, empty folders, and link issues.
@@ -29,7 +29,7 @@ Browser bookmark managers become difficult to use once a collection grows into t
 
 ## Current Features
 
-| Area | Available in `v0.1.0 Beta` |
+| Area | Available in `v0.2.0 Beta` |
 |---|---|
 | Dashboard | Bookmark and folder statistics, quick actions, local recommendations, search history, recent activity |
 | Search | Title, URL, folder-path, full-pinyin, and pinyin-initial search with 300 ms debounce and `Ctrl/Cmd+K` |
@@ -45,18 +45,18 @@ The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGR
 
 ## Link Scanner
 
-Markora uses a Web Worker for scheduling, URL deduplication, concurrency, and progress calculation. HTTPS requests are sent through the Manifest V3 background service worker using optional host permission.
+FavGrove uses a Web Worker for scheduling, URL deduplication, concurrency, and progress calculation. HTTPS requests are sent through the Manifest V3 background service worker using optional host permission.
 
 - Failed `HEAD` checks are verified with `GET`.
 - Authentication, rate limiting, Cloudflare challenges, and network failures are not automatically treated as broken links.
 - Plain HTTP and browser-store links are marked for manual verification to avoid browser security and CORS errors.
-- The scanner uses the browser or system proxy configuration; Markora does not operate a remote scanning proxy.
+- The scanner uses the browser or system proxy configuration; FavGrove does not operate a remote scanning proxy.
 
 ## Installation
 
 ### Beta Release
 
-1. Download `markora-v0.1.0.zip` from [GitHub Releases](https://github.com/everett7623/Markora/releases).
+1. After the beta is published, download `favgrove-v0.2.0.zip` from [GitHub Releases](https://github.com/everett7623/FavGrove/releases).
 2. Extract the ZIP to a permanent local folder.
 3. Open `chrome://extensions` or `edge://extensions`.
 4. Enable **Developer mode**.
@@ -65,8 +65,8 @@ Markora uses a Web Worker for scheduling, URL deduplication, concurrency, and pr
 ### Build From Source
 
 ```bash
-git clone https://github.com/everett7623/Markora.git
-cd Markora
+git clone https://github.com/everett7623/FavGrove.git
+cd FavGrove
 npm install
 npm run build:extension
 ```
@@ -95,16 +95,16 @@ npm run package:release
 The release package is generated at:
 
 ```text
-release/markora-v0.1.0.zip
+release/favgrove-v0.2.0.zip
 ```
 
 ## Quality
 
-The `v0.1.0` beta baseline currently passes:
+The `v0.2.0` beta candidate currently passes:
 
 - ESLint with zero errors and zero warnings.
 - TypeScript strict type checking.
-- 62 Vitest unit and component tests.
+- 66 Vitest unit and component tests.
 - 8 Playwright end-to-end flows.
 - Production extension validation.
 - Permission audit for the release manifest and privacy copy.
@@ -136,7 +136,7 @@ Core stack: React 18, TypeScript 5, Vite 5, CRXJS, Manifest V3, Zustand, React R
 
 ## Privacy
 
-Markora does not collect personal data or upload bookmarks. Settings, tags, history, scan caches, and backups remain in browser extension storage. See [PRIVACY.md](PRIVACY.md) for permission and network details.
+FavGrove does not collect personal data or upload bookmarks. Settings, tags, history, scan caches, and backups remain in browser extension storage. See [PRIVACY.md](PRIVACY.md) for permission and network details.
 
 ## Documentation
 
@@ -158,6 +158,6 @@ Markora does not collect personal data or upload bookmarks. Settings, tags, hist
 
 ## Links
 
-- Repository: [github.com/everett7623/Markora](https://github.com/everett7623/Markora)
+- Repository: [github.com/everett7623/FavGrove](https://github.com/everett7623/FavGrove)
 - Author: [github.com/everett7623](https://github.com/everett7623)
 - Website: [seedloc.com](https://seedloc.com)

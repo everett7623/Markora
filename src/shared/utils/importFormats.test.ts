@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseImportContent } from './importFormats';
 
 describe('parseImportContent', () => {
-  it('parses Markora JSON bookmark exports recursively', () => {
+  it('parses FavGrove JSON bookmark exports recursively', () => {
     const items = parseImportContent(
       'json',
       JSON.stringify([
@@ -29,7 +29,7 @@ describe('parseImportContent', () => {
     expect(items).toEqual([{ title: 'Example, Inc', url: 'https://example.com', path: ['Imported', 'CSV'], dateAdded: undefined }]);
   });
 
-  it('parses Markora TXT export blocks', () => {
+  it('parses FavGrove TXT export blocks', () => {
     const items = parseImportContent('txt', 'Example\nhttps://example.com\nImported / TXT\n\nBad\njavascript:alert(1)');
 
     expect(items).toEqual([{ title: 'Example', url: 'https://example.com', path: ['Imported', 'TXT'], dateAdded: undefined }]);

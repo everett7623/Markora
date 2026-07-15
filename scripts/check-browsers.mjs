@@ -2,35 +2,14 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { findBrowserExecutable } from './browser-paths.mjs';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
 const manifestPath = path.join(distDir, 'manifest.json');
 
-const candidates = {
-  chrome: [
-    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-    path.join(process.env.LOCALAPPDATA ?? '', 'Google\\Chrome\\Application\\chrome.exe'),
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable'
-  ],
-  edge: [
-    'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
-    'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
-    '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
-    '/usr/bin/microsoft-edge',
-    '/usr/bin/microsoft-edge-stable'
-  ]
-};
-
-function findBrowser(name) {
-  return candidates[name].find((candidate) => candidate && existsSync(candidate));
-}
-
 function runBrowser(name, executable) {
-  const profileDir = mkdtempSync(path.join(tmpdir(), `markora-${name}-`));
+  const profileDir = mkdtempSync(path.join(tmpdir(), `favgrove-${name}-`));
   const args = [
     '--headless=new',
     '--disable-gpu',
@@ -75,7 +54,7 @@ if (manifest.manifest_version !== 3 || !manifest.options_ui?.open_in_tab) {
 }
 
 for (const name of ['chrome', 'edge']) {
-  const executable = findBrowser(name);
+  const executable = findBrowserExecutable(name);
   if (!executable) throw new Error(`Unable to find ${name} executable for browser check.`);
   console.log(`Checking ${name}: ${executable}`);
   await runBrowser(name, executable);

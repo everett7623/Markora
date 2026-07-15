@@ -13,7 +13,7 @@ function createLargeBookmarkTree(count: number): BookmarkNode[] {
 
   for (let index = 0; index < count; index += 1) {
     const folder = folders[index % folders.length];
-    const title = index % 2 === 0 ? `书签星图 ${index}` : `Bookmark ${index}`;
+    const title = index % 2 === 0 ? `书签整理 ${index}` : `Bookmark ${index}`;
     folder.children = [
       ...((folder.children as BookmarkNode[] | undefined) ?? []),
       {
@@ -43,7 +43,7 @@ describe('large collection performance', () => {
 
   it('keeps pinyin search responsive for 10,000 bookmarks', () => {
     const startedAt = performance.now();
-    const results = searchBookmarks(tree, 'sqxt');
+    const results = searchBookmarks(tree, 'sqzl');
     const durationMs = performance.now() - startedAt;
 
     expect(results).toHaveLength(5_000);

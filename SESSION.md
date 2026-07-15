@@ -1,14 +1,14 @@
 # Current Session
 
-Date: 2026-07-08
+Date: 2026-07-15
 
 ## Working On
 
-Codex Handoff Docs And Comprehensive Improvement
+FavGrove Rebrand And Release Readiness
 
 ## Current Goal
 
-Close the clarified core, localization, and release gaps before store publication.
+Complete the FavGrove `0.2.0` beta migration and close the remaining release gaps before store publication.
 
 ## Current Status
 
@@ -58,7 +58,7 @@ Close the clarified core, localization, and release gaps before store publicatio
 - Link scan results now separate confirmed broken links from links that could not be verified because of timeout, server, network, proxy, DNS, TLS, or regional access conditions.
 - `/scanner/links` provides filtering, 50-row pagination, manual open-and-check, and backup-protected batch deletion.
 - Link issue rows provide separate open, edit URL, and confirmed delete actions.
-- The product brand is now `Markora - Bookmark Atlas` / `书签星图 Markora`, using a minimal bookmark icon that remains legible at 16px.
+- The product brand is now `FavGrove - Bookmark Manager` / `FavGrove 书签管理器` for the `0.2.0` beta candidate; the published `0.1.0` Markora release remains historical.
 - Import/Export currently supports:
   - JSON, CSV, TXT, OPML, and HTML export.
   - Worker-based Netscape HTML import parsing.
@@ -89,7 +89,7 @@ Close the clarified core, localization, and release gaps before store publicatio
 - `npm run validate:extension` rejects development URLs, broad resource exposure, and missing background service workers.
 - Multi-format import requirements are now recorded for JSON, CSV, TXT, and OPML.
 - Localization audit found 15 English locale keys missing from Chinese and additional hardcoded user-facing English strings.
-- `VERSIONING.md` defines `0.1.0` as the current beta baseline and reserves `1.0.0` for the first stable store release.
+- `VERSIONING.md` defines `0.2.0` as the FavGrove beta candidate, preserves `0.1.0` as the historical Markora beta, and reserves `1.0.0` for the first stable store release.
 - Locale key parity was improved for `en` and `zh_CN`, and multiple Manager/Scanner/Settings hardcoded UI strings were switched to i18n keys.
 - `bookmarkStore` activity log messages and URL validation error text were migrated to i18n keys.
 - Service-layer fallback error messages in storage/import/bookmark/scan/link-request services were migrated to i18n keys.
@@ -130,7 +130,12 @@ Close the clarified core, localization, and release gaps before store publicatio
 - `npm run audit:permissions` verifies the manifest permission boundary and `PRIVACY.md` permission copy.
 - Visible browser click-through steps are prepared in `docs/release/browser-clickthrough.md`; the final human-visible Chrome and Edge results still need to be recorded before store submission.
 - Full destructive replacement restore is deferred by `docs/decisions/restore-strategy.md`; current restore remains backup-protected and service-boundary scoped.
-- GitHub pre-release metadata, store submission fields, and post-beta AI guardrails are prepared in `docs/release/github-prerelease-v0.1.0.md`, `store/submission-fields.md`, and `docs/roadmap/post-beta-ai.md`.
+- GitHub pre-release metadata, store submission fields, and post-beta AI guardrails are prepared in `docs/release/github-prerelease-v0.2.0.md`, `store/submission-fields.md`, and `docs/roadmap/post-beta-ai.md`.
+- Link checking now treats ambiguous 4xx responses, including 404, authentication, proxy, and rate-limit responses, as requiring manual verification; only HTTP 410 is automatically classified as confirmed broken.
+- Legacy cached 404 results are reclassified under the conservative policy, and link issue rows can be dismissed with "Works for me" / "确认可打开" without changing the bookmark.
+- Manually dismissed link URLs are now persisted locally and filtered from future scans and cached results.
+- Settings now manages ignored link-check URLs with local search, per-URL re-enable, and confirmation-protected clear-all actions.
+- Link issue rows now support an in-place single-link recheck using the current scanner settings; successful checks remove the issue, while failures refresh its status and classification without adding an ignore rule.
 
 ## Next Step
 
@@ -140,7 +145,7 @@ Run and record the final visible Chrome and Edge click-through checks from `dist
 
 1. Run the visible Chrome and Edge checklist in `docs/release/browser-clickthrough.md`.
 2. Confirm the public privacy policy URL and support URL in the store portals.
-3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.1.0.md`.
+3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.2.0.md`.
 4. Upload the verified release ZIP only after the visible browser pass is recorded.
 5. Start post-beta AI/local recommendation work only after release gates are closed.
 
@@ -167,7 +172,7 @@ Latest verification:
 - Production extension validation: passed.
 - E2E isolation check: passed; `dist/` hashes remained unchanged.
 - Release audit rerun passed: ESLint, TypeScript, 42 Vitest tests, 7 Playwright tests, production build, extension validation, and release packaging.
-- Current release classification: `0.1.0` beta. GitHub push is acceptable after an intentional commit review; stable store publication is not yet approved.
+- Current release classification: `0.2.0` FavGrove beta candidate. The public `0.1.0` Markora beta remains historical; stable store publication is not yet approved.
 - Link-check transport regression verification passed with 46 Vitest tests and 7 Playwright tests after moving HTTPS requests to the background service worker.
 - Browser-store URL protection verification passed with 48 Vitest tests and 7 Playwright tests; protected store links are skipped before `fetch`.
 - GitHub README was rebuilt for the public beta, with honest feature status, installation instructions, privacy boundaries, browser support, quality gates, and the new repository URL.
@@ -186,6 +191,12 @@ Latest verification:
 - On 2026-07-08, after backup retention, locale parity, multi-format import, Manager batch tags/collapsible folders, and Dashboard quick actions/recommendations/pinyin search, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 15 files and 60 tests, `npm run build:extension` passed, and Playwright E2E passed with 7 tests.
 - On 2026-07-08, after Chinese route smoke, individual empty-folder deletion, 10,000-bookmark benchmarks, store assets/screenshots, and Chrome/Edge headless load checks, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 62 tests, `npm run benchmark:performance` passed, `npm run build:extension` passed, `npm run check:browsers` passed, and Playwright E2E passed with 8 tests.
 - On 2026-07-08, after release permission tightening, browser click-through preparation, restore strategy decision, pre-release/store metadata, and post-beta AI guardrails, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 62 tests, `npm run benchmark:performance` passed, `npm run build:extension` passed with permission audit, `npm run check:browsers` passed, Playwright E2E passed with 8 tests, and `npm run package:release` regenerated `release/markora-v0.1.0.zip`.
+- On 2026-07-12, after conservative link-status classification and the manual "Works for me" action, ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 63 tests, `npm run build:extension` passed with validation and permission audit, and Playwright E2E passed with 8 tests.
+- On 2026-07-12, persisted ignored-link URLs were added; ESLint, TypeScript, 63 Vitest tests, and 8 Playwright E2E tests passed.
+- On 2026-07-12, ignored-link management was added to Settings; ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 64 tests, `npm run build:extension` passed, and Playwright E2E passed with 8 tests.
+- On 2026-07-13, single-link rechecking was added; ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 66 tests, `npm run build:extension` passed, and Playwright E2E passed with 8 tests.
+- On 2026-07-15, the FavGrove `0.2.0` rebrand passed ESLint with 0 warnings, TypeScript strict checking, 66 Vitest tests, `npm run benchmark:performance`, production extension build validation and permission audit, `npm run check:browsers`, regenerated and visually checked store screenshots, 8 Playwright E2E tests, and release packaging/inspection for `favgrove-v0.2.0.zip`.
+- On 2026-07-15, the GitHub repository was renamed to `everett7623/FavGrove`; the local `origin`, README, privacy/support links, store metadata, and `v0.2.0` pre-release notes now use the new URL.
 
 ## Notes
 

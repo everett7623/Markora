@@ -11,7 +11,7 @@ const PROTECTED_BROWSER_STORE_HOSTS = new Set([
 
 export type LinkResponseClassification =
   | { kind: 'broken'; reason: 'not-found' | 'http-error' }
-  | { kind: 'unreachable'; reason: 'server-error' }
+  | { kind: 'unreachable'; reason: 'http-error' | 'server-error' }
   | null;
 type LinkIssueInput = Omit<InvalidLink, 'kind' | 'reason'> & Partial<Pick<InvalidLink, 'kind' | 'reason'>>;
 
@@ -84,17 +84,19 @@ export function isProtectedBrowserStoreUrl(url: string): boolean {
 
 export function classifyLinkStatus(status: number, cloudflare = false): LinkResponseClassification {
   if (status < 400) return null;
-  if (RESTRICTED_STATUSES.has(status)) return null;
-  if (cloudflare && CLOUDFLARE_CHALLENGE_STATUSES.has(status)) return null;
+  if (RESTRICTED_STATUSES.has(status)) return { kind: 'unreachable', reason: 'http-error' };
+  if (cloudflare && CLOUDFLARE_CHALLENGE_STATUSES.has(status)) return { kind: 'unreachable', reason: 'http-error' };
 
-  if (status === 404 || status === 410) {
+  if (status === 410) {
     return { kind: 'broken', reason: 'not-found' };
   }
   if (status >= 500) {
     return { kind: 'unreachable', reason: 'server-error' };
   }
 
-  return { kind: 'broken', reason: 'http-error' };
+  // A browser navigation can succeed when an anonymous extension fetch receives
+  // a 4xx response due to login state, anti-bot rules, proxy routing, or request headers.
+  return { kind: 'unreachable', reason: 'http-error' };
 }
 
 export function classifyLinkResponse(response: Response): LinkResponseClassification {
@@ -107,19 +109,19 @@ export function isConfirmedBrokenResponse(response: Response): boolean {
 }
 
 export function normalizeLinkIssue(issue: LinkIssueInput): InvalidLink {
-  if (issue.kind && issue.reason) return { ...issue, kind: issue.kind, reason: issue.reason };
-  if (issue.status === 404 || issue.status === 410) {
+  if (issue.status === 410) {
     return { ...issue, kind: 'broken', reason: 'not-found' };
   }
   if (issue.status && issue.status >= 500) {
     return { ...issue, kind: 'unreachable', reason: 'server-error' };
   }
   if (!issue.status) {
+    if (issue.kind && issue.reason) return { ...issue, kind: issue.kind, reason: issue.reason };
     return {
       ...issue,
       kind: 'unreachable',
       reason: issue.error.toLowerCase().includes('timeout') ? 'timeout' : 'network'
     };
   }
-  return { ...issue, kind: 'broken', reason: 'http-error' };
+  return { ...issue, kind: 'unreachable', reason: 'http-error' };
 }

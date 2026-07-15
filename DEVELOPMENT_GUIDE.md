@@ -1,11 +1,11 @@
-# Markora Development Guide
+# FavGrove Development Guide
 
-This document describes how to work on Markora in a way that any Codex session
+This document describes how to work on FavGrove in a way that any Codex session
 or human maintainer can pick up cleanly.
 
 ## Product Goal
 
-Markora is a local-first bookmark management extension for Chrome and Edge. It
+FavGrove is a local-first bookmark management extension for Chrome and Edge. It
 targets large bookmark collections and provides scanning, cleanup, import/export,
 backup/restore, settings, and future local recommendation features.
 
@@ -123,7 +123,7 @@ The near-term priorities are:
 
 1. Run and record final visible Chrome and Edge click-through checks from `dist/`.
 2. Confirm the public privacy policy URL and copy the prepared submission fields into the store portals.
-3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.1.0.md`.
+3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.2.0.md`.
 4. Keep destructive full replacement restore deferred unless a separate safety design is approved.
 5. Start post-beta AI/local recommendation work only after release gates are closed.
 

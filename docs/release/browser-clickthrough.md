@@ -27,7 +27,7 @@ Do not load the project root or `.crx-dev`.
 ## Required Checks
 
 - Load `dist/` as an unpacked extension with no manifest warnings.
-- Confirm the extension action opens the full-screen Markora options page.
+- Confirm the extension action opens the full-screen FavGrove options page.
 - Open Dashboard, Scanner, Manager, Import / Export, and Settings from the built extension.
 - Confirm broken-link scanning requests optional `<all_urls>` host access only after the user starts a link scan.
 - Exercise rename, move, delete, undo, duplicate-folder merge, import preview, export, backup, and restore flows on disposable bookmark data.

@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, ChevronLeft, ChevronRight, Edit3, ExternalLink, Trash2, WifiOff } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Check, ChevronLeft, ChevronRight, Edit3, ExternalLink, RefreshCw, Trash2, WifiOff } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -10,6 +10,7 @@ import type { InvalidLink } from '../../shared/types';
 import { normalizeLinkIssue } from '../../shared/utils/linkCheck';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
 import { useScanStore } from '../../stores/scanStore';
+import { useSettingsStore } from '../../stores/settingsStore';
 
 const PAGE_SIZE = 50;
 type IssueFilter = 'all' | 'broken' | 'unreachable';
@@ -29,11 +30,13 @@ export default function LinkIssuesPage() {
   const updateBookmarkUrl = useBookmarkStore((state) => state.updateBookmarkUrl);
   const mutating = useBookmarkStore((state) => state.mutating);
   const mutationError = useBookmarkStore((state) => state.error);
+  const scannerSettings = useSettingsStore((state) => state.settings.scanner);
   const [filter, setFilter] = useState<IssueFilter>('all');
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editingIssue, setEditingIssue] = useState<InvalidLink | null>(null);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
+  const [recheckingIds, setRecheckingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (result) return;
@@ -99,6 +102,64 @@ export default function LinkIssuesPage() {
       next.delete(id);
       return next;
     });
+    await scanService.saveCache(nextResult);
+  };
+
+  const dismissIssue = async (issue: InvalidLink) => {
+    if (!issue.node.url) return;
+    const ignored = await scanService.ignoreLinkUrl(issue.node.url);
+    if (ignored.success) await removeIssue(issue.node.id);
+  };
+
+  const recheckIssue = async (issue: InvalidLink) => {
+    if (!result) return;
+    setRecheckingIds((current) => new Set(current).add(issue.node.id));
+    const checked = await scanService.recheckLink(issue.node, scannerSettings);
+    setRecheckingIds((current) => {
+      const next = new Set(current);
+      next.delete(issue.node.id);
+      return next;
+    });
+    if (!checked.success) return;
+
+    const nextResult = {
+      ...result,
+      invalidLinks: checked.data
+        ? result.invalidLinks.map((current) => current.node.id === issue.node.id ? checked.data as InvalidLink : current)
+        : result.invalidLinks.filter((current) => current.node.id !== issue.node.id)
+    };
+    setResult(nextResult);
+    await scanService.saveCache(nextResult);
+  };
+
+  const recheckSelected = async () => {
+    if (!result || selectedIds.size === 0) return;
+    const selectedIssues = issues.filter((issue) => selectedIds.has(issue.node.id));
+    setRecheckingIds(new Set(selectedIssues.map((issue) => issue.node.id)));
+
+    const replacements = new Map<string, InvalidLink | null>();
+    const pending = [...selectedIssues];
+    const workers = Array.from({ length: Math.min(4, pending.length) }, async () => {
+      while (pending.length > 0) {
+        const issue = pending.shift();
+        if (!issue) return;
+        const checked = await scanService.recheckLink(issue.node, scannerSettings);
+        if (checked.success) replacements.set(issue.node.id, checked.data);
+      }
+    });
+    await Promise.all(workers);
+
+    const nextResult = {
+      ...result,
+      invalidLinks: result.invalidLinks.flatMap((issue) => {
+        if (!replacements.has(issue.node.id)) return [issue];
+        const replacement = replacements.get(issue.node.id);
+        return replacement ? [replacement] : [];
+      })
+    };
+    setRecheckingIds(new Set());
+    setSelectedIds(new Set());
+    setResult(nextResult);
     await scanService.saveCache(nextResult);
   };
 
@@ -173,6 +234,10 @@ export default function LinkIssuesPage() {
         <Button variant="ghost" onClick={() => setSelectedIds(new Set())} disabled={selectedIds.size === 0}>
           {t('linkIssues.clearSelection')}
         </Button>
+        <Button variant="outline" onClick={() => void recheckSelected()} disabled={selectedIds.size === 0 || recheckingIds.size > 0}>
+          <RefreshCw className={recheckingIds.size > 0 ? 'animate-spin' : ''} size={16} />
+          {t('linkIssues.recheckSelected', { count: selectedIds.size })}
+        </Button>
       </div>
 
       <section className="overflow-hidden rounded-lg border bg-white shadow-sm dark:bg-slate-950">
@@ -184,7 +249,10 @@ export default function LinkIssuesPage() {
                 issue={issue}
                 selected={selectedIds.has(issue.node.id)}
                 disabled={mutating}
+                rechecking={recheckingIds.has(issue.node.id)}
                 onSelectedChange={toggleSelected}
+                onRecheck={(issue) => void recheckIssue(issue)}
+                onDismiss={(issue) => void dismissIssue(issue)}
                 onEdit={editIssueUrl}
                 onDelete={deleteIssue}
               />
@@ -244,14 +312,20 @@ function IssueRow({
   issue,
   selected,
   disabled,
+  rechecking,
   onSelectedChange,
+  onRecheck,
+  onDismiss,
   onEdit,
   onDelete
 }: {
   issue: InvalidLink;
   selected: boolean;
   disabled: boolean;
+  rechecking: boolean;
   onSelectedChange: (id: string, checked: boolean) => void;
+  onRecheck: (issue: InvalidLink) => void;
+  onDismiss: (issue: InvalidLink) => void;
   onEdit: (issue: InvalidLink) => void;
   onDelete: (issue: InvalidLink) => void;
 }) {
@@ -277,6 +351,14 @@ function IssueRow({
           <ExternalLink size={14} />
           {t('linkIssues.open')}
         </a>
+        <button type="button" disabled={disabled || rechecking} onClick={() => onRecheck(issue)} className="inline-flex items-center justify-center gap-1 rounded-md border px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-50 dark:hover:bg-slate-900">
+          <RefreshCw className={rechecking ? 'animate-spin' : ''} size={14} />
+          {rechecking ? t('linkIssues.rechecking') : t('linkIssues.recheck')}
+        </button>
+        <button type="button" disabled={disabled} onClick={() => onDismiss(issue)} className="inline-flex items-center justify-center gap-1 rounded-md border px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50 disabled:opacity-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10">
+          <Check size={14} />
+          {t('linkIssues.markWorking')}
+        </button>
         <button type="button" disabled={disabled} onClick={() => onEdit(issue)} className="inline-flex items-center justify-center gap-1 rounded-md border px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-50 dark:hover:bg-slate-900">
           <Edit3 size={14} />
           {t('linkIssues.editUrl')}

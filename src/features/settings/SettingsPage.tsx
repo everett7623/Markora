@@ -1,7 +1,8 @@
-import { RotateCcw, Save, Settings, Trash2 } from 'lucide-react';
+import { RotateCcw, Save, Search, Settings, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { alarmService } from '../../services/alarmService';
+import { scanService } from '../../services/scanService';
 import { ConfirmDialog } from '../../shared/components/ui/ConfirmDialog';
 import { flattenBookmarks } from '../../shared/utils/bookmarks';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
@@ -29,10 +30,29 @@ export default function SettingsPage() {
   const deleteBackup = useBookmarkStore((state) => state.deleteBackup);
   const [restoreTarget, setRestoreTarget] = useState<BackupRecord | null>(null);
   const [alarmError, setAlarmError] = useState<string | null>(null);
+  const [ignoredUrls, setIgnoredUrls] = useState<string[]>([]);
+  const [ignoredQuery, setIgnoredQuery] = useState('');
+  const [confirmClearIgnored, setConfirmClearIgnored] = useState(false);
 
   useEffect(() => {
     void loadBackups();
+    void scanService.getIgnoredLinkUrls().then((result) => {
+      if (result.success) setIgnoredUrls([...result.data].sort());
+    });
   }, [loadBackups]);
+
+  const filteredIgnoredUrls = ignoredUrls.filter((url) => url.toLowerCase().includes(ignoredQuery.trim().toLowerCase()));
+
+  const restoreIgnoredUrl = async (url: string) => {
+    const restored = await scanService.restoreIgnoredLinkUrl(url);
+    if (restored.success) setIgnoredUrls([...restored.data].sort());
+  };
+
+  const clearIgnoredUrls = async () => {
+    setConfirmClearIgnored(false);
+    const cleared = await scanService.clearIgnoredLinkUrls();
+    if (cleared.success) setIgnoredUrls([]);
+  };
 
   const updateSetting = (key: keyof AppSettings, value: AppSettings[keyof AppSettings]) => {
     void update({ [key]: value });
@@ -201,6 +221,33 @@ export default function SettingsPage() {
             </div>
           </div>
         </SettingsCard>
+
+        <div className="lg:col-span-2">
+          <SettingsCard title={t('settings.ignoredLinks')}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-slate-500">{t('settings.ignoredLinksCount', { count: ignoredUrls.length })}</p>
+              <button type="button" disabled={ignoredUrls.length === 0} onClick={() => setConfirmClearIgnored(true)} className="inline-flex items-center gap-1 rounded border px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50 dark:hover:bg-red-500/10">
+                <Trash2 size={14} />
+                {t('settings.clearIgnoredLinks')}
+              </button>
+            </div>
+            <label className="relative block">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input value={ignoredQuery} onChange={(event) => setIgnoredQuery(event.target.value)} placeholder={t('settings.searchIgnoredLinks')} className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary" />
+            </label>
+            <div className="max-h-72 divide-y overflow-auto rounded-md border dark:divide-slate-800 dark:border-slate-800">
+              {filteredIgnoredUrls.length > 0 ? filteredIgnoredUrls.map((url) => (
+                <div key={url} className="flex items-center justify-between gap-3 p-3">
+                  <span className="min-w-0 truncate text-sm" title={url}>{url}</span>
+                  <button type="button" onClick={() => void restoreIgnoredUrl(url)} className="inline-flex shrink-0 items-center gap-1 rounded border px-2 py-1 text-xs hover:bg-slate-50 dark:hover:bg-slate-900">
+                    <RotateCcw size={13} />
+                    {t('settings.restoreIgnoredLink')}
+                  </button>
+                </div>
+              )) : <div className="p-5 text-center text-sm text-slate-500">{t(ignoredUrls.length === 0 ? 'settings.noIgnoredLinks' : 'settings.noIgnoredLinkMatches')}</div>}
+            </div>
+          </SettingsCard>
+        </div>
       </section>
 
       <div className="flex items-center gap-2 text-sm text-slate-500">
@@ -219,6 +266,16 @@ export default function SettingsPage() {
         variant="destructive"
         onCancel={() => setRestoreTarget(null)}
         onConfirm={() => void confirmRestore()}
+      />
+      <ConfirmDialog
+        open={confirmClearIgnored}
+        title={t('settings.confirmClearIgnoredTitle')}
+        description={t('settings.confirmClearIgnoredDescription', { count: ignoredUrls.length })}
+        confirmLabel={t('settings.clearIgnoredLinks')}
+        cancelLabel={t('dialog.cancel')}
+        variant="destructive"
+        onCancel={() => setConfirmClearIgnored(false)}
+        onConfirm={() => void clearIgnoredUrls()}
       />
     </div>
   );

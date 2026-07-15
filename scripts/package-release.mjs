@@ -62,7 +62,7 @@ if (exposedResources.includes('*') || exposedResources.includes('**/*')) {
 }
 
 const releaseDir = resolve(root, 'release');
-const archivePath = resolve(releaseDir, `markora-v${manifest.version}.zip`);
+const archivePath = resolve(releaseDir, `favgrove-v${manifest.version}.zip`);
 mkdirSync(releaseDir, { recursive: true });
 rmSync(archivePath, { force: true });
 

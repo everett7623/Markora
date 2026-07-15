@@ -57,7 +57,7 @@
 
 - [x] Store description is current.
 - [x] Store portal submission field worksheet is prepared in `store/submission-fields.md`.
-- [x] GitHub pre-release draft metadata is prepared in `docs/release/github-prerelease-v0.1.0.md`.
+- [x] GitHub pre-release draft metadata is prepared in `docs/release/github-prerelease-v0.2.0.md`.
 - [ ] Privacy policy URL is publicly accessible.
 - [x] 1280x800 or 640x400 screenshots are prepared.
 - [x] 440x280 promotional tile is prepared if required.
@@ -72,7 +72,7 @@
 The packaging command creates:
 
 ```txt
-release/markora-v<version>.zip
+release/favgrove-v<version>.zip
 ```
 
 Upload the generated ZIP to the Chrome Web Store or Microsoft Edge Add-ons portal.

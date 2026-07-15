@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Markora - Bookmark Atlas",
-  "version": "0.1.0",
-  "description": "A local-first bookmark atlas for Chrome and Edge.",
+  "name": "FavGrove - Bookmark Manager",
+  "version": "0.2.0",
+  "description": "A local-first bookmark manager for Chrome and Edge.",
   "permissions": ["alarms", "bookmarks", "storage"],
   "optional_host_permissions": ["<all_urls>"],
   "icons": {
@@ -11,7 +11,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Open Markora",
+    "default_title": "Open FavGrove",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

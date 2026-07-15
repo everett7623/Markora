@@ -95,7 +95,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <main className="min-h-0 flex-1 overflow-auto p-4 lg:p-6">{children}</main>
         <footer className="flex h-10 items-center justify-between border-t bg-white px-4 text-xs text-slate-500 lg:px-6 dark:bg-slate-950">
           <span>{t('footer.localOnly')}</span>
-          <span>v0.1.0</span>
+          <span>v0.2.0</span>
         </footer>
       </div>
     </div>
