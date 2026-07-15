@@ -175,6 +175,8 @@ Additional verification in this Codex session on 2026-07-08:
 - On 2026-07-13, single-link rechecking passed ESLint with 0 warnings, TypeScript strict checking, 66 Vitest tests, production extension build validation with permission audit, and 8 Playwright E2E tests.
 - On 2026-07-15, the FavGrove `0.2.0` rebrand passed ESLint with 0 warnings, TypeScript strict checking, 66 Vitest tests, the focused 10,000-bookmark benchmark, production extension build validation and permission audit, installed Chrome/Edge checks, regenerated store screenshots, 8 Playwright E2E tests, and release ZIP packaging/inspection for `favgrove-v0.2.0.zip`.
 - On 2026-07-15, the GitHub repository was renamed from `everett7623/Markora` to `everett7623/FavGrove`; repository documentation, store URLs, and the local `origin` now use the FavGrove URL.
+- On 2026-07-15, current project package metadata, README attribution, MIT copyright, and repository-local Git author were normalized to `everettlabs`; the GitHub account path remains `everett7623` because it is the repository owner URL. The extension manifest omits its email-only author object rather than inventing an address.
+- On 2026-07-15, the local workspace was relocated from `D:\EvenFrank\Workspace\Plugins\Google\markora` to `D:\EvenFrank\Workspace\Plugins\Google\FavGrove`; Git state, uncommitted changes, and the FavGrove remote were preserved.
 
 ## Release Decision
 

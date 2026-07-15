@@ -74,10 +74,10 @@ npm run build:extension
 In Chrome or Edge, select **Load unpacked** and choose the generated `dist/` directory:
 
 ```text
-D:\EvenFrank\Workspace\Github\markora\dist
+D:\EvenFrank\Workspace\Plugins\Google\FavGrove\dist
 ```
 
-Do **not** choose the project root (`markora/`) or `.crx-dev/`. The root contains source files, while `.crx-dev/` is development-server output. Only `dist/` is the validated unpacked extension.
+Do **not** choose the project root (`FavGrove/`) or `.crx-dev/`. The root contains source files, while `.crx-dev/` is development-server output. Only `dist/` is the validated unpacked extension.
 
 ## Development
 
@@ -154,10 +154,10 @@ FavGrove does not collect personal data or upload bookmarks. Settings, tags, his
 
 ## License
 
-[MIT](LICENSE) © 2026 Jensfrank.
+[MIT](LICENSE) © 2026 everettlabs.
 
 ## Links
 
 - Repository: [github.com/everett7623/FavGrove](https://github.com/everett7623/FavGrove)
-- Author: [github.com/everett7623](https://github.com/everett7623)
+- Author: **everettlabs** ([GitHub](https://github.com/everett7623))
 - Website: [seedloc.com](https://seedloc.com)
