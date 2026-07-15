@@ -197,6 +197,8 @@ Latest verification:
 - On 2026-07-13, single-link rechecking was added; ESLint passed with 0 warnings, TypeScript strict check passed, Vitest passed with 16 files and 66 tests, `npm run build:extension` passed, and Playwright E2E passed with 8 tests.
 - On 2026-07-15, the FavGrove `0.2.0` rebrand passed ESLint with 0 warnings, TypeScript strict checking, 66 Vitest tests, `npm run benchmark:performance`, production extension build validation and permission audit, `npm run check:browsers`, regenerated and visually checked store screenshots, 8 Playwright E2E tests, and release packaging/inspection for `favgrove-v0.2.0.zip`.
 - On 2026-07-15, the GitHub repository was renamed to `everett7623/FavGrove`; the local `origin`, README, privacy/support links, store metadata, and `v0.2.0` pre-release notes now use the new URL.
+- On 2026-07-15, project author attribution was normalized to `everettlabs` across the MIT license, README, npm package metadata, and repository-local Git configuration. The extension manifest author field is intentionally omitted because the CRXJS Manifest V3 contract accepts an email object, not a display name.
+- On 2026-07-15, the complete local repository was moved to `D:\EvenFrank\Workspace\Plugins\Google\FavGrove`; Git object integrity, branch tracking, remote configuration, and working-tree changes were verified after the move.
 
 ## Notes
 

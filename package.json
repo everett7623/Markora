@@ -1,6 +1,7 @@
 {
   "name": "favgrove-bookmark-manager",
   "version": "0.2.0",
+  "author": "everettlabs",
   "private": true,
   "type": "module",
   "scripts": {

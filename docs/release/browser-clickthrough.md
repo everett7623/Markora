@@ -12,7 +12,7 @@ npm run check:browsers
 Load only:
 
 ```text
-D:\EvenFrank\Workspace\Github\markora\dist
+D:\EvenFrank\Workspace\Plugins\Google\FavGrove\dist
 ```
 
 Do not load the project root or `.crx-dev`.
