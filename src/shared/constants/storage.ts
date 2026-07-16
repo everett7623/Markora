@@ -6,7 +6,8 @@ export const STORAGE_KEYS = {
   searchHistory: 'search-history',
   recentActivities: 'recent-activities',
   bookmarkTags: 'bookmark-tags',
-  ignoredLinkUrls: 'ignored-link-urls'
+  ignoredLinkUrls: 'ignored-link-urls',
+  availableExtensionUpdate: 'available-extension-update'
 } as const;
 
 export const DEFAULT_BACKUP_RETENTION = 10;

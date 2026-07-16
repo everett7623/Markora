@@ -18,6 +18,13 @@ export const en = {
     shortcut: 'Ctrl K'
   },
   footer: { localOnly: 'All bookmark data stays in your browser.' },
+  update: {
+    available: 'FavGrove {{version}} is ready',
+    description: 'Chrome or Edge downloaded the update. Reload FavGrove to apply it now.',
+    apply: 'Update now',
+    applying: 'Updating...',
+    dismiss: 'Remind me later'
+  },
   activity: {
     loadedBookmarks: 'Loaded {{count}} bookmarks',
     searched: 'Searched "{{query}}"',
@@ -56,7 +63,8 @@ export const en = {
     brokenLinkScanFailed: 'Broken link scan failed.',
     browserStoreManualVerification: 'Browser store links require manual verification.',
     linkCheckIncomplete: 'Link check did not complete.',
-    registerAutoScan: 'Unable to register automatic scanning.'
+    registerAutoScan: 'Unable to register automatic scanning.',
+    applyExtensionUpdate: 'Unable to apply the extension update.'
   },
   foundation: { ready: 'Foundation route ready. Product behavior will be added in the next milestones.' },
   dashboard: {

@@ -76,6 +76,11 @@ export interface StoredValue<T> {
   updatedAt: number;
 }
 
+export interface ExtensionUpdateInfo {
+  version: string;
+  detectedAt: number;
+}
+
 export interface BackupRecord {
   id: string;
   reason: 'delete' | 'import' | 'merge' | 'restore';

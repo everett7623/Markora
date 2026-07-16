@@ -2,7 +2,11 @@ import { registerAlarms } from './alarms';
 import { linkRequestService } from '../services/linkRequestService';
 import type { LinkFetchRequest, Result } from '../shared/types';
 
-export type BackgroundMessage = { type: 'open-options' } | { type: 'register-alarms' } | LinkFetchRequest;
+export type BackgroundMessage =
+  | { type: 'open-options' }
+  | { type: 'register-alarms' }
+  | { type: 'apply-extension-update' }
+  | LinkFetchRequest;
 
 export function registerMessageRouter(): void {
   chrome.runtime.onMessage.addListener((message: BackgroundMessage, _sender, sendResponse) => {
@@ -21,6 +25,12 @@ export function registerMessageRouter(): void {
           } satisfies Result<boolean>)
         );
       return true;
+    }
+
+    if (message.type === 'apply-extension-update') {
+      sendResponse({ success: true, data: true } satisfies Result<boolean>);
+      setTimeout(() => chrome.runtime.reload(), 50);
+      return;
     }
 
     if (message.type === 'check-link') {

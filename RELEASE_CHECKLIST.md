@@ -33,6 +33,7 @@
 - [x] `tabs` permission was removed after source audit confirmed no `chrome.tabs` usage.
 - [x] `npm run audit:permissions` verifies manifest and privacy-copy alignment.
 - [x] `<all_urls>` remains optional and is requested only for broken-link scanning.
+- [x] Store update notifications use the browser-managed update lifecycle without new permissions or remote version polling.
 
 ## Privacy And Security
 

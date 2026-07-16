@@ -18,6 +18,13 @@ export const zhCN = {
     shortcut: 'Ctrl K'
   },
   footer: { localOnly: '所有书签数据仅保留在浏览器本地。' },
+  update: {
+    available: 'FavGrove {{version}} 已准备就绪',
+    description: 'Chrome 或 Edge 已下载更新，重新加载 FavGrove 即可立即应用。',
+    apply: '立即更新',
+    applying: '正在更新...',
+    dismiss: '稍后提醒'
+  },
   activity: {
     loadedBookmarks: '已加载 {{count}} 个书签',
     searched: '已搜索“{{query}}”',
@@ -56,7 +63,8 @@ export const zhCN = {
     brokenLinkScanFailed: '失效链接扫描失败。',
     browserStoreManualVerification: '浏览器商店链接需要人工验证。',
     linkCheckIncomplete: '链接检测未完成。',
-    registerAutoScan: '无法注册自动扫描。'
+    registerAutoScan: '无法注册自动扫描。',
+    applyExtensionUpdate: '无法应用扩展更新。'
   },
   foundation: { ready: '基础路由已就绪，产品功能将在后续里程碑中添加。' },
   dashboard: {

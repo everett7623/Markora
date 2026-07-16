@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: July 15, 2026
+Last updated: July 16, 2026
 
 FavGrove is a local-first Chrome and Edge extension for organizing browser bookmarks.
 
@@ -19,7 +19,7 @@ It does not include:
 
 ## Local Data
 
-The extension processes bookmark data locally in the browser. Settings, scan caches, search history, tags, recent activity, and backups are stored with the browser extension storage API.
+The extension processes bookmark data locally in the browser. Settings, scan caches, search history, tags, recent activity, backups, and pending extension-update version metadata are stored with the browser extension storage API.
 
 This data remains on the user's device unless the user explicitly exports a file.
 
@@ -33,6 +33,10 @@ This data remains on the user's device unless the user explicitly exports a file
 ## Network Requests
 
 Network requests are made only for URLs selected by the broken-link scanner. Bookmark data is not sent to a developer-controlled server.
+
+## Extension Updates
+
+Chrome and Edge manage store update checks and downloads. FavGrove listens for the browser's update-ready event, stores only the available version and detection time locally, and shows a reload notice. FavGrove does not poll Google, Microsoft, or GitHub for version information.
 
 ## Imports And Exports
 

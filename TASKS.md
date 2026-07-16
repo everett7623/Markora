@@ -858,6 +858,25 @@ Acceptance:
 
 ---
 
+TASK-814
+
+Browser Store Update Notification
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- Chrome and Edge continue to manage store update checks and downloads
+- FavGrove listens for `chrome.runtime.onUpdateAvailable` without manual polling
+- The available version is persisted locally and shown on the next options-page visit
+- The user can reload FavGrove to apply a downloaded update immediately
+- English and Chinese notices cover available, applying, dismissed, and error states
+- No new host permission, GitHub request, bookmark upload, analytics, or telemetry is introduced
+
+---
+
 # Core Feature Audit
 
 Reviewed against the current implementation on 2026-06-06.

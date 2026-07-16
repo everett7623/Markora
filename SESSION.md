@@ -137,6 +137,7 @@ Complete the FavGrove `0.2.0` beta migration and close the remaining release gap
 - Settings now manages ignored link-check URLs with local search, per-URL re-enable, and confirmation-protected clear-all actions.
 - Link issue rows now support an in-place single-link recheck using the current scanner settings; successful checks remove the issue, while failures refresh its status and classification without adding an ignore rule.
 - The first post-beta AI milestone is now specified as optional, read-only bookmark-library analysis in `TASK-705` and `.codex/tasks/ai-analysis-integration-2026-07-15.md`. No provider, model, credential, endpoint, permission, or data transfer was added during planning.
+- Store-installed updates now use the Chrome/Edge-managed `runtime.onUpdateAvailable` lifecycle. FavGrove persists only the pending version and detection time, shows a localized global notice, and reloads only after the user chooses to apply the downloaded update. No remote version polling or new permission was added.
 
 ## Next Step
 
@@ -201,6 +202,7 @@ Latest verification:
 - On 2026-07-15, project author attribution was normalized to `everettlabs` across the MIT license, README, npm package metadata, and repository-local Git configuration. The extension manifest author field is intentionally omitted because the CRXJS Manifest V3 contract accepts an email object, not a display name.
 - On 2026-07-15, the complete local repository was moved to `D:\EvenFrank\Workspace\Plugins\Google\FavGrove`; Git object integrity, branch tracking, remote configuration, and working-tree changes were verified after the move.
 - On 2026-07-15, the FavGrove `0.2.0` development line and future releases were relicensed under `GPL-3.0-or-later`. Production builds and release archives now include the matching license text; previously granted MIT rights, historical release assets, and third-party dependency licenses were not rewritten.
+- On 2026-07-16, the browser-managed extension update notice passed ESLint with 0 warnings, TypeScript strict checking, 19 Vitest files with 74 tests, production extension build validation and permission audit, Chrome/Edge headless load checks, and 8 Playwright E2E tests. The required permission set remains `alarms`, `bookmarks`, and `storage`.
 
 ## Notes
 

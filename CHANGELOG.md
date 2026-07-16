@@ -4,6 +4,10 @@ All notable changes to FavGrove, formerly Markora, are documented in this file.
 
 ## [0.2.0] - Unreleased
 
+### Added
+
+- Added a localized in-app notice when Chrome or Edge has downloaded a newer store version, with an explicit action to reload FavGrove and apply it.
+
 ### Changed
 
 - Renamed the product from `Markora - Bookmark Atlas` to `FavGrove - Bookmark Manager`.

@@ -39,6 +39,7 @@ Browser bookmark managers become difficult to use once a collection grows into t
 | Import | HTML, JSON, CSV, TXT, and OPML with preview, conflict handling, and backup |
 | Export | HTML, JSON, CSV, TXT, and OPML |
 | Settings | Theme, language, scanner, cache, automatic scan, backup retention, backup management |
+| Updates | Browser-managed Chrome/Edge store updates with an in-app reload notice when a new version is ready |
 | Privacy | Local storage and direct URL checks only; no developer-controlled server |
 
 The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include final visible browser click-through checks, store portal submission, and post-beta local recommendation work. Full destructive replacement restore is documented as deferred.

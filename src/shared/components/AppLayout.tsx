@@ -6,6 +6,8 @@ import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { Button } from './ui/Button';
 import { cn } from '../utils/cn';
 import { useBookmarkStore } from '../../stores/bookmarkStore';
+import { CURRENT_EXTENSION_VERSION } from '../../services/updateService';
+import { UpdateBanner } from './UpdateBanner';
 
 const navigation = [
   { to: '/', key: 'dashboard', icon: BarChart3 },
@@ -92,10 +94,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </label>
           <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-200">P0</span>
         </header>
+        <UpdateBanner />
         <main className="min-h-0 flex-1 overflow-auto p-4 lg:p-6">{children}</main>
         <footer className="flex h-10 items-center justify-between border-t bg-white px-4 text-xs text-slate-500 lg:px-6 dark:bg-slate-950">
           <span>{t('footer.localOnly')}</span>
-          <span>v0.2.0</span>
+          <span>v{CURRENT_EXTENSION_VERSION}</span>
         </footer>
       </div>
     </div>

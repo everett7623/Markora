@@ -1,6 +1,6 @@
 # PROGRESS
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 ## Current Project Completion
 
@@ -62,6 +62,7 @@ Last updated: 2026-07-15
 - Settings includes backup management with backup list, restore, and delete actions.
 - Restore creates a safety backup before applying the selected backup snapshot.
 - App applies persisted theme and language.
+- Chrome/Edge store update readiness is persisted locally and shown in a localized global banner; applying an available update uses an explicit user-triggered extension reload without new permissions or remote version polling.
 - Baseline unit/component tests exist and pass.
 - Playwright E2E covers route navigation, scanner execution, HTML import preview and conflict handling, and manager mutation flows.
 - A local-first privacy policy documents permissions, data handling, and the absence of analytics or remote bookmark uploads.
@@ -179,6 +180,7 @@ Additional verification in this Codex session on 2026-07-08:
 - On 2026-07-15, current project package metadata, README attribution, MIT copyright, and repository-local Git author were normalized to `everettlabs`; the GitHub account path remains `everett7623` because it is the repository owner URL. The extension manifest omits its email-only author object rather than inventing an address.
 - On 2026-07-15, the local workspace was relocated from `D:\EvenFrank\Workspace\Plugins\Google\markora` to `D:\EvenFrank\Workspace\Plugins\Google\FavGrove`; Git state, uncommitted changes, and the FavGrove remote were preserved.
 - On 2026-07-15, the FavGrove `0.2.0` development line and future releases were relicensed under `GPL-3.0-or-later`; production builds and release archives include the matching license text, while historical MIT grants, existing release artifacts, and third-party dependency licenses remain unchanged.
+- On 2026-07-16, the browser-managed update notice passed ESLint with 0 warnings, TypeScript strict checking, 19 Vitest files with 74 tests, production extension build validation and permission audit, Chrome/Edge headless load checks, and 8 Playwright E2E tests. No required or optional host permission changed.
 
 ## Release Decision
 
