@@ -1,3 +1,5 @@
+import { enRelease } from './en-release';
+
 export const en = {
   appName: 'FavGrove',
   tagline: 'Your bookmarks, organized locally',
@@ -18,13 +20,8 @@ export const en = {
     shortcut: 'Ctrl K'
   },
   footer: { localOnly: 'All bookmark data stays in your browser.' },
-  update: {
-    available: 'FavGrove {{version}} is ready',
-    description: 'Chrome or Edge downloaded the update. Reload FavGrove to apply it now.',
-    apply: 'Update now',
-    applying: 'Updating...',
-    dismiss: 'Remind me later'
-  },
+  status: enRelease.status,
+  update: enRelease.update,
   activity: {
     loadedBookmarks: 'Loaded {{count}} bookmarks',
     searched: 'Searched "{{query}}"',
@@ -56,7 +53,9 @@ export const en = {
     reorderBookmark: 'Unable to reorder bookmark.',
     mergeFolders: 'Unable to merge folders.',
     restoreBookmarks: 'Unable to restore bookmarks.',
+    restoreRootFolderMissing: 'The original browser bookmark root is unavailable, so this backup cannot be restored safely.',
     importBookmarks: 'Unable to import bookmarks.',
+    exportBookmarks: 'Unable to export bookmarks.',
     contactBackgroundLinkChecker: 'Unable to contact the background link checker.',
     requestLinkCheckPermissions: 'Unable to request link-check permissions.',
     scanFailed: 'Scan failed.',
@@ -226,6 +225,8 @@ export const en = {
     bookmarksReady: 'bookmarks ready',
     chooseFile: 'Choose file',
     parsing: 'Parsing...',
+    importingBookmarks: 'Importing...',
+    exporting: 'Exporting...',
     unsupportedImportFormat: 'Choose an HTML, JSON, CSV, TXT, or OPML bookmark file.',
     previewTitle: 'Import preview',
     detected: 'detected',
@@ -272,10 +273,10 @@ export const en = {
     noBackups: 'Backups will appear after delete, import, or restore operations.',
     backupCount: '{{count}} backups available.',
     bookmarksCount: '{{count}} bookmarks',
-    restoreBackup: 'Restore',
+    restoreBackup: 'Restore missing',
     deleteBackup: 'Delete',
-    confirmRestoreTitle: 'Restore backup',
-    confirmRestoreDescription: 'Restore this backup with {{count}} bookmarks? A safety backup of the current state will be created first.',
+    confirmRestoreTitle: 'Restore missing bookmarks',
+    confirmRestoreDescription: 'Restore bookmarks missing from this {{count}}-bookmark backup? Existing bookmarks and folders will be kept, and a safety backup will be created first.',
     backupReasons: {
       delete: 'Delete',
       import: 'Import',

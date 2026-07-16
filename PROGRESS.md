@@ -4,13 +4,14 @@ Last updated: 2026-07-16
 
 ## Current Project Completion
 
-- Overall completion: about 96% against the clarified core and release-ready scope.
+- Beta core completion: about 96% against the explicitly scoped `0.2.0` release checklist. This is not 96% of the full roadmap; later automatic AI actions and deferred features are excluded.
 - P0 Foundation: complete and verified.
 - P1 Dashboard: about 94% complete.
 - P2 Scanner: about 97% complete.
 - P3 Manager: about 97% complete.
-- P4 Import/Export: about 94% complete after adding JSON, CSV, TXT, and OPML import.
+- P4 Import/Export: about 96% complete after multi-format import and non-blocking requested-format export.
 - P5 Settings: about 94% complete.
+- P7 AI: the first optional, read-only model-backed analysis milestone is implemented; automatic recommendation and mutation tasks remain open.
 - P6 Optimization through P8 Release: mostly complete; visible browser checks and store portal submission remain open.
 
 ## Completed
@@ -52,6 +53,7 @@ Last updated: 2026-07-16
 - Duplicate bookmark results support keeping the oldest entry and deleting the remaining copies with backup and undo support.
 - Duplicate cleanup and folder merge now rerun the structural scan and replace stale cached results immediately.
 - Import/Export supports JSON, CSV, TXT, OPML, and HTML export generation.
+- Export serializes only the selected format in a dedicated Web Worker, shows immediate busy feedback, and no longer performs five synchronous main-thread serializations per click.
 - HTML import parses Netscape bookmark files in a Web Worker.
 - HTML import parsing is Worker-safe and does not depend on `DOMParser`.
 - Import preview detects URL conflicts before writing.
@@ -60,9 +62,10 @@ Last updated: 2026-07-16
 - HTML import recreates imported folder hierarchy from Netscape bookmark paths.
 - Settings persistence is implemented for theme, language, scanner config, cache config, and backup config.
 - Settings includes backup management with backup list, restore, and delete actions.
-- Restore creates a safety backup before applying the selected backup snapshot.
+- Restore creates a safety backup and adds only bookmark occurrences missing from the selected snapshot without deleting or overwriting current bookmarks and folders.
 - App applies persisted theme and language.
-- Chrome/Edge store update readiness is persisted locally and shown in a localized global banner; applying an available update uses an explicit user-triggered extension reload without new permissions or remote version polling.
+- Chrome/Edge store update readiness is persisted locally and shown in a localized global banner, including updates detected while the options page is open; stale records are cleared, and applying an update uses an explicit user-triggered extension reload without new permissions or remote version polling.
+- The route-loading fallback and beta status badge use shared English and Chinese locale resources.
 - Baseline unit/component tests exist and pass.
 - Playwright E2E covers route navigation, scanner execution, HTML import preview and conflict handling, and manager mutation flows.
 - A local-first privacy policy documents permissions, data handling, and the absence of analytics or remote bookmark uploads.
@@ -93,23 +96,26 @@ Last updated: 2026-07-16
 - Dashboard includes quick actions, local scan-result recommendations, and full-pinyin/pinyin-initial search support.
 - Chinese primary route smoke coverage passes through Playwright after switching language in Settings.
 - Scanner supports deleting one detected empty folder with confirmation, backup creation, bookmark refresh, and scan-cache refresh.
-- 10,000-bookmark structural scan and pinyin search performance benchmarks are covered by `npm run benchmark:performance`.
+- 10,000-bookmark structural scan, pinyin search, and selected-format export performance benchmarks are covered by `npm run benchmark:performance`.
 - Store listing copy, promotional SVG sources, and 1280x800 screenshots are available under `store/`.
 - Chrome and Edge can load the production `dist/` extension through `npm run check:browsers`.
 - Manifest required permissions are limited to `alarms`, `bookmarks`, and `storage`; the unused `tabs` permission was removed after confirming no `chrome.tabs` usage.
 - `npm run audit:permissions` validates the manifest permission boundary and permission documentation in `PRIVACY.md`.
 - Visible Chrome and Edge click-through steps are prepared in `docs/release/browser-clickthrough.md`.
-- Full destructive replacement restore is deferred by `docs/decisions/restore-strategy.md`; the current backup-protected restore remains the release path.
+- Full destructive replacement restore is deferred by `docs/decisions/restore-strategy.md`; additive, path-mapped missing-bookmark recovery is the current release path.
 - GitHub pre-release metadata is prepared in `docs/release/github-prerelease-v0.2.0.md`.
 - Store portal submission fields are prepared in `store/submission-fields.md`.
 - Post-beta AI and local recommendation guardrails are documented in `docs/roadmap/post-beta-ai.md`.
 - `TASK-705` and `.codex/tasks/ai-analysis-integration-2026-07-15.md` define the first model-backed milestone as opt-in, read-only bookmark-library analysis with explicit provider, privacy, schema, cancellation, and large-library acceptance gates.
+- AI Analysis now supports disabled-by-default opt-in, whole-library or folder scope, domain-only or metadata privacy modes, Web Worker preprocessing, exact request preview, user-provided Chat Completions endpoints/models, transient API keys/results, 60-second timeout, cancellation, strict response/evidence validation, and read-only results.
+- AI payloads remove URL queries and fragments, cap metadata samples at 200, and keep full-scope aggregate counts for at least 10,000 bookmarks.
 
 ## Not Completed
 
+- The full post-beta roadmap is not implemented; the completion percentage above applies only to the `0.2.0` beta scope.
 - Visible Chrome and Edge click-through checks from `dist/` remain open.
 - Store portal submission fields and GitHub pre-release metadata are prepared locally but not finalized in the portals.
-- Post-beta AI analysis is planned but not implemented; no provider, model, credential, endpoint, permission, or data transfer is configured.
+- A visible live-provider compatibility check remains open because FavGrove intentionally bundles no provider endpoint, model, or credential; automated success/failure/cancellation coverage uses a simulated compatible provider.
 - Full destructive replacement restore remains a deferred post-beta feature and is not part of the current release path.
 
 ## Verification
@@ -181,6 +187,10 @@ Additional verification in this Codex session on 2026-07-08:
 - On 2026-07-15, the local workspace was relocated from `D:\EvenFrank\Workspace\Plugins\Google\markora` to `D:\EvenFrank\Workspace\Plugins\Google\FavGrove`; Git state, uncommitted changes, and the FavGrove remote were preserved.
 - On 2026-07-15, the FavGrove `0.2.0` development line and future releases were relicensed under `GPL-3.0-or-later`; production builds and release archives include the matching license text, while historical MIT grants, existing release artifacts, and third-party dependency licenses remain unchanged.
 - On 2026-07-16, the browser-managed update notice passed ESLint with 0 warnings, TypeScript strict checking, 19 Vitest files with 74 tests, production extension build validation and permission audit, Chrome/Edge headless load checks, and 8 Playwright E2E tests. No required or optional host permission changed.
+- On 2026-07-16, release polish for live update-state refresh, stale-record cleanup, and localized loading/beta labels passed ESLint with 0 warnings, TypeScript strict checking, 19 Vitest files with 77 tests, production extension build validation and permission audit, Chrome/Edge headless load checks, and 8 Playwright E2E tests.
+- On 2026-07-16, non-destructive missing-bookmark recovery passed ESLint with 0 warnings, TypeScript strict checking, 21 Vitest files with 82 tests, production extension build validation and permission audit, Chrome/Edge headless load checks, and 8 Playwright E2E tests.
+- On 2026-07-16, requested-format export moved to a dedicated Worker with import/export busy feedback; ESLint, TypeScript, 83 Vitest tests, the 10,000-bookmark benchmark, production extension validation and permission audit, Chrome/Edge headless load checks, and 9 Playwright E2E tests passed. A Chrome 10,000-bookmark CSV run completed in 105 ms with no observed Long Task.
+- On 2026-07-16, the optional read-only AI analysis milestone passed ESLint with 0 warnings, TypeScript strict checking, 26 Vitest files with 97 tests, the 10,000-bookmark benchmark, production extension validation and permission audit, Chrome/Edge headless load checks, and 11 Playwright E2E tests. Automated provider checks cover opt-in, privacy redaction, exact preview, success, cancellation, failure, and untrusted-response rejection; a live-provider check remains open.
 
 ## Release Decision
 
@@ -203,11 +213,11 @@ Required standards:
 2. Confirm public privacy policy and support URLs in the store portals.
 3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.2.0.md`.
 4. Upload the verified release ZIP only after the visible browser pass is recorded.
-5. After release gates close, begin `TASK-705` with the provider/data-boundary decision and local preprocessing contract.
+5. Run a disposable live-provider AI check with user-owned credentials and record the result without storing the key.
 
 ## Design Notes / Pending Decisions
 
-- Backup restore currently re-applies a selected snapshot and creates a safety backup first.
+- Backup restore is non-destructive and idempotent, with parent-ID/path mapping, missing-folder recreation, a pre-write safety backup, and rollback of newly created items on failure.
 - Full destructive replacement restore is intentionally deferred to post-beta work.
 - HTML import now recreates nested folders; folder conflict behavior currently creates/imports new folders for the import batch.
 - Folder merge keeps the first duplicate folder as the target and moves all source children without silently deleting URL conflicts.

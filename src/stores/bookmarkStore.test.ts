@@ -187,13 +187,20 @@ describe('bookmarkStore', () => {
     }
   });
 
-  it('loads, restores, and deletes backups', async () => {
-    // The backup contains only one bookmark (https://restore.test)
+  it('restores missing bookmarks without deleting the current collection', async () => {
     const backupBookmarks: BookmarkNode[] = [
       {
-        id: 'root',
-        title: 'Backup Root',
-        children: [{ id: 'backup-bookmark', title: 'Restored', url: 'https://restore.test', parentId: 'root' }]
+        id: '1',
+        title: 'Bookmarks Bar',
+        children: [{
+          id: '10',
+          title: 'Work',
+          parentId: '1',
+          children: [
+            { id: '101', title: 'GitHub', url: 'https://github.com', parentId: '10' },
+            { id: 'backup-bookmark', title: 'Restored', url: 'https://restore.test', parentId: '10' }
+          ]
+        }]
       }
     ];
     const backup: BackupRecord = {
@@ -204,54 +211,38 @@ describe('bookmarkStore', () => {
     };
     await storageService.set(STORAGE_KEYS.backups, [backup]);
 
-    // Load the store — this populates bookmarks with the mock tree (GitHub, MDN, etc.)
     await useBookmarkStore.getState().load();
     await useBookmarkStore.getState().loadBackups();
 
     expect(useBookmarkStore.getState().backups).toHaveLength(1);
 
-    // Capture the IDs present before restore (the "current" bookmarks that should be removed)
     const currentBookmarks = useBookmarkStore.getState().bookmarks;
-    const expectedRemovedIds = currentBookmarks
-      .flatMap((root) => (root.children ?? []) as BookmarkNode[])
-      .flatMap((node) => [node.id, ...((node.children ?? []) as BookmarkNode[]).map((child) => child.id)]);
-
-    // Mock removeMany to succeed and capture what IDs it was called with
-    const removeManyMock = vi.spyOn(bookmarkService, 'removeMany').mockResolvedValue({ success: true, data: expectedRemovedIds });
-
-    // Mock getTree to return a fresh tree containing only the backup bookmarks
-    const freshTree: BookmarkNode[] = [
-      {
-        id: 'root',
-        title: 'Backup Root',
-        children: [{ id: 'backup-bookmark', title: 'Restored', url: 'https://restore.test', parentId: 'root' }]
-      }
-    ];
+    const workFolder = currentBookmarks[0].children?.[0] as BookmarkNode;
+    const freshTree: BookmarkNode[] = currentBookmarks.map((root) => root.id === '1'
+      ? {
+          ...root,
+          children: (root.children as BookmarkNode[]).map((folder) => folder.id === '10'
+            ? {
+                ...folder,
+                children: [...(folder.children as BookmarkNode[]), { id: 'restored', title: 'Restored', url: 'https://restore.test', parentId: workFolder.id }]
+              }
+            : folder)
+        }
+      : root);
+    const removeManyMock = vi.spyOn(bookmarkService, 'removeMany');
     const getTreeMock = vi.spyOn(bookmarkService, 'getTree').mockResolvedValue({ success: true, data: freshTree });
 
     await useBookmarkStore.getState().restoreBackup('backup-1');
 
-    // removeMany must have been called to clear prior bookmarks before restoring
-    expect(removeManyMock).toHaveBeenCalledOnce();
-    const removedIds: string[] = removeManyMock.mock.calls[0][0];
-    expect(removedIds.length).toBeGreaterThan(0);
-    // All removed IDs should come from the bookmarks that existed before restore
-    for (const id of removedIds) {
-      expect(expectedRemovedIds).toContain(id);
-    }
-
-    // getTree must have been called to reload from Chrome API after restore
+    expect(removeManyMock).not.toHaveBeenCalled();
     expect(getTreeMock).toHaveBeenCalledOnce();
 
-    // The store should contain only the backup bookmark — no duplicates from prior state
     const resultUrls = useBookmarkStore.getState().searchResults.map((b) => b.url);
-    expect(resultUrls).toEqual(['https://restore.test']);
-    // Prior-state URLs must not appear
-    expect(resultUrls).not.toContain('https://github.com');
-    expect(resultUrls).not.toContain('https://developer.mozilla.org');
-    expect(resultUrls).not.toContain('https://react.dev');
+    expect(resultUrls).toContain('https://restore.test');
+    expect(resultUrls).toContain('https://github.com');
+    expect(resultUrls).toContain('https://developer.mozilla.org');
+    expect(resultUrls).toContain('https://react.dev');
 
-    // A safety backup with reason 'restore' should have been prepended
     expect(useBookmarkStore.getState().backups[0].reason).toBe('restore');
 
     await useBookmarkStore.getState().deleteBackup('backup-1');

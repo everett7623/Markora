@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { BookmarkNode } from '../shared/types';
 import { exportService } from './exportService';
 
@@ -14,6 +14,8 @@ const bookmarks: BookmarkNode[] = [
 ];
 
 describe('exportService', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
   it('serializes bookmark data as JSON', () => {
     const result = exportService.toJson(bookmarks);
     expect(result.success).toBe(true);
@@ -40,12 +42,26 @@ describe('exportService', () => {
     expect(html.success && html.data).toContain('NETSCAPE-Bookmark-file-1');
   });
 
-  it('creates a downloadable file descriptor', () => {
-    const file = exportService.createFile(bookmarks, 'csv');
+  it('creates a downloadable file descriptor for only the requested format', async () => {
+    const worker = {
+      onmessage: null as ((event: MessageEvent) => void) | null,
+      onerror: null as (() => void) | null,
+      postMessage: vi.fn(),
+      terminate: vi.fn()
+    };
+    vi.stubGlobal('Worker', vi.fn(() => worker));
+
+    const filePromise = exportService.createFile(bookmarks, 'csv');
+    expect(worker.postMessage).toHaveBeenCalledWith({ type: 'create-export', bookmarks, format: 'csv' });
+    worker.onmessage?.({ data: { type: 'complete', content: 'csv-only' } } as MessageEvent);
+    const file = await filePromise;
+
     expect(file.success).toBe(true);
     if (file.success) {
       expect(file.data.filename).toMatch(/bookmarks-\d{4}-\d{2}-\d{2}\.csv/);
       expect(file.data.mimeType).toContain('text/csv');
+      expect(file.data.content).toBe('csv-only');
     }
+    expect(worker.terminate).toHaveBeenCalledOnce();
   });
 });

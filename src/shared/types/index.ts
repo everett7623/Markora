@@ -81,6 +81,13 @@ export interface ExtensionUpdateInfo {
   detectedAt: number;
 }
 
+export interface BookmarkRestoreItem {
+  title: string;
+  url: string;
+  path: string[];
+  parentId?: string;
+}
+
 export interface BackupRecord {
   id: string;
   reason: 'delete' | 'import' | 'merge' | 'restore';
@@ -161,3 +168,17 @@ export interface ImportHtmlWorkerResponse {
   items?: ImportBookmarkItem[];
   error?: string;
 }
+
+export interface ExportWorkerRequest {
+  type: 'create-export';
+  format: ExportFormat;
+  bookmarks: BookmarkNode[];
+}
+
+export interface ExportWorkerResponse {
+  type: 'complete' | 'error';
+  content?: string;
+  error?: string;
+}
+
+export * from './ai';

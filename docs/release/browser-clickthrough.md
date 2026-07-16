@@ -28,9 +28,12 @@ Do not load the project root or `.crx-dev`.
 
 - Load `dist/` as an unpacked extension with no manifest warnings.
 - Confirm the extension action opens the full-screen FavGrove options page.
-- Open Dashboard, Scanner, Manager, Import / Export, and Settings from the built extension.
+- Open Dashboard, Scanner, Manager, Import / Export, AI Analysis, and Settings from the built extension.
 - Confirm broken-link scanning requests optional `<all_urls>` host access only after the user starts a link scan.
-- Exercise rename, move, delete, undo, duplicate-folder merge, import preview, export, backup, and restore flows on disposable bookmark data.
+- Confirm AI Analysis is disabled by default and makes no request before preview confirmation.
+- With a disposable user-owned compatible endpoint, confirm the request preview shows destination, model, scope, fields, counts, and estimate before endpoint permission is requested.
+- Confirm cancellation and a provider-error response return the page to an actionable state without modifying bookmarks.
+- Exercise rename, move, delete, undo, duplicate-folder merge, import preview, export, backup, and missing-bookmark restore flows on disposable bookmark data; confirm restore keeps current bookmarks.
 - Confirm light mode, dark mode, English, and Chinese settings persist after browser restart.
 - Confirm no popup page appears and all primary workflows remain in the options tab.
 

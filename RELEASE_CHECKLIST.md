@@ -32,16 +32,16 @@
 - [x] Required permissions have a documented user-facing purpose.
 - [x] `tabs` permission was removed after source audit confirmed no `chrome.tabs` usage.
 - [x] `npm run audit:permissions` verifies manifest and privacy-copy alignment.
-- [x] `<all_urls>` remains optional and is requested only for broken-link scanning.
+- [x] `<all_urls>` remains optional and is requested only for broken-link scanning or an explicitly confirmed user-selected AI endpoint.
 - [x] Store update notifications use the browser-managed update lifecycle without new permissions or remote version polling.
 
 ## Privacy And Security
 
 - [x] `PRIVACY.md` matches current behavior.
-- [x] No analytics, telemetry, remote tracking, or cloud upload was introduced.
+- [x] No analytics, telemetry, remote tracking, developer-operated AI proxy, or automatic cloud upload was introduced.
 - [x] Imported files and URLs are validated.
 - [x] Destructive operations create backups where currently implemented.
-- [x] No bookmark data is sent to a developer-controlled server.
+- [x] No bookmark data is sent to a developer-controlled FavGrove server; optional AI requests go directly to the user-selected endpoint after preview and confirmation.
 
 ## Manual Extension Checks
 
@@ -49,9 +49,11 @@
 - [x] Visible Chrome and Edge click-through checklist is prepared in `docs/release/browser-clickthrough.md`.
 - [ ] Load `dist/` as an unpacked extension without manifest warnings in visible Chrome and Edge.
 - [ ] Clicking the extension action opens the full-screen options page.
-- [ ] Dashboard, Scanner, Manager, Import / Export, and Settings routes open.
+- [ ] Dashboard, Scanner, Manager, Import / Export, AI Analysis, and Settings routes open.
 - [ ] Broken-link permission is requested only after starting a scan.
-- [ ] Rename, move, delete, undo, folder merge, import, export, backup, and restore flows work.
+- [ ] AI endpoint permission is requested only after opt-in, local preview, and explicit confirmation.
+- [ ] AI domain-only mode sends no bookmark titles, paths, tags, URL queries, or URL fragments.
+- [ ] Rename, move, delete, undo, folder merge, import, export, backup, and missing-bookmark restore flows work without deleting current bookmarks.
 - [ ] Light, dark, English, and Chinese settings persist after restart.
 
 ## Store Submission

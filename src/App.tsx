@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import i18n from './shared/i18n';
 import { AppLayout } from './shared/components/AppLayout';
@@ -10,9 +11,11 @@ const ScannerPage = lazy(() => import('./features/scanner/ScannerPage'));
 const LinkIssuesPage = lazy(() => import('./features/scanner/LinkIssuesPage'));
 const ManagerPage = lazy(() => import('./features/manager/ManagerPage'));
 const ImportExportPage = lazy(() => import('./features/import-export/ImportExportPage'));
+const AiAnalysisPage = lazy(() => import('./features/ai-analysis/AiAnalysisPage'));
 const SettingsPage = lazy(() => import('./features/settings/SettingsPage'));
 
 export function App() {
+  const { t } = useTranslation();
   const loadBookmarks = useBookmarkStore((state) => state.load);
   const settings = useSettingsStore((state) => state.settings);
   const loadSettings = useSettingsStore((state) => state.load);
@@ -41,13 +44,14 @@ export function App() {
   return (
     <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AppLayout>
-        <Suspense fallback={<div className="p-6 text-sm text-slate-500">Loading...</div>}>
+        <Suspense fallback={<div className="p-6 text-sm text-slate-500">{t('status.loading')}</div>}>
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/scanner" element={<ScannerPage />} />
             <Route path="/scanner/links" element={<LinkIssuesPage />} />
             <Route path="/manager" element={<ManagerPage />} />
             <Route path="/import-export" element={<ImportExportPage />} />
+            <Route path="/ai-analysis" element={<AiAnalysisPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

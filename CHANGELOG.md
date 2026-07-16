@@ -6,10 +6,15 @@ All notable changes to FavGrove, formerly Markora, are documented in this file.
 
 ### Added
 
+- Added optional, read-only AI bookmark-library analysis with user-provided Chat Completions endpoints, explicit request preview, privacy modes, cancellation, and structured evidence validation.
 - Added a localized in-app notice when Chrome or Edge has downloaded a newer store version, with an explicit action to reload FavGrove and apply it.
 
 ### Changed
 
+- Export now serializes only the selected format in a Web Worker, with immediate busy feedback instead of generating all five formats on the options-page main thread.
+- Replaced destructive backup restore with additive missing-bookmark recovery, parent-ID/path mapping, safety backups, and rollback of failed restore writes.
+- Update notices now appear without reopening FavGrove when Chrome or Edge downloads an update while the page is open, and stale update records are cleared locally.
+- Localized the route-loading fallback and beta status badge in English and Chinese.
 - Renamed the product from `Markora - Bookmark Atlas` to `FavGrove - Bookmark Manager`.
 - Updated English and Chinese product copy, release metadata, promotional assets, and package naming for the FavGrove brand.
 - Preserved browser storage contracts, import schemas, and the existing automatic-scan alarm identifier for upgrade compatibility.

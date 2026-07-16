@@ -21,11 +21,12 @@ FavGrove v0.2.0 is the rebranded beta of the local-first Manifest V3 bookmark wo
 - Link issue review with manual verification states, per-link rechecks, ignored-link management, and backup-protected deletion.
 - Virtualized bookmark manager with rename, move, reorder, tags, batch tag editing, batch delete, and undo.
 - HTML, JSON, CSV, TXT, and OPML import/export with preview and conflict handling.
-- Local backups, restore, backup retention, theme, language, and automatic daily structure scan settings.
+- Local backups, non-destructive missing-bookmark recovery, backup retention, theme, language, and automatic daily structure scan settings.
+- Optional read-only AI analysis through a user-provided compatible endpoint, with request preview, redaction, cancellation, and strict result validation.
 
 ## Privacy
 
-FavGrove stores bookmark metadata, settings, scan cache, search history, tags, and backups locally in browser extension storage. It does not include analytics, telemetry, account sync, cloud processing, or developer-operated bookmark uploads.
+FavGrove stores bookmark metadata, settings, scan cache, search history, tags, and backups locally in browser extension storage. It does not include analytics, telemetry, account sync, a developer-operated AI proxy, or developer-operated bookmark uploads. Optional AI analysis is disabled by default and sends only previewed metadata directly to a user-selected endpoint after confirmation; API keys and results are not persisted.
 
 ## License
 
@@ -49,4 +50,5 @@ FavGrove v0.2.0 is distributed under `GPL-3.0-or-later`. The release archive inc
 - Store portal upload and review are not performed from this repository.
 - The GitHub repository is available at `https://github.com/everett7623/FavGrove`.
 - Full destructive bookmark-tree replacement restore is deferred by decision.
-- Post-beta AI/local recommendation features remain out of scope until release gates are closed.
+- Live-provider compatibility must be checked with a user-owned endpoint, model, and credential; automated tests use a simulated compatible provider.
+- Automatic AI bookmark mutations and later recommendation features remain out of scope.

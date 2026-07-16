@@ -10,7 +10,7 @@
   [![Release](https://img.shields.io/github/v/release/everett7623/FavGrove?include_prereleases&label=beta)](https://github.com/everett7623/FavGrove/releases)
   [![Manifest](https://img.shields.io/badge/Manifest-V3-4285F4)](manifest.json)
   [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6)](tsconfig.json)
-  [![Tests](https://img.shields.io/badge/tests-66%20unit%20%2B%208%20E2E-success)](#quality)
+  [![Tests](https://img.shields.io/badge/tests-97%20Vitest%20%2B%2011%20E2E-success)](#quality)
   [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 </div>
 
@@ -25,7 +25,7 @@ Browser bookmark managers become difficult to use once a collection grows into t
 - Detects exact duplicate URLs, duplicate folders, empty folders, and link issues.
 - Separates confirmed broken links from links blocked by networks, proxies, Cloudflare, or browser-protected stores.
 - Creates local backups before destructive operations.
-- Does not include analytics, telemetry, cloud sync, or bookmark uploads.
+- Does not include analytics, telemetry, cloud sync, a developer-operated AI proxy, or automatic bookmark uploads.
 
 ## Current Features
 
@@ -38,11 +38,12 @@ Browser bookmark managers become difficult to use once a collection grows into t
 | Manager | Folder filtering, collapsible tree, virtualized list, rename, move, reorder, tags, batch edit, batch delete, undo |
 | Import | HTML, JSON, CSV, TXT, and OPML with preview, conflict handling, and backup |
 | Export | HTML, JSON, CSV, TXT, and OPML |
-| Settings | Theme, language, scanner, cache, automatic scan, backup retention, backup management |
+| Settings | Theme, language, scanner, cache, automatic scan, backup retention, and non-destructive missing-bookmark recovery |
 | Updates | Browser-managed Chrome/Edge store updates with an in-app reload notice when a new version is ready |
-| Privacy | Local storage and direct URL checks only; no developer-controlled server |
+| AI analysis | Disabled by default; whole-library or folder analysis through a user-provided compatible endpoint, request preview, URL redaction, cancellation, and read-only structured results |
+| Privacy | Local storage by default; no analytics, telemetry, shared AI key, developer-controlled bookmark server, or AI proxy |
 
-The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include final visible browser click-through checks, store portal submission, and post-beta local recommendation work. Full destructive replacement restore is documented as deferred.
+The remaining roadmap is tracked in [TASKS.md](TASKS.md) and [PROGRESS.md](PROGRESS.md). Known gaps include final visible browser click-through checks, live-provider compatibility testing with user-owned credentials, store portal submission, and later automatic recommendation work. Full destructive replacement restore is documented as deferred.
 
 ## Link Scanner
 
@@ -105,8 +106,8 @@ The `v0.2.0` beta candidate currently passes:
 
 - ESLint with zero errors and zero warnings.
 - TypeScript strict type checking.
-- 66 Vitest unit and component tests.
-- 8 Playwright end-to-end flows.
+- 97 Vitest unit and component tests.
+- 11 Playwright end-to-end flows.
 - Production extension validation.
 - Permission audit for the release manifest and privacy copy.
 - Chrome and Edge headless `dist/` load checks.
@@ -117,8 +118,8 @@ The `v0.2.0` beta candidate currently passes:
 ```text
 src/
 ├── background/       Manifest V3 service worker and message routing
-├── workers/          Scanner, link scheduling, and import parsing
-├── services/         Chrome API, storage, scan, import/export, and backup boundaries
+├── workers/          Scanner, link scheduling, import/export, and AI preprocessing
+├── services/         Chrome API, storage, scan, import/export, backup, and AI provider boundaries
 ├── stores/           Zustand application state
 ├── shared/           Shared components, hooks, types, utilities, and i18n
 ├── features/         Dashboard, scanner, manager, import/export, and settings
@@ -137,7 +138,7 @@ Core stack: React 18, TypeScript 5, Vite 5, CRXJS, Manifest V3, Zustand, React R
 
 ## Privacy
 
-FavGrove does not collect personal data or upload bookmarks. Settings, tags, history, scan caches, and backups remain in browser extension storage. See [PRIVACY.md](PRIVACY.md) for permission and network details.
+FavGrove does not collect personal data or operate a bookmark/AI proxy service. Settings, tags, history, scan caches, and backups remain in browser extension storage. Optional AI analysis is disabled by default and sends only previewed, minimized metadata to the user-selected endpoint after confirmation. See [PRIVACY.md](PRIVACY.md) for permission and network details.
 
 ## Documentation
 
@@ -147,6 +148,7 @@ FavGrove does not collect personal data or upload bookmarks. Settings, tags, his
 - [Release checklist](RELEASE_CHECKLIST.md)
 - [Browser click-through checklist](docs/release/browser-clickthrough.md)
 - [Restore strategy decision](docs/decisions/restore-strategy.md)
+- [AI provider and data boundary](docs/decisions/ai-provider-boundary.md)
 - [Store submission fields](store/submission-fields.md)
 - [Post-beta AI roadmap](docs/roadmap/post-beta-ai.md)
 - [Version policy](VERSIONING.md)

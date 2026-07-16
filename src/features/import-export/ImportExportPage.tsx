@@ -41,59 +41,66 @@ export default function ImportExportPage() {
   const [error, setError] = useState<string | null>(null);
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [importing, setImporting] = useState(false);
+  const [importingStrategy, setImportingStrategy] = useState<ImportConflictStrategy | null>(null);
+  const [exportingFormat, setExportingFormat] = useState<ExportFormat | null>(null);
   const bookmarkCount = useMemo(() => flattenBookmarks(bookmarks).length, [bookmarks]);
   const importableCount = importPreview ? importPreview.items.length - importPreview.conflicts.length : 0;
 
-  const exportFormat = (format: ExportFormat) => {
-    const file = exportService.createFile(bookmarks, format);
-    if (!file.success) {
-      setError(file.error);
-      return;
-    }
-
+  const exportFormat = async (format: ExportFormat) => {
+    if (exportingFormat) return;
+    setExportingFormat(format);
     setError(null);
-    downloadFile(file.data.filename, file.data.mimeType, file.data.content);
+    try {
+      const file = await exportService.createFile(bookmarks, format);
+      if (!file.success) return setError(file.error);
+      downloadFile(file.data.filename, file.data.mimeType, file.data.content);
+    } catch (exportError) {
+      setError(exportError instanceof Error ? exportError.message : t('serviceErrors.exportBookmarks'));
+    } finally {
+      setExportingFormat(null);
+    }
   };
 
   const previewImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setImporting(true);
-    setError(null);
+    const input = event.currentTarget;
     const format = detectImportFormat(file);
     if (!format) {
-      setImporting(false);
       setError(t('importExport.unsupportedImportFormat'));
       setImportPreview(null);
-      event.target.value = '';
+      input.value = '';
       return;
     }
 
-    const content = await file.text();
-    const preview = await importService.preview(format, content, bookmarks);
-    setImporting(false);
-    event.target.value = '';
-
-    if (!preview.success) {
-      setError(preview.error);
+    setImporting(true);
+    setError(null);
+    setImportPreview(null);
+    try {
+      const content = await file.text();
+      const preview = await importService.preview(format, content, bookmarks);
+      if (!preview.success) return setError(preview.error);
+      if (preview.data.items.length === 0) return setError(t('importExport.noImportItems'));
+      setImportPreview(preview.data);
+    } catch (readError) {
+      setError(readError instanceof Error ? readError.message : t('serviceErrors.parseBookmarkHtml'));
       setImportPreview(null);
-      return;
+    } finally {
+      setImporting(false);
+      input.value = '';
     }
-
-    if (preview.data.items.length === 0) {
-      setError(t('importExport.noImportItems'));
-      setImportPreview(null);
-      return;
-    }
-
-    setImportPreview(preview.data);
   };
 
   const runImport = async (strategy: ImportConflictStrategy) => {
-    if (!importPreview) return;
-    await importBookmarks(importPreview, strategy);
-    setImportPreview(null);
+    if (!importPreview || importingStrategy) return;
+    setImportingStrategy(strategy);
+    try {
+      await importBookmarks(importPreview, strategy);
+      setImportPreview(null);
+    } finally {
+      setImportingStrategy(null);
+    }
   };
 
   return (
@@ -115,9 +122,15 @@ export default function ImportExportPage() {
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {exportOptions.map(({ format, icon: Icon }) => (
-            <Button key={format} variant="outline" className="justify-start" onClick={() => exportFormat(format)} disabled={bookmarkCount === 0}>
+            <Button
+              key={format}
+              variant="outline"
+              className="justify-start"
+              onClick={() => void exportFormat(format)}
+              disabled={bookmarkCount === 0 || exportingFormat !== null}
+            >
               <Icon size={16} />
-              {t(`importExport.formats.${format}`)}
+              {exportingFormat === format ? t('importExport.exporting') : t(`importExport.formats.${format}`)}
             </Button>
           ))}
         </div>
@@ -158,11 +171,11 @@ export default function ImportExportPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button onClick={() => void runImport('skip')} disabled={importableCount === 0 || mutating}>
-                  {t('importExport.importNewOnly')} ({importableCount})
+                <Button onClick={() => void runImport('skip')} disabled={importableCount === 0 || mutating || importingStrategy !== null}>
+                  {importingStrategy === 'skip' ? t('importExport.importingBookmarks') : `${t('importExport.importNewOnly')} (${importableCount})`}
                 </Button>
-                <Button variant="outline" onClick={() => void runImport('import-all')} disabled={mutating}>
-                  {t('importExport.importAll')}
+                <Button variant="outline" onClick={() => void runImport('import-all')} disabled={mutating || importingStrategy !== null}>
+                  {importingStrategy === 'import-all' ? t('importExport.importingBookmarks') : t('importExport.importAll')}
                 </Button>
               </div>
             </div>

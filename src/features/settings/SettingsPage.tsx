@@ -263,7 +263,6 @@ export default function SettingsPage() {
         })}
         confirmLabel={t('settings.restoreBackup')}
         cancelLabel={t('dialog.cancel')}
-        variant="destructive"
         onCancel={() => setRestoreTarget(null)}
         onConfirm={() => void confirmRestore()}
       />

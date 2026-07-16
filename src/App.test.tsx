@@ -10,6 +10,7 @@ describe('App', () => {
     render(<App />);
     expect(screen.getAllByText('FavGrove').length).toBeGreaterThan(0);
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(screen.getByText('Beta')).toBeInTheDocument();
     expect(screen.getByText('All bookmark data stays in your browser.')).toBeInTheDocument();
   });
 });

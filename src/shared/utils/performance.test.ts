@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BookmarkNode } from '../types';
+import { serializeExport } from './exportFormats';
+import { createAiAnalysisPayload } from './aiPreprocess';
 import { searchBookmarks } from './bookmarks';
 import { createStructureScanResult } from './structureScan';
 
@@ -48,5 +50,25 @@ describe('large collection performance', () => {
 
     expect(results).toHaveLength(5_000);
     expect(durationMs).toBeLessThan(2_500);
+  });
+
+  it('serializes one requested export format efficiently for 10,000 bookmarks', () => {
+    const startedAt = performance.now();
+    const csv = serializeExport(tree, 'csv');
+    const durationMs = performance.now() - startedAt;
+
+    expect(csv).toContain('bookmark-9999');
+    expect(durationMs).toBeLessThan(1_500);
+  });
+
+  it('prepares privacy-bounded AI metadata for 10,000 bookmarks', () => {
+    const startedAt = performance.now();
+    const prepared = createAiAnalysisPayload(tree, null, 'metadata');
+    const durationMs = performance.now() - startedAt;
+
+    expect(prepared.payload.scope.bookmarkCount).toBe(10_000);
+    expect(prepared.payload.items).toHaveLength(200);
+    expect(prepared.payload.truncated).toBe(true);
+    expect(durationMs).toBeLessThan(1_500);
   });
 });

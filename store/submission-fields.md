@@ -5,7 +5,7 @@ Use this worksheet when copying FavGrove metadata into the Chrome Web Store and 
 ## Listing
 
 - Product name: `FavGrove - Bookmark Manager`
-- Short description: `A local-first bookmark workspace for scanning, cleaning, importing, exporting, and backing up large Chrome and Edge bookmark collections.`
+- Short description: `A local-first bookmark workspace with scanning, cleanup, import/export, backups, and optional user-configured AI analysis.`
 - Category: `Productivity`
 - Support URL: `https://github.com/everett7623/FavGrove/issues`
 - Privacy policy URL: `https://github.com/everett7623/FavGrove/blob/main/PRIVACY.md`
@@ -13,14 +13,14 @@ Use this worksheet when copying FavGrove metadata into the Chrome Web Store and 
 
 ## Single Purpose
 
-FavGrove helps users organize, scan, clean, import, export, and back up their browser bookmark collections locally inside Chrome or Edge.
+FavGrove helps users organize, scan, clean, import, export, back up, and optionally analyze browser bookmark collections inside Chrome or Edge.
 
 ## Permission Justifications
 
 - `alarms`: Runs the optional daily local structure scan when automatic scanning is enabled.
 - `bookmarks`: Reads and updates bookmarks for scan, cleanup, import, export, restore, and management workflows.
 - `storage`: Stores local settings, tags, scan caches, search history, recent activity, and backups.
-- Optional `<all_urls>` host access: Requested only when the user starts broken-link scanning so URLs can be checked directly from the extension.
+- Optional `<all_urls>` host access: Requested only when the user starts broken-link scanning or confirms an AI request to a user-selected endpoint.
 
 The extension does not request the `tabs` permission.
 
@@ -31,8 +31,9 @@ The extension does not request the `tabs` permission.
 - No advertising.
 - No account sync.
 - No sale or sharing of user data.
-- No bookmark uploads to a developer-controlled server.
-- Bookmark data stays in browser APIs and extension storage unless the user exports a file.
+- No bookmark uploads to a developer-controlled FavGrove server; FavGrove operates no AI proxy.
+- Bookmark data stays in browser APIs and extension storage unless the user exports a file or explicitly previews and confirms an optional request to their selected AI endpoint.
+- AI is disabled by default, API keys are not persisted, and URL queries/fragments are removed from AI metadata requests.
 
 ## Assets
 

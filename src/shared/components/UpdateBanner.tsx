@@ -2,7 +2,7 @@ import { RefreshCw, TriangleAlert, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { updateService } from '../../services/updateService';
-import type { ExtensionUpdateInfo } from '../types';
+import type { ExtensionUpdateInfo, Result } from '../types';
 import { Button } from './ui/Button';
 
 export function UpdateBanner() {
@@ -14,16 +14,21 @@ export function UpdateBanner() {
 
   useEffect(() => {
     let cancelled = false;
-    void updateService.getAvailableUpdate().then((result) => {
+    const handleUpdate = (result: Result<ExtensionUpdateInfo | null>) => {
       if (cancelled) return;
       if (!result.success) {
         setError(result.error);
         return;
       }
+      setError('');
       setUpdate(result.data);
-    });
+    };
+
+    const unsubscribe = updateService.subscribeToAvailableUpdate(handleUpdate);
+    void updateService.getAvailableUpdate().then(handleUpdate);
     return () => {
       cancelled = true;
+      unsubscribe();
     };
   }, []);
 

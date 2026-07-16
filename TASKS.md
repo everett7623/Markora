@@ -483,6 +483,23 @@ Acceptance:
 
 ---
 
+TASK-412
+
+Responsive Multi-Format Export
+
+Status:
+
+- Implemented
+
+Acceptance:
+
+- Serialize only the format selected by the user
+- Run large export serialization outside the options-page main thread
+- Show immediate localized busy feedback and block duplicate clicks
+- Cover the Worker request, real browser download, and 10,000-bookmark path
+
+---
+
 # P5 Settings
 
 TASK-501
@@ -635,8 +652,8 @@ AI Bookmark Library Analysis
 
 Status:
 
-- Planned; implementation has not started
-- First model-backed milestone after the release gates are closed
+- Implemented: first read-only model-backed milestone
+- Live-provider compatibility check remains user-configured because FavGrove bundles no endpoint or credential
 - Detailed scope: `.codex/tasks/ai-analysis-integration-2026-07-15.md`
 
 Acceptance:
@@ -644,9 +661,9 @@ Acceptance:
 - AI analysis is disabled by default and starts only after explicit scope preview and confirmation
 - The first milestone is read-only and cannot directly mutate bookmarks
 - Local preprocessing minimizes and redacts data before an approved remote request
-- Provider/model selection, credential handling, retention, cost, and host permissions are approved before implementation
+- The user selects a compatible endpoint and model; the API key remains in current-page memory only
 - Provider calls stay behind service/background boundaries and return provider-neutral structured results
-- Large-library analysis supports cancellation, progress, bounded batches, and at least 10,000 bookmarks
+- Large-library analysis supports cancellation, timeout, bounded 200-item samples, full-scope aggregates, and at least 10,000 bookmarks
 - Invalid or malicious model output cannot trigger bookmark operations
 - Unit, performance, E2E, privacy, store disclosure, and release-note requirements are complete before shipping
 
@@ -709,6 +726,7 @@ Status:
 - English and Chinese locale key parity is enforced by unit test
 - English route smoke checks pass through Playwright
 - Chinese primary route smoke checks pass through Playwright
+- Route loading and beta status labels use shared locale resources
 
 Acceptance:
 
@@ -796,13 +814,16 @@ Restore Strategy Decision
 
 Status:
 
-- Implemented
+- Implemented with non-destructive missing-bookmark recovery
 
 Acceptance:
 
 - `docs/decisions/restore-strategy.md` documents the pre-`1.0.0` decision
 - Full destructive replacement restore is deferred to post-beta work
-- Current restore behavior remains backup-protected and service-boundary scoped
+- Current restore never deletes or overwrites existing bookmarks and folders
+- Missing bookmark occurrences use parent-ID matching with folder-path fallback
+- Missing non-root folders are recreated and failed writes roll back their created items
+- A safety backup is created before the first restore write
 
 ---
 
@@ -870,7 +891,8 @@ Acceptance:
 
 - Chrome and Edge continue to manage store update checks and downloads
 - FavGrove listens for `chrome.runtime.onUpdateAvailable` without manual polling
-- The available version is persisted locally and shown on the next options-page visit
+- The available version is persisted locally and shown on the next options-page visit or immediately while the page is open
+- Stale records that do not describe a newer version are cleared locally
 - The user can reload FavGrove to apply a downloaded update immediately
 - English and Chinese notices cover available, applying, dismissed, and error states
 - No new host permission, GitHub request, bookmark upload, analytics, or telemetry is introduced

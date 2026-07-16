@@ -1,5 +1,6 @@
-import type { BookmarkNode, ExportFormat, Result } from '../shared/types';
-import { flattenBookmarks } from '../shared/utils/bookmarks';
+import i18n from '../shared/i18n';
+import type { BookmarkNode, ExportFormat, ExportWorkerResponse, Result } from '../shared/types';
+import { serializeExport } from '../shared/utils/exportFormats';
 
 export interface ExportFile {
   filename: string;
@@ -15,76 +16,61 @@ const formatConfig: Record<ExportFormat, { extension: string; mimeType: string }
   html: { extension: 'html', mimeType: 'text/html;charset=utf-8' }
 };
 
-function escapeCsv(value: unknown): string {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+function serializeWithWorker(bookmarks: BookmarkNode[], format: ExportFormat): Promise<Result<string>> {
+  if (typeof Worker === 'undefined') {
+    try {
+      return Promise.resolve({ success: true, data: serializeExport(bookmarks, format) });
+    } catch (error) {
+      return Promise.resolve({ success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.exportBookmarks') });
+    }
+  }
+
+  let worker: Worker;
+  try {
+    worker = new Worker(new URL('../workers/exportFile.worker.ts', import.meta.url), { type: 'module' });
+  } catch (error) {
+    return Promise.resolve({ success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.exportBookmarks') });
+  }
+
+  return new Promise((resolve) => {
+    const finish = (result: Result<string>) => {
+      worker.terminate();
+      resolve(result);
+    };
+
+    worker.onmessage = (event: MessageEvent<ExportWorkerResponse>) => {
+      if (event.data.type === 'complete' && event.data.content !== undefined) {
+        finish({ success: true, data: event.data.content });
+      } else {
+        finish({ success: false, error: event.data.error ?? i18n.t('serviceErrors.exportBookmarks') });
+      }
+    };
+    worker.onerror = () => finish({ success: false, error: i18n.t('serviceErrors.exportBookmarks') });
+    try {
+      worker.postMessage({ type: 'create-export', bookmarks, format });
+    } catch (error) {
+      finish({ success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.exportBookmarks') });
+    }
+  });
 }
 
-function escapeXml(value: unknown): string {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
-
-function toCsvRows(bookmarks: BookmarkNode[]): string {
-  const rows = flattenBookmarks(bookmarks).map((bookmark) =>
-    [bookmark.id, bookmark.title, bookmark.url, bookmark.path?.join(' / ') ?? '', bookmark.dateAdded ?? ''].map(escapeCsv).join(',')
-  );
-  return ['id,title,url,path,dateAdded', ...rows].join('\n');
-}
-
-function toTxtRows(bookmarks: BookmarkNode[]): string {
-  return flattenBookmarks(bookmarks)
-    .map((bookmark) => `${bookmark.title || 'Untitled'}\n${bookmark.url ?? ''}\n${bookmark.path?.join(' / ') ?? ''}`)
-    .join('\n\n');
-}
-
-function toOpml(bookmarks: BookmarkNode[]): string {
-  const outlines = flattenBookmarks(bookmarks)
-    .map((bookmark) => `    <outline text="${escapeXml(bookmark.title || 'Untitled')}" type="link" url="${escapeXml(bookmark.url)}" />`)
-    .join('\n');
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<opml version="2.0">\n  <head>\n    <title>FavGrove Bookmark Export</title>\n  </head>\n  <body>\n${outlines}\n  </body>\n</opml>\n`;
-}
-
-function toHtml(bookmarks: BookmarkNode[]): string {
-  const links = flattenBookmarks(bookmarks)
-    .map((bookmark) => `    <DT><A HREF="${escapeXml(bookmark.url)}">${escapeXml(bookmark.title || 'Untitled')}</A>`)
-    .join('\n');
-  return `<!DOCTYPE NETSCAPE-Bookmark-file-1>\n<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">\n<TITLE>Bookmarks</TITLE>\n<H1>Bookmarks</H1>\n<DL><p>\n${links}\n</DL><p>\n`;
+function serialize(bookmarks: BookmarkNode[], format: ExportFormat): Result<string> {
+  try {
+    return { success: true, data: serializeExport(bookmarks, format) };
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : i18n.t('serviceErrors.exportBookmarks') };
+  }
 }
 
 export const exportService = {
-  toJson(bookmarks: BookmarkNode[]): Result<string> {
-    return { success: true, data: JSON.stringify(bookmarks, null, 2) };
-  },
+  toJson: (bookmarks: BookmarkNode[]) => serialize(bookmarks, 'json'),
+  toCsv: (bookmarks: BookmarkNode[]) => serialize(bookmarks, 'csv'),
+  toTxt: (bookmarks: BookmarkNode[]) => serialize(bookmarks, 'txt'),
+  toOpml: (bookmarks: BookmarkNode[]) => serialize(bookmarks, 'opml'),
+  toHtml: (bookmarks: BookmarkNode[]) => serialize(bookmarks, 'html'),
 
-  toCsv(bookmarks: BookmarkNode[]): Result<string> {
-    return { success: true, data: toCsvRows(bookmarks) };
-  },
-
-  toTxt(bookmarks: BookmarkNode[]): Result<string> {
-    return { success: true, data: toTxtRows(bookmarks) };
-  },
-
-  toOpml(bookmarks: BookmarkNode[]): Result<string> {
-    return { success: true, data: toOpml(bookmarks) };
-  },
-
-  toHtml(bookmarks: BookmarkNode[]): Result<string> {
-    return { success: true, data: toHtml(bookmarks) };
-  },
-
-  createFile(bookmarks: BookmarkNode[], format: ExportFormat): Result<ExportFile> {
-    const contentByFormat: Record<ExportFormat, Result<string>> = {
-      json: this.toJson(bookmarks),
-      csv: this.toCsv(bookmarks),
-      txt: this.toTxt(bookmarks),
-      opml: this.toOpml(bookmarks),
-      html: this.toHtml(bookmarks)
-    };
-    const content = contentByFormat[format];
+  async createFile(bookmarks: BookmarkNode[], format: ExportFormat): Promise<Result<ExportFile>> {
+    const content = await serializeWithWorker(bookmarks, format);
     if (!content.success) return content;
 
     return {

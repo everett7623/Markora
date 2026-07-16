@@ -1,11 +1,14 @@
 import { registerAlarms } from './alarms';
 import { linkRequestService } from '../services/linkRequestService';
-import type { LinkFetchRequest, Result } from '../shared/types';
+import { aiProviderService } from '../services/aiProviderService';
+import type { AiProviderCancelRequest, AiProviderRequest, LinkFetchRequest, Result } from '../shared/types';
 
 export type BackgroundMessage =
   | { type: 'open-options' }
   | { type: 'register-alarms' }
   | { type: 'apply-extension-update' }
+  | AiProviderRequest
+  | AiProviderCancelRequest
   | LinkFetchRequest;
 
 export function registerMessageRouter(): void {
@@ -36,6 +39,15 @@ export function registerMessageRouter(): void {
     if (message.type === 'check-link') {
       void linkRequestService.check(message.url, message.settings).then(sendResponse);
       return true;
+    }
+
+    if (message.type === 'run-ai-analysis') {
+      void aiProviderService.run(message).then(sendResponse);
+      return true;
+    }
+
+    if (message.type === 'cancel-ai-analysis') {
+      sendResponse({ success: true, data: aiProviderService.cancel(message.requestId) } satisfies Result<boolean>);
     }
   });
 }

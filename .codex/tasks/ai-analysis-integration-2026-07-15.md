@@ -4,9 +4,10 @@ Date: 2026-07-15
 
 ## Status
 
-- Planned; implementation has not started.
-- Blocked until the release gates in `RELEASE_CHECKLIST.md` are closed.
-- No provider, model, SDK, API key, network endpoint, or new permission is configured by this task.
+- First read-only milestone implemented on 2026-07-16 after explicit user direction to continue before the earlier release-gate sequence was complete.
+- Uses a user-provided OpenAI-compatible Chat Completions endpoint and model; no provider, SDK, shared key, or default network endpoint is bundled.
+- Provider boundary decision: `docs/decisions/ai-provider-boundary.md`.
+- Automated provider success, cancellation, failure, schema, privacy, and 10,000-bookmark paths are verified; a live-provider check requires user-owned credentials.
 
 ## Goal
 
@@ -39,13 +40,11 @@ results but must not replace deterministic checks.
 
 ## Required Decisions Before Implementation
 
-- Choose the execution model: on-device/local endpoint, user-provided API key,
-  or a separately approved developer-operated service.
-- Select the provider and model only after reviewing privacy, retention,
-  training, regional availability, quota, cost, and license terms.
-- Define whether results are transient or may be saved locally.
-- Define an explicit versioned request and response schema.
-- Decide the provider-specific optional host-permission strategy.
+- Execution model: user-provided local or remote Chat Completions-compatible endpoint.
+- Provider and model: selected by the user; FavGrove has no default provider.
+- Results: transient and not saved.
+- Contract: versioned request and response schema `1`.
+- Host permission: requested for the exact endpoint origin only after preview confirmation.
 
 ## Privacy And Security Requirements
 
@@ -72,12 +71,22 @@ results but must not replace deterministic checks.
 
 ## Development Phases
 
-1. Write the provider/data-boundary decision record and structured analysis contract.
-2. Implement deterministic local preprocessing with unit and performance coverage.
-3. Add a provider-neutral analysis service and background message contract.
-4. Add opt-in settings, credential handling, scope preview, cost/token estimate, and cancellation.
-5. Add read-only analysis results with evidence, confidence, and dismissed-result handling.
-6. Update privacy/store documentation and add E2E coverage before release.
+1. [x] Write the provider/data-boundary decision record and structured analysis contract.
+2. [x] Implement deterministic local preprocessing with unit and performance coverage.
+3. [x] Add a provider-neutral analysis service and background message contract.
+4. [x] Add opt-in settings, transient credential handling, scope preview, token estimate, timeout, and cancellation.
+5. [x] Add read-only analysis results with evidence and confidence.
+6. [x] Update privacy/store documentation and add success, cancellation, failure, and disabled-state E2E coverage.
+
+## Implemented Verification
+
+- Full quality gates passed on 2026-07-16: ESLint, TypeScript strict checking, 26 Vitest files with 97 tests, the focused 10,000-bookmark benchmark, production extension validation and permission audit, Chrome/Edge headless load checks, and 11 Playwright E2E tests.
+- AI remains disabled until the user opts in.
+- Domain-only payloads exclude titles, paths, tags, URL queries, and fragments.
+- Metadata payloads strip URL queries and fragments and cap samples at 200.
+- 10,000 bookmarks are preprocessed locally through a bounded Worker path.
+- Invalid schema, invalid confidence, invented evidence, permission denial, cancellation, and provider failure are covered.
+- Model output remains read-only and cannot call bookmark mutation services.
 
 ## Acceptance Criteria
 

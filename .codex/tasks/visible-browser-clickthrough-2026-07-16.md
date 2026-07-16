@@ -5,7 +5,7 @@ Date: 2026-07-16
 ## Status
 
 - Pending a clean visible Chrome and Edge browser session; automated UI control stopped before extension installation or manual verification.
-- Current branch matches `origin/main`; local `main` is six commits behind.
+- Current `main` matches `origin/main` at `7febb36d` after the browser-managed update notification merge.
 
 ## Goal
 
@@ -29,8 +29,8 @@ the FavGrove `0.2.0` beta candidate using the production `dist/` build.
 
 ## Checklist
 
-- [ ] `npm run build:extension`
-- [ ] `npm run check:browsers`
+- [x] `npm run build:extension`
+- [x] `npm run check:browsers`
 - [ ] Visible Chrome check
 - [ ] Visible Edge check
 - [ ] Update `docs/release/browser-clickthrough.md`
@@ -40,4 +40,4 @@ the FavGrove `0.2.0` beta candidate using the production `dist/` build.
 ## Notes
 
 - Remote fetch completed successfully on 2026-07-16.
-- `codex/ai-analysis-plan` is at `3b3876b0`, identical to `origin/main`.
+- `main` and `origin/main` were fast-forwarded to `7febb36d` on 2026-07-16.

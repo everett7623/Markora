@@ -1,3 +1,5 @@
+import { zhCNRelease } from './zh-CN-release';
+
 export const zhCN = {
   appName: 'FavGrove 书签管理器',
   tagline: '让每一枚书签，各归其位',
@@ -18,13 +20,8 @@ export const zhCN = {
     shortcut: 'Ctrl K'
   },
   footer: { localOnly: '所有书签数据仅保留在浏览器本地。' },
-  update: {
-    available: 'FavGrove {{version}} 已准备就绪',
-    description: 'Chrome 或 Edge 已下载更新，重新加载 FavGrove 即可立即应用。',
-    apply: '立即更新',
-    applying: '正在更新...',
-    dismiss: '稍后提醒'
-  },
+  status: zhCNRelease.status,
+  update: zhCNRelease.update,
   activity: {
     loadedBookmarks: '已加载 {{count}} 个书签',
     searched: '已搜索“{{query}}”',
@@ -56,7 +53,9 @@ export const zhCN = {
     reorderBookmark: '无法调整书签顺序。',
     mergeFolders: '无法合并文件夹。',
     restoreBookmarks: '无法恢复书签。',
+    restoreRootFolderMissing: '原浏览器书签根目录不可用，无法安全恢复这份备份。',
     importBookmarks: '无法导入书签。',
+    exportBookmarks: '无法导出书签。',
     contactBackgroundLinkChecker: '无法连接扩展后台链接检测服务。',
     requestLinkCheckPermissions: '无法请求链接检测权限。',
     scanFailed: '扫描失败。',
@@ -225,6 +224,8 @@ export const zhCN = {
     importDescription: '在本地导入 HTML、JSON、CSV、TXT 或 OPML 书签文件。写入新书签前会先创建备份。',
     chooseFile: '选择文件',
     parsing: '解析中...',
+    importingBookmarks: '正在导入...',
+    exporting: '正在导出...',
     unsupportedImportFormat: '请选择 HTML、JSON、CSV、TXT 或 OPML 书签文件。',
     previewTitle: '导入预览',
     detected: '已识别',
@@ -272,10 +273,10 @@ export const zhCN = {
     noBackups: '删除、导入或恢复操作后将显示备份记录。',
     backupCount: '共 {{count}} 个备份。',
     bookmarksCount: '{{count}} 个书签',
-    restoreBackup: '恢复',
+    restoreBackup: '恢复缺失项',
     deleteBackup: '删除',
-    confirmRestoreTitle: '恢复备份',
-    confirmRestoreDescription: '确定恢复这份包含 {{count}} 个书签的备份吗？恢复前会先为当前状态创建安全备份。',
+    confirmRestoreTitle: '恢复缺失书签',
+    confirmRestoreDescription: '确定从这份包含 {{count}} 个书签的备份中补回缺失项吗？现有书签和文件夹不会被删除，并会先创建安全备份。',
     backupReasons: {
       delete: '删除',
       import: '导入',

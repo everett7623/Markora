@@ -1,11 +1,13 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import '../i18n';
+import type { ExtensionUpdateInfo, Result } from '../types';
 import { UpdateBanner } from './UpdateBanner';
 
 const updateMocks = vi.hoisted(() => ({
   getAvailableUpdate: vi.fn(),
+  subscribeToAvailableUpdate: vi.fn(),
   applyAvailableUpdate: vi.fn()
 }));
 
@@ -14,9 +16,19 @@ vi.mock('../../services/updateService', () => ({
 }));
 
 describe('UpdateBanner', () => {
+  const unsubscribe = vi.fn();
+  let updateListener: ((result: Result<ExtensionUpdateInfo | null>) => void) | undefined;
+
   beforeEach(() => {
     updateMocks.getAvailableUpdate.mockReset();
+    updateMocks.subscribeToAvailableUpdate.mockReset();
     updateMocks.applyAvailableUpdate.mockReset();
+    unsubscribe.mockReset();
+    updateListener = undefined;
+    updateMocks.subscribeToAvailableUpdate.mockImplementation((listener) => {
+      updateListener = listener;
+      return unsubscribe;
+    });
     updateMocks.getAvailableUpdate.mockResolvedValue({
       success: true,
       data: { version: '0.3.0', detectedAt: 123 }
@@ -51,5 +63,20 @@ describe('UpdateBanner', () => {
     render(<UpdateBanner />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Unable to read local storage.');
+  });
+
+  it('shows an update detected while the page is already open', async () => {
+    updateMocks.getAvailableUpdate.mockResolvedValue({ success: true, data: null });
+    const view = render(<UpdateBanner />);
+    await act(async () => Promise.resolve());
+
+    act(() => updateListener?.({
+      success: true,
+      data: { version: '0.3.1', detectedAt: 456 }
+    }));
+
+    expect(await screen.findByText('FavGrove 0.3.1 is ready')).toBeInTheDocument();
+    view.unmount();
+    expect(unsubscribe).toHaveBeenCalledOnce();
   });
 });

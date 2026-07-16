@@ -6,7 +6,7 @@ FavGrove - Bookmark Manager
 
 ## Short Description
 
-A local-first bookmark workspace for scanning, cleaning, importing, exporting, and backing up large Chrome and Edge bookmark collections.
+A local-first bookmark workspace with scanning, cleanup, import/export, backups, and optional user-configured AI analysis.
 
 ## Long Description
 
@@ -22,10 +22,11 @@ Core features:
 - HTML, JSON, CSV, TXT, and OPML import/export with preview and conflict handling.
 - Local backups before destructive operations and configurable backup retention.
 - Theme, language, scan cache, scanner, and automatic daily scan settings.
+- Optional read-only AI analysis using a user-provided compatible endpoint, explicit request preview, redaction, timeout, and cancellation.
 
 Privacy summary:
 
-FavGrove stores bookmark metadata, settings, scan cache, search history, tags, and backups locally in the browser. It does not include analytics, telemetry, account sync, cloud processing, or developer-operated bookmark upload.
+FavGrove stores bookmark metadata, settings, scan cache, search history, tags, and backups locally in the browser. It does not include analytics, telemetry, account sync, a developer-operated AI proxy, or developer-operated bookmark storage. Optional AI requests are disabled by default and go only to the endpoint selected and confirmed by the user.
 
 ## Chrome Web Store Category
 
@@ -49,4 +50,5 @@ https://github.com/everett7623/FavGrove/blob/main/PRIVACY.md
 - Public beta candidate for local testing.
 - Manifest V3 Chrome and Edge extension.
 - Local-first bookmark scan, cleanup, import/export, backup, and management workflows.
+- Optional, read-only AI analysis with no bundled provider, model, endpoint, or API key.
 - Not yet a stable `1.0.0` store release.

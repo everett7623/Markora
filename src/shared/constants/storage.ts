@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   recentActivities: 'recent-activities',
   bookmarkTags: 'bookmark-tags',
   ignoredLinkUrls: 'ignored-link-urls',
+  aiSettings: 'ai-settings',
   availableExtensionUpdate: 'available-extension-update'
 } as const;
 

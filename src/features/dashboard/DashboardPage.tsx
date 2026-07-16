@@ -136,6 +136,12 @@ export default function DashboardPage() {
                 {t('dashboard.actions.manage')}
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link to="/ai-analysis">
+                <Sparkles size={16} />
+                {t('ai.dashboardAction')}
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

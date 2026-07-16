@@ -6,7 +6,9 @@ FavGrove is a local-first Chrome and Edge extension for organizing browser bookm
 
 ## Data Collection
 
-The extension does not collect, sell, transmit, or share personal information.
+The FavGrove project and its developer do not collect, sell, or share personal information. FavGrove does not operate an analytics service, account service, bookmark storage service, or AI proxy.
+
+Optional AI analysis can transmit a minimized bookmark metadata request directly to an endpoint selected and configured by the user. No AI request starts until the user enables the feature, reviews the request preview, and confirms the destination.
 
 It does not include:
 
@@ -15,24 +17,34 @@ It does not include:
 - Advertising
 - Remote tracking
 - Cloud synchronization
-- Bookmark uploads
+- Automatic or developer-operated bookmark uploads
 
 ## Local Data
 
-The extension processes bookmark data locally in the browser. Settings, scan caches, search history, tags, recent activity, backups, and pending extension-update version metadata are stored with the browser extension storage API.
+The extension processes bookmark data locally in the browser. Settings, scan caches, search history, tags, recent activity, backups, pending extension-update version metadata, and the optional AI endpoint/model configuration are stored with the browser extension storage API.
 
-This data remains on the user's device unless the user explicitly exports a file.
+This data remains on the user's device unless the user explicitly exports a file or confirms an optional AI analysis request as described below. AI API keys and AI results are not stored.
 
 ## Permissions
 
 - `alarms`: Schedules the optional daily local bookmark structure scan when the user enables automatic scanning in Settings.
 - `bookmarks`: Reads and updates the user's bookmark tree when the user uses management features.
 - `storage`: Stores settings, local tags, scan caches, search history, recent activity, and backups.
-- Optional `<all_urls>` host access: Requested only when the user starts broken-link checking. It is used to send direct link-validation requests and is not used to collect page content.
+- Optional `<all_urls>` host access: Requested only after the user starts broken-link checking or confirms an AI request to a selected endpoint. It is used for direct link validation or the confirmed AI endpoint request and is not used to collect page content.
 
 ## Network Requests
 
-Network requests are made only for URLs selected by the broken-link scanner. Bookmark data is not sent to a developer-controlled server.
+Network requests occur only for URLs selected by the broken-link scanner, browser-managed extension updates, or an AI endpoint explicitly configured and confirmed by the user. Bookmark data is not sent to a developer-controlled server operated by FavGrove.
+
+## Optional AI Analysis
+
+AI analysis is disabled by default. FavGrove does not include a default provider, endpoint, model, SDK, shared API key, or developer-operated proxy.
+
+Before each AI request, FavGrove shows the selected scope, destination origin, model, fields, item counts, and estimated request size. The default domain-only mode sends hostname aggregates and counts. If the user selects metadata mode, FavGrove may send bookmark titles, hostnames, URL pathnames, folder paths, and local tags for at most 200 sample items. URL query strings and fragments are removed. Aggregate counts can cover the complete selected scope.
+
+FavGrove never sends bookmark page content, backups, search history, recent activity, ignored-link lists, browser history, or analytics data to the AI endpoint. The API key remains in the current page memory and is not persisted, logged, exported, or included in diagnostics. AI results are transient and read-only.
+
+The selected provider controls its own retention, training, regional, security, pricing, and quota policies. Users should review those policies before sending a request.
 
 ## Extension Updates
 

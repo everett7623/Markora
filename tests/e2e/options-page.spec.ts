@@ -18,6 +18,10 @@ test('renders all foundation navigation routes', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Import / Export' })).toBeVisible();
   await expect(page.getByText('Choose file')).toBeVisible();
 
+  await page.getByRole('link', { name: 'AI Analysis' }).click();
+  await expect(page.getByRole('heading', { name: 'AI Analysis' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /Enable AI analysis/ })).not.toBeChecked();
+
   await page.getByRole('link', { name: 'Settings' }).click();
   await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
   await expect(page.getByRole('checkbox', { name: /Automatic daily scan/ })).toBeVisible();
@@ -63,6 +67,10 @@ test('checks primary routes in Chinese localization', async ({ page }) => {
   await page.getByRole('link', { name: '导入 / 导出' }).click();
   await expect(page.getByRole('heading', { name: '导入 / 导出' })).toBeVisible();
   await expect(page.getByText('选择文件')).toBeVisible();
+
+  await page.getByRole('link', { name: 'AI 分析' }).click();
+  await expect(page.getByRole('heading', { name: 'AI 分析' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: /启用 AI 分析/ })).not.toBeChecked();
 });
 
 test('runs the scanner and renders structural results', async ({ page }) => {
@@ -174,6 +182,88 @@ test('previews an HTML import, resolves conflicts, and imports new bookmarks', a
   await expect(
     page.getByRole('checkbox', { name: 'Select E2E Imported Bookmark' }).locator('..').getByText('Bookmarks Bar / Imported E2E', { exact: true })
   ).toBeVisible();
+});
+
+test('exports the selected bookmark format through the export worker', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Import / Export' }).click();
+
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'CSV' }).click();
+  const download = await downloadPromise;
+
+  expect(download.suggestedFilename()).toMatch(/^bookmarks-\d{4}-\d{2}-\d{2}\.csv$/);
+});
+
+test('requires AI opt-in and preview before returning read-only analysis', async ({ page }) => {
+  let providerRequests = 0;
+  await page.route('https://provider.test/**', async (route) => {
+    const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization,content-type', 'Access-Control-Allow-Methods': 'POST,OPTIONS' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    providerRequests += 1;
+    const request = JSON.parse(route.request().postData() ?? '{}');
+    const payload = JSON.parse(request.messages[1].content);
+    expect(payload.items).toEqual([]);
+    expect(JSON.stringify(payload)).not.toContain('GitHub Duplicate');
+    return route.fulfill({
+      status: 200,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        choices: [{ message: { content: JSON.stringify({
+          schemaVersion: 1,
+          summary: 'This library is centered on developer documentation.',
+          topics: [{ label: 'Developer tools', count: 2, confidence: 0.9, evidence: ['github.com'] }],
+          suggestions: [{ type: 'organization', title: 'Group developer resources', rationale: 'Keep frequently used developer domains together.', confidence: 0.8, evidence: ['github.com'] }],
+          warnings: []
+        }) } }]
+      })
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('link', { name: 'AI Analysis' }).click();
+  const previewButton = page.getByRole('button', { name: 'Build request preview' });
+  await expect(previewButton).toBeDisabled();
+  await page.getByRole('checkbox', { name: /Enable AI analysis/ }).check();
+  await page.getByRole('textbox', { name: 'Chat Completions endpoint' }).fill('https://provider.test/v1/chat/completions');
+  await page.getByRole('textbox', { name: 'Model' }).fill('test-model');
+  await previewButton.click();
+
+  await expect(page.getByRole('heading', { name: 'Request preview' })).toBeVisible();
+  expect(providerRequests).toBe(0);
+  await page.getByRole('button', { name: 'Confirm and analyze' }).click();
+  await expect(page.getByRole('heading', { name: 'Analysis result' })).toBeVisible();
+  await expect(page.getByText('This library is centered on developer documentation.')).toBeVisible();
+  await expect(page.getByRole('paragraph').filter({ hasText: 'Results are suggestions only' })).toBeVisible();
+  expect(providerRequests).toBe(1);
+});
+
+test('cancels an AI request and surfaces provider failures', async ({ page }) => {
+  let mode: 'pending' | 'failed' = 'pending';
+  const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type', 'Access-Control-Allow-Methods': 'POST,OPTIONS' };
+  await page.route('https://slow-provider.test/**', async (route) => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    if (mode === 'failed') {
+      return route.fulfill({ status: 503, headers: { ...cors, 'Content-Type': 'application/json' }, body: JSON.stringify({ error: { message: 'Provider unavailable' } }) });
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    return route.fulfill({ status: 200, headers: { ...cors, 'Content-Type': 'application/json' }, body: '{}' }).catch(() => undefined);
+  });
+
+  await page.goto('/');
+  await page.getByRole('link', { name: 'AI Analysis' }).click();
+  await page.getByRole('checkbox', { name: /Enable AI analysis/ }).check();
+  await page.getByRole('textbox', { name: 'Chat Completions endpoint' }).fill('https://slow-provider.test/v1/chat/completions');
+  await page.getByRole('textbox', { name: 'Model' }).fill('test-model');
+  await page.getByRole('button', { name: 'Build request preview' }).click();
+  await page.getByRole('button', { name: 'Confirm and analyze' }).click();
+  await expect(page.getByRole('button', { name: 'Cancel analysis' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cancel analysis' }).click();
+  await expect(page.getByText('Analysis cancelled. No result was saved.')).toBeVisible();
+
+  mode = 'failed';
+  await page.getByRole('button', { name: 'Confirm and analyze' }).click();
+  await expect(page.getByText(/Provider unavailable \(HTTP 503\)/)).toBeVisible();
 });
 
 test('renames, tags, moves, deletes, and restores a bookmark', async ({ page }) => {

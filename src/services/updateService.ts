@@ -26,18 +26,35 @@ export function isNewerVersion(currentVersion: string, candidateVersion: string)
 
 export const CURRENT_EXTENSION_VERSION = manifest.version;
 
+async function getAvailableUpdate(): Promise<Result<ExtensionUpdateInfo | null>> {
+  if (!globalThis.chrome?.runtime?.id) return { success: true, data: null };
+
+  const stored = await storageService.get<ExtensionUpdateInfo | null>(STORAGE_KEYS.availableExtensionUpdate);
+  if (!stored.success) return stored;
+
+  const update = stored.data?.data ?? null;
+  if (!update) return { success: true, data: null };
+  if (!isNewerVersion(CURRENT_EXTENSION_VERSION, update.version)) {
+    const cleared = await storageService.set<ExtensionUpdateInfo | null>(STORAGE_KEYS.availableExtensionUpdate, null);
+    if (!cleared.success) return cleared;
+    return { success: true, data: null };
+  }
+  return { success: true, data: update };
+}
+
 export const updateService = {
-  async getAvailableUpdate(): Promise<Result<ExtensionUpdateInfo | null>> {
-    if (!globalThis.chrome?.runtime?.id) return { success: true, data: null };
+  getAvailableUpdate,
 
-    const stored = await storageService.get<ExtensionUpdateInfo | null>(STORAGE_KEYS.availableExtensionUpdate);
-    if (!stored.success) return stored;
+  subscribeToAvailableUpdate(listener: (result: Result<ExtensionUpdateInfo | null>) => void): () => void {
+    const onChanged = globalThis.chrome?.storage?.onChanged;
+    if (!onChanged) return () => undefined;
 
-    const update = stored.data?.data ?? null;
-    if (!update || !isNewerVersion(CURRENT_EXTENSION_VERSION, update.version)) {
-      return { success: true, data: null };
-    }
-    return { success: true, data: update };
+    const handleChange: Parameters<typeof onChanged.addListener>[0] = (changes, areaName) => {
+      if (areaName !== 'local' || !Object.prototype.hasOwnProperty.call(changes, STORAGE_KEYS.availableExtensionUpdate)) return;
+      void getAvailableUpdate().then(listener);
+    };
+    onChanged.addListener(handleChange);
+    return () => onChanged.removeListener(handleChange);
   },
 
   async applyAvailableUpdate(): Promise<Result<boolean>> {

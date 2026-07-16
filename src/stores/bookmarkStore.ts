@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { backupRestoreService } from '../services/backupRestoreService';
 import { backupService } from '../services/backupService';
 import { bookmarkService } from '../services/bookmarkService';
 import { storageService } from '../services/storageService';
@@ -10,7 +11,6 @@ import {
   calculateBookmarkStats,
   collectBookmarkNodesByIds,
   findNodeParent,
-  flattenBookmarks,
   isDescendantNode,
   mergeFolderNodes,
   moveBookmarkNodes,
@@ -417,48 +417,34 @@ export const useBookmarkStore = create<BookmarkStore>((set, get) => ({
     if (!target) return;
 
     set({ mutating: true, error: null });
-
-    // 1. Create safety backup of current state
-    const safetyBackup = await backupService.create(get().bookmarks, 'restore');
-    if (!safetyBackup.success) {
-      set({ error: safetyBackup.error, mutating: false });
-      return;
-    }
-
-    // 2. Get all current bookmark IDs (non-root)
-    const currentIds = flattenBookmarks(get().bookmarks).map((b) => b.id);
-
-    // 3. Remove all current bookmarks
-    if (currentIds.length > 0) {
-      const removed = await bookmarkService.removeMany(currentIds);
-      if (!removed.success) {
-        set({ error: removed.error, mutating: false });
-        return;
-      }
-    }
-
-    // 4. Restore backup bookmarks
-    const restored = await bookmarkService.restoreMany(
-      flattenBookmarks(target.bookmarks)
-    );
+    const restored = await backupRestoreService.restoreMissing(get().bookmarks, target.bookmarks);
     if (!restored.success) {
       set({ error: restored.error, mutating: false });
       return;
     }
+    if (restored.data === 0) {
+      set({ mutating: false });
+      return;
+    }
 
-    // 5. Reload tree from Chrome API for consistency
     const tree = await bookmarkService.getTree();
-    const freshBookmarks = tree.success ? tree.data : target.bookmarks;
-    const refreshedBackups = await getBackupListFallback([safetyBackup.data, ...get().backups]);
+    if (!tree.success) {
+      set({ error: tree.error, mutating: false });
+      return;
+    }
+    const refreshedBackups = await getBackupListFallback(get().backups);
 
     set((state) => ({
-      ...applyBookmarks(freshBookmarks, state.searchQuery, state.tagsByBookmarkId, state.tagFilter),
+      ...applyBookmarks(tree.data, state.searchQuery, state.tagsByBookmarkId, state.tagFilter),
       backups: refreshedBackups,
       mutating: false
     }));
     await get().addActivity({
       type: 'restore',
-      message: i18n.t('activity.restoredBackupFromDate', { date: new Date(target.createdAt).toLocaleDateString() })
+      message: i18n.t('activity.restoredBookmarks', {
+        count: restored.data,
+        suffix: restored.data === 1 ? '' : 's'
+      })
     });
   },
   deleteBackup: async (id) => {

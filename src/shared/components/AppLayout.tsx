@@ -1,4 +1,4 @@
-import { BarChart3, Bookmark, FolderTree, Import, Menu, ScanSearch, Search, Settings } from 'lucide-react';
+import { BarChart3, Bookmark, BrainCircuit, FolderTree, Import, Menu, ScanSearch, Search, Settings } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
@@ -14,6 +14,7 @@ const navigation = [
   { to: '/scanner', key: 'scanner', icon: ScanSearch },
   { to: '/manager', key: 'manager', icon: FolderTree },
   { to: '/import-export', key: 'importExport', icon: Import },
+  { to: '/ai-analysis', key: 'aiAnalysis', icon: BrainCircuit },
   { to: '/settings', key: 'settings', icon: Settings }
 ] as const;
 
@@ -92,7 +93,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <span className="hidden rounded border px-1.5 py-0.5 text-xs lg:inline">{t('search.shortcut')}</span>
             {searchInput.trim() && <span className="text-xs">{searchResults.length}</span>}
           </label>
-          <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-200">P0</span>
+          <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-200">{t('status.beta')}</span>
         </header>
         <UpdateBanner />
         <main className="min-h-0 flex-1 overflow-auto p-4 lg:p-6">{children}</main>

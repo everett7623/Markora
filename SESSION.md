@@ -1,14 +1,14 @@
 # Current Session
 
-Date: 2026-07-15
+Date: 2026-07-16
 
 ## Working On
 
-FavGrove Rebrand And Release Readiness
+AI Bookmark Analysis And Release Readiness
 
 ## Current Goal
 
-Complete the FavGrove `0.2.0` beta migration and close the remaining release gaps before store publication.
+Complete the first read-only AI analysis milestone, preserve the local-first consent boundary, and close the remaining `0.2.0` release gaps.
 
 ## Current Status
 
@@ -67,6 +67,8 @@ Complete the FavGrove `0.2.0` beta migration and close the remaining release gap
   - Conflict resolver for skipping existing URLs or importing all.
   - Backup-before-import.
   - Nested folder recreation from Netscape bookmark paths.
+  - Requested-format-only export serialization in a dedicated Web Worker.
+  - Localized export busy feedback and reliable import parsing-state cleanup.
 - Settings persistence is implemented for:
   - Theme.
   - Language.
@@ -74,7 +76,7 @@ Complete the FavGrove `0.2.0` beta migration and close the remaining release gap
   - Scan cache duration.
   - Backup retention.
 - Settings backup management supports listing backups, restoring a backup, and deleting backups.
-- Restore creates a safety backup before applying a selected backup snapshot.
+- Restore keeps the current collection intact and adds only bookmark occurrences missing from the selected backup snapshot, after creating a safety backup.
 - App now applies persisted theme and language on startup.
 - Playwright E2E smoke tests pass for route navigation, import/settings visibility, and manager controls.
 - Expanded E2E covers scanner execution, HTML import preview/conflict handling, and manager rename/tag/move/delete/undo flows.
@@ -129,19 +131,23 @@ Complete the FavGrove `0.2.0` beta migration and close the remaining release gap
 - Manifest required permissions are now limited to `alarms`, `bookmarks`, and `storage`; the unused `tabs` permission was removed after a source audit found no `chrome.tabs` usage.
 - `npm run audit:permissions` verifies the manifest permission boundary and `PRIVACY.md` permission copy.
 - Visible browser click-through steps are prepared in `docs/release/browser-clickthrough.md`; the final human-visible Chrome and Edge results still need to be recorded before store submission.
-- Full destructive replacement restore is deferred by `docs/decisions/restore-strategy.md`; current restore remains backup-protected and service-boundary scoped.
+- Full destructive replacement restore is deferred by `docs/decisions/restore-strategy.md`; the current recovery flow is additive, backup-protected, path-mapped, and service-boundary scoped.
 - GitHub pre-release metadata, store submission fields, and post-beta AI guardrails are prepared in `docs/release/github-prerelease-v0.2.0.md`, `store/submission-fields.md`, and `docs/roadmap/post-beta-ai.md`.
 - Link checking now treats ambiguous 4xx responses, including 404, authentication, proxy, and rate-limit responses, as requiring manual verification; only HTTP 410 is automatically classified as confirmed broken.
 - Legacy cached 404 results are reclassified under the conservative policy, and link issue rows can be dismissed with "Works for me" / "确认可打开" without changing the bookmark.
 - Manually dismissed link URLs are now persisted locally and filtered from future scans and cached results.
 - Settings now manages ignored link-check URLs with local search, per-URL re-enable, and confirmation-protected clear-all actions.
 - Link issue rows now support an in-place single-link recheck using the current scanner settings; successful checks remove the issue, while failures refresh its status and classification without adding an ignore rule.
-- The first post-beta AI milestone is now specified as optional, read-only bookmark-library analysis in `TASK-705` and `.codex/tasks/ai-analysis-integration-2026-07-15.md`. No provider, model, credential, endpoint, permission, or data transfer was added during planning.
+- The first AI milestone is implemented as optional, disabled-by-default, read-only bookmark-library analysis using a user-provided Chat Completions-compatible endpoint and model.
+- AI supports whole-library or folder scope, domain-only or redacted metadata modes, exact request preview, transient API keys/results, separate endpoint permission, timeout, cancellation, provider error handling, and strict structured result validation.
+- Local AI preprocessing runs in a Worker, strips URL queries/fragments, caps samples at 200, and covers full-scope aggregates for at least 10,000 bookmarks.
 - Store-installed updates now use the Chrome/Edge-managed `runtime.onUpdateAvailable` lifecycle. FavGrove persists only the pending version and detection time, shows a localized global notice, and reloads only after the user chooses to apply the downloaded update. No remote version polling or new permission was added.
+- The update notice now appears immediately if Chrome or Edge downloads an update while FavGrove is already open, and stale non-newer update records are cleared locally.
+- The route-loading fallback and beta status badge now use the shared English and Chinese locale resources.
 
 ## Next Step
 
-Run and record the final visible Chrome and Edge click-through checks from `dist/`, then copy the prepared submission fields into the Chrome Web Store and Edge Add-ons portals when publication is approved.
+Load the rebuilt `dist/` in visible Chrome and Edge, complete the checklist including AI disabled/preview/cancel states, and perform one disposable live-provider compatibility check with user-owned credentials.
 
 ## After E2E
 
@@ -149,7 +155,7 @@ Run and record the final visible Chrome and Edge click-through checks from `dist
 2. Confirm the public privacy policy URL and support URL in the store portals.
 3. Create the GitHub beta pre-release from `docs/release/github-prerelease-v0.2.0.md`.
 4. Upload the verified release ZIP only after the visible browser pass is recorded.
-5. After release gates close, implement the provider/data-boundary decision and local preprocessing phase for `TASK-705`.
+5. Record a live-provider AI compatibility result without persisting the user-owned API key.
 
 ## Verification Required Before Commit
 
@@ -166,9 +172,10 @@ Latest verification:
 
 - ESLint: passed, 0 errors and 0 warnings.
 - TypeScript strict check: passed.
-- Vitest: passed, 11 test files and 42 tests.
-- Vite build: passed.
-- Playwright E2E: passed, 7 tests, including duplicate cleanup persistence and link-issue classification/detail coverage.
+- Vitest: passed, 26 test files and 97 tests.
+- Vite production extension build, validation, and permission audit: passed.
+- Chrome and Edge headless `dist/` load checks: passed.
+- Playwright E2E: passed, 11 tests.
 - Release packaging: passed.
 - Release archive inspection: passed.
 - Production extension validation: passed.
@@ -203,18 +210,21 @@ Latest verification:
 - On 2026-07-15, the complete local repository was moved to `D:\EvenFrank\Workspace\Plugins\Google\FavGrove`; Git object integrity, branch tracking, remote configuration, and working-tree changes were verified after the move.
 - On 2026-07-15, the FavGrove `0.2.0` development line and future releases were relicensed under `GPL-3.0-or-later`. Production builds and release archives now include the matching license text; previously granted MIT rights, historical release assets, and third-party dependency licenses were not rewritten.
 - On 2026-07-16, the browser-managed extension update notice passed ESLint with 0 warnings, TypeScript strict checking, 19 Vitest files with 74 tests, production extension build validation and permission audit, Chrome/Edge headless load checks, and 8 Playwright E2E tests. The required permission set remains `alarms`, `bookmarks`, and `storage`.
+- On 2026-07-16, non-destructive missing-bookmark recovery passed ESLint with 0 warnings, TypeScript strict checking, 21 Vitest files with 82 tests, production extension build validation and permission audit, Chrome/Edge headless load checks, and 8 Playwright E2E tests.
+- On 2026-07-16, requested-format export moved to a dedicated Worker with import/export busy feedback; ESLint, TypeScript, 21 Vitest files with 83 tests, the 10,000-bookmark benchmark, production extension validation and permission audit, Chrome/Edge headless load checks, and 9 Playwright E2E tests passed. A Chrome 10,000-bookmark CSV run completed in 105 ms with no observed Long Task.
+- On 2026-07-16, the first read-only AI analysis milestone passed ESLint with 0 warnings, TypeScript strict checking, 26 Vitest files with 97 tests, the 10,000-bookmark benchmark, production extension validation and permission audit, Chrome/Edge headless load checks, and 11 Playwright E2E tests. The rebuilt `dist/` includes the AI preprocessing Worker and analysis route; a live-provider check still requires user-owned credentials.
 
 ## Notes
 
 - Do not reuse stale environment assumptions. The Windows 11 environment has been verified with Git, Node.js v24.16.0, npm v11.13.0, build, lint, and test passing.
 - Do not automatically push.
 - Update both `SESSION.md` and `PROGRESS.md` after completing each development phase.
-- Current restore flow re-applies the selected backup snapshot and creates a safety backup first; destructive full replacement is deferred by `docs/decisions/restore-strategy.md`.
+- Current restore flow adds only missing bookmarks, preserves existing items, recreates missing non-root folders by path, and creates a safety backup before writing.
 - Use `npm run test:e2e` for Playwright; direct `playwright test` can leave the local web server hanging on this Windows setup.
 
 ## Design Notes / Pending Decisions
 
-- Backup restore currently re-applies a selected snapshot and creates a safety backup first.
+- Backup restore is non-destructive: it matches URL occurrences by parent, prefers live parent IDs, falls back to folder paths, and rolls back newly created items after a failure.
 - Full destructive replacement restore is intentionally deferred to post-beta work.
 - HTML import now recreates nested folders; folder conflict behavior currently creates/imports new folders for the import batch.
 - Folder merge keeps the first duplicate folder as the target, moves all source children, preserves URL conflicts, and creates a backup first.
